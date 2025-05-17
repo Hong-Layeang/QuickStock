@@ -1,0 +1,2 @@
+# QuickStock
+QuickStock is a streamlined inventory management system designed for efficient stock tracking and control. It is built to serve two types of users: Admins and Suppliers, each with distinct roles and responsibilities.
