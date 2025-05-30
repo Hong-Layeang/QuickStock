@@ -84,9 +84,14 @@ npm run dev
 
 > The app should now be running at `http://localhost:3000`
 
+<<<<<<< HEAD
 ## 📸 Processing Preview
+=======
+## 📸 Progressing Preview
+>>>>>>> b736cd6577b64771450460a6355da9ba3a045985
 
-*(Add screenshots or demo GIFs here)*
+![LoginPage](https://github.com/user-attachments/assets/85e467e5-7cfe-4e7a-b42b-6ba9948e08a7)
+![DashboardPage](https://github.com/user-attachments/assets/2ddd622c-4ffb-43e4-87be-987043c4ee81)
 
 ## 📌 Future Improvements
 
