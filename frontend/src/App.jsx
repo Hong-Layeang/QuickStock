@@ -1,10 +1,10 @@
 import './App.css';
 import { useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
+import useAuthStore from './store/useAuthStore.js';
 import LoginPage from './pages/LoginPage.jsx'
 import PrivateRoute from './components/PrivateRoute.jsx'
 import DashBoardPage from './pages/DashBoardPage.jsx';
-import useAuthStore from './store/useAuthStore.js';
 
 const App = () => {
   const loadUserFromStorage = useAuthStore((state) => state.loadUserFromStorage);
@@ -16,9 +16,7 @@ const App = () => {
   return (
     <Routes>
       <Route path="/" element={<LoginPage />} />
-      <Route 
-        path="/dashboard" 
-        element={
+      <Route path="/dashboard" element={
         <PrivateRoute>
           <DashBoardPage />
         </PrivateRoute>

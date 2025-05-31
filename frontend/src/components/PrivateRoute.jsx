@@ -1,9 +1,12 @@
-import { Navigate, Outlet } from 'react-router-dom';
-import useAuthStore from '../store/useAuthStore.js';
+import { Navigate } from "react-router-dom";
+import useAuthStore from "../store/useAuthStore.js";
 
-const PrivateRoute = () => {
-  const token = useAuthStore((state) => state.token);
-  return token ? <Outlet /> : <Navigate to="/" />;
+const PrivateRoute = ({ children }) => {
+  const { token, loading } = useAuthStore();
+
+  if (loading) return null; // or a spinner
+
+  return token ? children : <Navigate to="/" replace />;
 };
 
 export default PrivateRoute;
