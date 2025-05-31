@@ -2,7 +2,6 @@ import User from '../models/User.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
-
 export const loginSupplier = async (req, res) => {
     const { email, password } = req.body;
 
@@ -21,7 +20,7 @@ export const loginSupplier = async (req, res) => {
         if(!isMatch) return res.status(401).json({ success: false, message: "Invalid credentials" });
 
         // 4. Create token
-        const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
+        const token = jwt.sign({ id: user._id, username: user.username, role: user.role }, process.env.JWT_SECRET, {
             expiresIn: '1h'
         });
 

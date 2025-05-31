@@ -1,31 +1,31 @@
 import { useState } from "react";
 import Logo from "../components/Logo";
 import { FaSignInAlt } from "react-icons/fa";
-// import useUserStore from "../store/useUserStore";
 import useAuthStore from "../store/useAuthStore"; // Assuming you have a user store for authentication
+import { useNavigate } from 'react-router-dom';
 
 const LoginPage = () => {
+  const navigate = useNavigate();
 
-  const [credentials, setCredentials] = useState({
+  const [credential, setCredential] = useState({
     email: '',
     password: ''
   });
 
   const { login } = useAuthStore(); // Using the auth store for login
 
-
   const onSubmit = async (e) => {
     e.preventDefault();
-    const { email, password } = credentials;
+    const { email, password } = credential;
 
     if (!email || !password) {
       return alert("Please fill in all fields.");
     }
-    const response = await login(credentials);
+    const response = await login(credential.email, credential.password);
     
     if (response.success) {
       alert("Login successful!");
-      window.location.href = "/dashboard"; // redirect to dashboard after successful login
+      navigate('/dashboard');
     } else {
       alert(response?.message || "Login failed. Please check your credentials.");
     }
@@ -42,11 +42,11 @@ const LoginPage = () => {
             <div className="flex flex-col mb-3">
                 <label htmlFor="email" className="text-left font-bold mb-2.5">Email Address</label>
                 <input className="w-full h-13 rounded-xl border-3 placeholder: pl-6"
-                  onChange={(e) => setCredentials({ ...credentials, email: e.target.value })}
+                  onChange={(e) => setCredential({ ...credential, email: e.target.value })}
                   type="email"
                   id="email"
                   name="email"
-                  value={credentials.email}
+                  value={credential.email}
                   placeholder="📧 you@example.com"
                   required
                 />
@@ -59,8 +59,8 @@ const LoginPage = () => {
                   name="password" 
                   placeholder="🔒 ************" 
                   required 
-                  value={credentials.password}
-                  onChange={(e) => setCredentials({ ...credentials, password: e.target.value})}
+                  value={credential.password}
+                  onChange={(e) => setCredential({ ...credential, password: e.target.value})}
                 />
             </div>
             <button type="submit" className="text-black font-extrabold  bg-orange-500 w-35 h-13 rounded-xl outline-2 border-b-5 outline-black shadow-xl ml-auto mr-auto flex justify-center items-center gap-2">Sign In <FaSignInAlt className="text-xl"/></button>

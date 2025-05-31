@@ -7,35 +7,35 @@ const useAuthStore = create((set) => ({
 
     login: async (email, password) => {
         try {
-            const res = await axios.post('/api/auth/login', { email, password });
+            const res = await axios.post('/api/login', { email, password });
             const { token, user } = res.data;
 
             set({ token, user });
-
             
-            // Optional: Save token in localStorage for persistence
+            // Save token & user in localStorage for persistence
             localStorage.setItem('token', token);
+            localStorage.setItem('user', JSON.stringify(user));
 
             return { success: true };
         } catch (error) {
-            return { success: false, message: error.res?.data?.message || error.message };
+            return { success: false, message: error.response?.data?.message || error.message };
         }
     },
 
     logout: () => {
         set({ token: null, user: null });
         localStorage.removeItem('token');
+        localStorage.removeItem('user');
     },
 
     loadUserFromStorage: () => {
         const token = localStorage.getItem('token');
-        if (token) {
-            // You might decode token to get user info (e.g. with jwt-decode lib)
-            // For simplicity, let's just store token and rely on backend to verify
-        set({ token });
-            // Optionally fetch user info from backend here
+        const user = JSON.parse(localStorage.getItem('user'));
+
+        if (token && user ) {
+            set({ token, user }); // restore both token and user
         }
-    }
+    },
 }));
 
 export default useAuthStore;
