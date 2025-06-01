@@ -3,6 +3,7 @@ import Logo from "../components/Logo";
 import { FaSignInAlt } from "react-icons/fa";
 import useAuthStore from "../store/useAuthStore"; // Assuming you have a user store for authentication
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-hot-toast';
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -24,10 +25,13 @@ const LoginPage = () => {
     const response = await login(credential.email, credential.password);
     
     if (response.success) {
-      alert("Login successful!");
-      navigate('/dashboard');
+      toast.success("Login successful!");
+
+      setTimeout(() => {
+        navigate('/adminDashboard');
+      }, 1500);
     } else {
-      alert(response?.message || "Login failed. Please check your credentials.");
+      toast.error(response.message || "Login failed.");
     }
   };
 
@@ -36,7 +40,7 @@ const LoginPage = () => {
         <h4 className="text-orange-500 mb-4 text-xl">Welcome Back!</h4>
         <Logo />
         <h2 className="mt-4 text-2xl font-bold text-orange-900">Please sign in to your account</h2>
-        <p className="text-orange-900 mt-0.5 text-sm font-thin">Let's get you signed in and straight to the icons.</p>
+        <p className="text-orange-900 mt-0.5 text-sm font-thin">Let's get you signed in and straight to the stock.</p>
         <form className="text-orange-900 pl-10 pr-10 flex flex-col gap-4 mt-7" 
           onSubmit={onSubmit}>
             <div className="flex flex-col mb-3">

@@ -6,7 +6,7 @@ const PrivateRoute = ({ children }) => {
 
   if (loading) return null; // or a spinner
 
-  return token ? children : <Navigate to="/" replace />;
+  return token ? children : <Navigate to="/unauthorized" replace />;
 };
 
 export default PrivateRoute;

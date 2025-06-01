@@ -4,7 +4,8 @@ import { Routes, Route } from 'react-router-dom';
 import useAuthStore from './store/useAuthStore.js';
 import LoginPage from './pages/LoginPage.jsx'
 import PrivateRoute from './components/PrivateRoute.jsx'
-import DashBoardPage from './pages/DashBoardPage.jsx';
+import AdminDashBoardPage from './pages/adminDashBoardPage.jsx';
+import UnauthorizedPage from './pages/UnauthorizedPage.jsx';
 
 const App = () => {
   const loadUserFromStorage = useAuthStore((state) => state.loadUserFromStorage);
@@ -16,9 +17,10 @@ const App = () => {
   return (
     <Routes>
       <Route path="/" element={<LoginPage />} />
-      <Route path="/dashboard" element={
+      <Route path='/unauthorized' element={<UnauthorizedPage />} />
+      <Route path="/adminDashboard" element={
         <PrivateRoute>
-          <DashBoardPage />
+          <AdminDashBoardPage />
         </PrivateRoute>
         }
       />

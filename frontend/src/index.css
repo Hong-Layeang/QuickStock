@@ -3,4 +3,10 @@
 body {
   background-color: #F6F6F6;
   font-family: Arial, Helvetica, sans-serif;
+  transition: background-color 0.3s ease;
+}
+
+body.dark {
+  background-color: #1a202c;
+  color: white;
 }
