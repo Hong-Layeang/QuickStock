@@ -3,8 +3,9 @@ import dotenv from 'dotenv'
 import connectDB from './config/mongodb.js';
 import cors from 'cors';
 
-import userRoutes from './routes/UserRoutes.js';
+import userRoutes from './routes/userRoutes.js';
 import authRoutes from './routes/authRoutes.js';
+import productRoutes from './routes/productRoutes.js';
 
 dotenv.config();
 
@@ -19,6 +20,7 @@ app.use(cors());
 
 app.use("/api/users", userRoutes);
 app.use("/api/login", authRoutes);
+app.use("/api/products", productRoutes);
 
 app.listen(PORT, () => {
     console.log("Server is running at http://localhost:" + PORT);

@@ -1,6 +1,9 @@
 import { create } from 'zustand';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
+import { toast } from 'react-hot-toast';
+
+let logoutTimer;
 
 const useAuthStore = create((set) => ({
     user: null,
@@ -25,10 +28,12 @@ const useAuthStore = create((set) => ({
     },
 
     logout: () => {
+        clearTimeout(logoutTimer); // cancel the scheduled logout
         set({ token: null, user: null });
         localStorage.removeItem('token');
         localStorage.removeItem('user');
     },
+
 
     loading: true, // wait for token and user retrieved before continue
 
@@ -39,13 +44,26 @@ const useAuthStore = create((set) => ({
         const user = JSON.parse(localStorage.getItem('user'));
 
         if (token) {
-            const { exp } = jwtDecode(token);
-            if (Date.now() >= exp * 1000) {
+            const { exp } = jwtDecode(token); // get expiration time
+            const expiryTime = exp * 1000;
+            const currentTime = Date.now();
+
+            if (currentTime >= expiryTime) {
                 localStorage.removeItem('token');
                 localStorage.removeItem('user');
                 set({ loading: false });
                 return;
             }
+
+            // Auto-logout when token expires
+            const timeout = expiryTime - currentTime;
+            logoutTimer = setTimeout(() => {
+                toast.error("Session expired. Please log in again.");
+                set({ token: null, user: null });
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                window.location.href = "/unauthorized?msg=expired"; // redirect to login
+            }, timeout);
         }
 
         if (token && user ) {
