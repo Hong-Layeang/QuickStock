@@ -1,25 +1,14 @@
-import { useLocation } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { Link } from 'react-router-dom';
 
 const UnauthorizedPage = () => {
-  const location = useLocation();
-  const [message, setMessage] = useState("");
-
-  useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const msg = params.get("msg");
-
-    if (msg === "expired") {
-      setMessage("Your session has expired. Please log in again.");
-    } else {
-      setMessage("You must log in to view this page.");
-    }
-  }, [location.search]);
-
   return (
-    <div className="text-center mt-20 text-red-700 text-2xl font-bold">
-      🔒 Access Denied
-      <p className="text-base font-normal text-black mt-4">{message}</p>
+    <div className="h-screen px-6 py-12 bg-gray-50">
+      <div className="max-w-xl mx-auto text-center mt-24">
+        <h1 className="text-4xl font-semibold text-red-600 mb-4">Access Denied</h1>
+        <p className="text-gray-700 text-lg mb-6">
+          You do not have permission to view this page. Please <Link to="/" className="text-blue-600 underline hover:text-blue-800">log in</Link> with the appropriate credentials.
+        </p>
+      </div>
     </div>
   );
 };
