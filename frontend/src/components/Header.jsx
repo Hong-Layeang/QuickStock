@@ -1,4 +1,3 @@
-import Logo from './Logo.jsx'
 import { MdSunny } from "react-icons/md";
 import { IoPersonCircle } from "react-icons/io5";
 import { BsBell } from "react-icons/bs";
@@ -23,7 +22,6 @@ const Header = () => {
 
   return (
     <div className=" pl-3 pr-3 flex justify-between items-center">
-        <Logo />
         <h1 className="text-5xl text-orange-900">Inventory Admin</h1>
         <div className=" text-4xl flex gap-3">
             <div onClick={handleDarkmode} className="cursor-pointer">
