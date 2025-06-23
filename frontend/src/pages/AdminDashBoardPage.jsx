@@ -1,34 +1,26 @@
-import Header from '../components/Header.jsx';
-import AdminSideBar from '../components/AdminSideBar.jsx';
-import DashboardCards from '../components/DashboardCards.jsx';
-import ActivityTable from '../components/ActivityTable.jsx';
-import TransactionSummary from '../components/TransactionSummary.jsx';
+import Header from "../components/Header.jsx"
+import AdminSideBar from "../components/AdminSideBar.jsx"
+import DashboardCards from "../components/DashboardCards.jsx"
+import ActivityTable from "../components/ActivityTable.jsx"
+import TransactionSummary from "../components/TransactionSummary.jsx"
 
-const AdminDashBoardPage = () => {
+export default function AdminDashBoardPage() {
   return (
-    <div className="flex">
-      {/* Sidebar */}
-      <div className="w-[220px] h-screen">
-        <AdminSideBar />
-      </div>
+    <div className="min-h-screen">
+      <AdminSideBar />
 
       {/* Main content */}
-      <div className="flex-1 min-h-screen">
-        <div className="p-6">
+      <div className="lg:pl-64">
+        <div className="p-4 lg:p-6">
           <Header />
-          <div className="mt-10">
+
+          <div className="space-y-6 mt-6">
             <DashboardCards />
-          </div>
-          <div className="mt-10">
             <ActivityTable />
-          </div>
-          <div className="mt-10">
             <TransactionSummary />
           </div>
         </div>
       </div>
     </div>
-  );
-};
-
-export default AdminDashBoardPage;
+  )
+}

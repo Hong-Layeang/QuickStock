@@ -1,37 +1,44 @@
-import { MdSunny } from "react-icons/md";
-import { IoPersonCircle } from "react-icons/io5";
-import { BsBell } from "react-icons/bs";
-import { FaMoon } from "react-icons/fa";
-import { useEffect, useState } from 'react';
+"use client"
+
+import { Sun, Moon, Bell, User } from "lucide-react"
+import { useEffect, useState } from "react"
 
 const Header = () => {
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(false)
 
   const handleDarkmode = () => {
-    setDarkMode(prev => !prev);
+    setDarkMode((prev) => !prev)
   }
 
   useEffect(() => {
-    const body = document.body;
+    const body = document.body
     if (darkMode) {
-      body.classList.add("dark");
+      body.classList.add("dark")
     } else {
-      body.classList.remove("dark");
+      body.classList.remove("dark")
     }
-  }, [darkMode]);
+  }, [darkMode])
 
   return (
-    <div className=" pl-3 pr-3 flex justify-between items-center">
-        <h1 className="text-5xl text-orange-900">Inventory Admin</h1>
-        <div className=" text-4xl flex gap-3">
-            <div onClick={handleDarkmode} className="cursor-pointer">
-              { darkMode ? <FaMoon className="text-blue-400"/> : <MdSunny className="text-yellow-500"/> }
-            </div>
-            <div className="text-orange-500"><BsBell /></div>
-            <div className="text-blue-500"><IoPersonCircle /></div>
-        </div>
+    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 p-4 lg:pl-0">
+      <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-orange-900">Inventory Admin</h1>
+      <div className="flex items-center gap-2 sm:gap-3">
+        <button onClick={handleDarkmode} className="p-2 hover:bg-gray-100 cursor-pointer rounded-lg transition-colors">
+          {darkMode ? (
+            <Moon className="h-4 w-4 sm:h-5 sm:w-5 text-blue-400" />
+          ) : (
+            <Sun className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-500" />
+          )}
+        </button>
+        <button className="p-2 hover:bg-gray-100 cursor-pointer rounded-lg transition-colors">
+          <Bell className="h-4 w-4 sm:h-5 sm:w-5 text-orange-500" />
+        </button>
+        <button className="p-2 hover:bg-gray-100 cursor-pointer rounded-lg transition-colors">
+          <User className="h-4 w-4 sm:h-5 sm:w-5 text-blue-500" />
+        </button>
+      </div>
     </div>
   )
 }
 
-export default Header;
+export default Header

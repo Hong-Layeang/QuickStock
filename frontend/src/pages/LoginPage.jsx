@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Logo from "../components/Logo";
+import Logo from "../components/logo";
 import { FaSignInAlt } from "react-icons/fa";
 import useAuthStore from "../store/useAuthStore"; // Assuming you have a user store for authentication
 import { useNavigate } from 'react-router-dom';
