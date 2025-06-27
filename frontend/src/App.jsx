@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 import useAuthStore from './store/useAuthStore.js';
 import LoginPage from './pages/LoginPage.jsx';
 import PrivateRoute from './components/PrivateRoute.jsx';
-import AdminDashBoardPage from './pages/adminDashBoardPage.jsx';
+import AdminDashBoardPage from './pages/AdminDashBoardPage.jsx';
 import UnauthorizedPage from './pages/UnauthorizedPage.jsx';
 import SessionExpiredPage from './pages/SessionExpiredPage.jsx';
 
@@ -20,7 +20,7 @@ const App = () => {
 
   useEffect(() => {
     if (sessionExpired) {
-      window.location.href = "/session-expired"; // 🔥 forget React Router, force reload
+      window.location.href = "/session-expired";
       resetSessionExpired(); // clean up flag
     }
   }, [sessionExpired, resetSessionExpired]);

@@ -1,12 +1,27 @@
 "use client"
 
 import { BarChart3, Package, ClipboardList, Users, Menu, X } from "lucide-react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Logo from "../components/Logo"
 
 const AdminSideBar = () => {
   const [active, setActive] = useState("dashboard")
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [isDarkMode, setDarkMode] = useState(false)
+
+useEffect(() => {
+  const observer = new MutationObserver(() => {
+    setDarkMode(document.body.classList.contains("dark"))
+  })
+
+  observer.observe(document.body, {
+    attributes: true,
+    attributeFilter: ['class'],
+  })
+ 
+  // Cleanup on unmount
+  return () => observer.disconnect()
+}, [])
 
   const menuItems = [
     { key: "dashboard", label: "Dashboard", icon: <BarChart3 className="w-5 h-5" /> },
@@ -18,7 +33,7 @@ const AdminSideBar = () => {
   const SidebarContent = () => (
     <div className="flex flex-col h-full">
       {/* Logo Section */}
-      <div className="p-10 border-b border-orange-400">
+      <div className="p-10 border-b border-orange-500">
         <Logo />
       </div>
 
@@ -53,29 +68,36 @@ const AdminSideBar = () => {
       {/* Mobile Menu Button */}
       <button
         onClick={() => setMobileMenuOpen(true)}
-        className="lg:hidden fixed top-4 left-4 z-50 p-2 border border-gray-300 rounded-md shadow-sm hover:bg-gray-50"
+        className="lg:hidden fixed top-4 left-4 z-50 p-2 border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 cursor-pointer"
       >
         <Menu className="h-4 w-4" />
       </button>
 
       {/* Mobile Sidebar Overlay */}
-      {mobileMenuOpen && (
-        <div className="lg:hidden fixed inset-0 z-50 flex">
-          <div className="fixed inset-0 bg-black bg-opacity-50" onClick={() => setMobileMenuOpen(false)} />
-          <div className="relative flex flex-col w-64">
-            <button
-              onClick={() => setMobileMenuOpen(false)}
-              className="absolute top-4 right-4 p-1 hover:bg-gray-100 rounded"
-            >
-              <X className="h-4 w-4" />
-            </button>
-            <SidebarContent />
-          </div>
+      <div className={`lg:hidden fixed inset-0 z-50 flex transition-opacity duration-300 ${mobileMenuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+        {/* Dimmed background with soft blur */}
+        <div
+          className="absolute inset-0 bg-black/30 backdrop-blur-sm"
+          onClick={() => setMobileMenuOpen(false)}
+        />
+
+        {/* Sidebar with slide-in/out animation */}
+        <div
+          className={`relative flex flex-col w-64  ${isDarkMode ? "bg-gray-900" : "bg-white"} shadow-xl transform transition-transform duration-300 ease-in-out
+            ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}
+        >
+          <button
+            onClick={() => setMobileMenuOpen(false)}
+            className="absolute top-4 right-4 p-1 hover:bg-gray-100 cursor-pointer rounded"
+          >
+            <X className="h-4 w-4" />
+          </button>
+          <SidebarContent />
         </div>
-      )}
+      </div>
 
       {/* Desktop Sidebar */}
-      <div className="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 border-r border-orange-400">
+      <div className="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 border-r border-orange-500">
         <SidebarContent />
       </div>
     </>

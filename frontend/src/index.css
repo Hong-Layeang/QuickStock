@@ -7,6 +7,7 @@ body {
 }
 
 body.dark {
-  background-color: #1a202c;
+  background-color: rgb(17 24 39);
+  transition: background-color 0.3s ease;
   color: white;
 }
