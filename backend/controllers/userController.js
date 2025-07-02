@@ -1,46 +1,95 @@
-import User from "../models/User.js"
+// controllers/UserController.js
+
+import User from "../models/User.js";
 import hashPassword from "../node.bcrypt.js";
 
+// Get all users
 export const getUsers = async (req, res) => {
     try {
-        const users = await User.find({}); // fetch all users
+        const users = await User.findAll(); // ✅ Sequelize correct method
         res.status(200).json({ success: true, data: users });
     } catch (error) {
-        console.log("Error in fetching users data:", error.message);
+        console.error("Error in fetching users data:", error.message);
         res.status(500).json({ success: false, message: "Server Error" });
     }
 };
 
+// Get user by ID
 export const getUsersById = async (req, res) => {
-
-};
-
-export const createUser = async (req, res) => {
-    const { email, password } = req.body;
-
-    // hash password before saving
-    const hashedPassword = await hashPassword(password);
-    const namePart = email.split("@")[0];
-
-    const newUser = new User ({
-        username: namePart,
-        email,
-        password: hashedPassword,
-    });
-
+    const { id } = req.params;
     try {
-        await newUser.save();
-        res.status(201).json({ success: true, data: newUser })
+        const user = await User.findByPk(id);
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+        res.status(200).json({ success: true, data: user });
     } catch (error) {
-        console.log("Error in create user:", error.message);
-        res.status(500).json({ success: false, message: "Server Error" })
+        console.error("Error fetching user by ID:", error.message);
+        res.status(500).json({ success: false, message: "Server Error" });
     }
 };
 
-export const editUser = async (req, res) => {
+// Create a new user
+export const createUser = async (req, res) => {
+    const { email, password, role } = req.body;
 
+    try {
+        const hashedPassword = await hashPassword(password);
+        const namePart = email.split("@")[0];
+
+        const newUser = await User.create({
+            username: namePart,
+            email,
+            password: hashedPassword,
+            role: role || "supplier", // fallback just in case
+        });
+
+        res.status(201).json({ success: true, data: newUser });
+    } catch (error) {
+        console.error("Error creating user:", error.message);
+        res.status(500).json({ success: false, message: "Server Error" });
+    }
 };
 
-export const deleteUser = async (req, res) => {
+// Edit user
+export const editUser = async (req, res) => {
+    const { id } = req.params;
+    const { username, email, password } = req.body;
 
+    try {
+        const user = await User.findByPk(id);
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+
+        user.username = username || user.username;
+        user.email = email || user.email;
+        if (password) {
+            user.password = await hashPassword(password);
+        }
+
+        await user.save();
+        res.status(200).json({ success: true, data: user });
+    } catch (error) {
+        console.error("Error editing user:", error.message);
+        res.status(500).json({ success: false, message: "Server Error" });
+    }
+};
+
+// Delete user
+export const deleteUser = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const user = await User.findByPk(id);
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+
+        await user.destroy();
+        res.status(200).json({ success: true, message: "User deleted successfully" });
+    } catch (error) {
+        console.error("Error deleting user:", error.message);
+        res.status(500).json({ success: false, message: "Server Error" });
+    }
 };

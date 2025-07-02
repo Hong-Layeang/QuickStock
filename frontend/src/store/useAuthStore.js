@@ -10,19 +10,32 @@ function setAutoLogout(token, set) {
     const expiryTime = exp * 1000;
     const timeout = expiryTime - Date.now();
 
-    if (timeout > 0) {
-        logoutTimer = setTimeout(() => {
-            toast.error("Session expired. Please log in again.");
-            set((state) => ({
-                ...state,
-                token: null,
-                user: null,
-                sessionExpired: true,
-            }));
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
-        }, timeout);
+    console.log("Setting auto logout in", timeout, "ms");
+
+    if (timeout <= 0) {
+        axios.defaults.headers.common['Authorization'] = undefined;
+        set((state) => ({
+            ...state,
+            token: null,
+            user: null,
+            sessionExpired: true,
+        }));
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        return;
     }
+
+    logoutTimer = setTimeout(() => {
+        toast.error("Session expired. Please log in again.");
+        set((state) => ({
+            ...state,
+            token: null,
+            user: null,
+            sessionExpired: true,
+        }));
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+    }, timeout);
 }
 
 const useAuthStore = create((set) => ({
@@ -37,14 +50,14 @@ const useAuthStore = create((set) => ({
             const { token, user } = res.data;
 
             axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-            set({ token, user });
+            set({ token, user, loading: false });
 
             localStorage.setItem('token', token);
             localStorage.setItem('user', JSON.stringify(user));
 
             setAutoLogout(token, set);
 
-            return { success: true };
+            return { success: true, role: user.role };
         } catch (error) {
             return { success: false, message: error.response?.data?.message || error.message };
         }
@@ -52,6 +65,7 @@ const useAuthStore = create((set) => ({
 
     logout: () => {
         clearTimeout(logoutTimer);
+        axios.defaults.headers.common['Authorization'] = undefined;
         set({ token: null, user: null, sessionExpired: false });
         localStorage.removeItem('token');
         localStorage.removeItem('user');
@@ -71,15 +85,15 @@ const useAuthStore = create((set) => ({
             if (currentTime >= expiryTime) {
                 localStorage.removeItem('token');
                 localStorage.removeItem('user');
-                set({ loading: false });
+                set({ token: null, user: null, loading: false, sessionExpired: true });
                 return;
             }
 
             setAutoLogout(token, set);
+            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
         }
 
         if (token && user) {
-            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
             set({ token, user, loading: false });
         } else {
             set({ loading: false });

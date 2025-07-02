@@ -1,27 +1,42 @@
+// server.js or index.js
 import express from 'express';
-import dotenv from 'dotenv'
-import connectDB from './config/mongodb.js';
+import dotenv from 'dotenv';
 import cors from 'cors';
 
-import userRoutes from './routes/userRoutes.js';
+import sequelize from './config/database.js'; //
+import userRoutes from './routes/UserRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import productRoutes from './routes/productRoutes.js';
 
 dotenv.config();
 
-// MongoDb connection
-connectDB();
-
 const app = express();
-const PORT = process.env.PORT || 3001; // set a default PORT for backup
+const PORT = process.env.PORT || 3001;
 
-app.use(express.json());
+// Middleware
 app.use(cors());
+app.use(express.json());
 
+// Routes
 app.use("/api/users", userRoutes);
 app.use("/api/login", authRoutes);
 app.use("/api/products", productRoutes);
 
-app.listen(PORT, () => {
-    console.log("Server is running at http://localhost:" + PORT);
-})
+// DB connection + table syncing
+sequelize.authenticate()
+  .then(() => {
+    console.log("✅ Connected to MySQL via Railway!");
+
+    // Auto-create tables if they don’t exist
+    return sequelize.sync({ force: false });
+  })
+  .then(() => {
+    console.log("✅ Tables synced");
+
+    app.listen(PORT, () => {
+      console.log(`🚀 Server is running at http://localhost:${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.error("❌ Database connection failed:", err.message);
+  });

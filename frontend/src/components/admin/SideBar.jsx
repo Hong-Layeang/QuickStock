@@ -1,30 +1,30 @@
 "use client"
 
-import { BarChart3, Package, ClipboardList, Users, Menu, X } from "lucide-react"
+import { ChartNoAxesCombined, Package, ClipboardList, Users, X } from "lucide-react"
 import { useEffect, useState } from "react"
-import Logo from "../components/Logo"
+import Logo from "../Logo"
+import MobileMenuToggle from "../MobileMenuToggle"
 
-const AdminSideBar = () => {
+const SideBar = () => {
   const [active, setActive] = useState("dashboard")
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [isDarkMode, setDarkMode] = useState(false)
 
-useEffect(() => {
-  const observer = new MutationObserver(() => {
-    setDarkMode(document.body.classList.contains("dark"))
-  })
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      setDarkMode(document.body.classList.contains("dark"))
+    })
 
-  observer.observe(document.body, {
-    attributes: true,
-    attributeFilter: ['class'],
-  })
- 
-  // Cleanup on unmount
-  return () => observer.disconnect()
-}, [])
+    observer.observe(document.body, {
+      attributes: true,
+      attributeFilter: ['class'],
+    })
+
+    return () => observer.disconnect()
+  }, [])
 
   const menuItems = [
-    { key: "dashboard", label: "Dashboard", icon: <BarChart3 className="w-5 h-5" /> },
+    { key: "dashboard", label: "Dashboard", icon: <ChartNoAxesCombined className="w-5 h-5" /> },
     { key: "products", label: "Products", icon: <Package className="w-5 h-5" /> },
     { key: "orders", label: "Orders", icon: <ClipboardList className="w-5 h-5" /> },
     { key: "suppliers", label: "Suppliers", icon: <Users className="w-5 h-5" /> },
@@ -32,12 +32,9 @@ useEffect(() => {
 
   const SidebarContent = () => (
     <div className="flex flex-col h-full">
-      {/* Logo Section */}
       <div className="p-10 border-b border-orange-500">
         <Logo />
       </div>
-
-      {/* Menu Items Section */}
       <div className="flex-1 py-4">
         <nav className="space-y-1 px-2">
           {menuItems.map((item) => (
@@ -65,25 +62,17 @@ useEffect(() => {
 
   return (
     <>
-      {/* Mobile Menu Button */}
-      <button
-        onClick={() => setMobileMenuOpen(true)}
-        className="lg:hidden fixed top-4 left-4 z-50 p-2 border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 cursor-pointer"
-      >
-        <Menu className="h-4 w-4" />
-      </button>
+      {/* Mobile Menu Toggle Button (externalized) */}
+      <MobileMenuToggle onClick={() => setMobileMenuOpen(true)} />
 
       {/* Mobile Sidebar Overlay */}
       <div className={`lg:hidden fixed inset-0 z-50 flex transition-opacity duration-300 ${mobileMenuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
-        {/* Dimmed background with soft blur */}
         <div
           className="absolute inset-0 bg-black/30 backdrop-blur-sm"
           onClick={() => setMobileMenuOpen(false)}
         />
-
-        {/* Sidebar with slide-in/out animation */}
         <div
-          className={`relative flex flex-col w-64  ${isDarkMode ? "bg-gray-900" : "bg-white"} shadow-xl transform transition-transform duration-300 ease-in-out
+          className={`relative flex flex-col w-64 ${isDarkMode ? "bg-gray-900" : "bg-white"} shadow-xl transform transition-transform duration-300 ease-in-out
             ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}
         >
           <button
@@ -104,4 +93,4 @@ useEffect(() => {
   )
 }
 
-export default AdminSideBar
+export default SideBar

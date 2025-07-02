@@ -27,16 +27,26 @@ const LoginPage = () => {
     if (response.success) {
       toast.success("Login successful!");
 
-      setTimeout(() => {
-        navigate('/adminDashboard');
-      }, 1500);
+      if (response.role === "admin") {
+        setTimeout(() => {
+          navigate('/adminDashboard');
+        }, 900);
+      } else if (response.role === "supplier") {
+        setTimeout(() => {
+          navigate('/supplierDashboard');
+        }, 900);
+      } else {
+        setTimeout(() => {
+          navigate('/unauthorized');
+        }, 900);
+      }
     } else {
       toast.error(response.message || "Login failed.");
     }
   };
 
   return (
-    <div className=" w-125 h-128 mt-10 m-auto rounded-xl shadow-xl">
+    <div className="flex flex-col justify-center column w-auto sm:w-125 min-h-screen sm:min-h-128 sm:ml-auto sm:mr-auto rounded-xl sm:shadow-xl">
         <h4 className="text-orange-500 mb-4 text-xl">Welcome Back!</h4>
         <Logo />
         <h2 className="mt-4 text-2xl font-bold text-orange-900">Please sign in to your account</h2>

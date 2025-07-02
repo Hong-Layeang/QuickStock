@@ -1,46 +1,29 @@
-import mongoose from "mongoose";
+// models/Product.js
+import { DataTypes } from "sequelize";
+import sequelize from "../config/database.js";
+import User from "./User.js";
 
-const productSchema = new mongoose.Schema({
-    name: {
-        type: String,
-        required: true,
-        trim: true,
-    },
-    category: {
-        type: String,
-        required: true,
-        min: 0,
-    },
-    unitprice: {
-        type: Number,
-        required: true,
-        min: 0,
-    },
-    supplier: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User", // Reference to the User model
-    },
-    status: {
-        type: String,
-        enum: ["in stock", "out of stock", "discontinued"],
-        default: "in stock",
-    },
-    createAt: {
-        type: Date,
-        default: Date.now,
-    },
-    updatedAt: {
-        type: Date,
-        default: Date.now,
-    },
+const Product = sequelize.define("Product", {
+  name: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  category: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  unitprice: {
+    type: DataTypes.FLOAT,
+    allowNull: false,
+  },
+  status: {
+    type: DataTypes.ENUM("in stock", "out of stock", "discontinued"),
+    defaultValue: "in stock",
+  },
+}, {
+  timestamps: true,
 });
 
-// Update `updatedAt` on save
-productSchema.pre("save", function (next) {
-    this.updatedAt = Date.now();
-    next();
-});
-
-const Product = mongoose.model("Product", productSchema);
+Product.belongsTo(User, { foreignKey: "supplierId", as: "supplier" });
 
 export default Product;

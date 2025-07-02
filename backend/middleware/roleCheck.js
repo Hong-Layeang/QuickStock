@@ -1,6 +1,6 @@
-export const supplierOnly = (req, res, next) => {
-    if (req.user?.role !== 'supplier') {
-        return res.status(403).json({ success: false, message: 'Access denied: Suppliers only'});
+export const roleCheck = (req, res, next) => {
+    if (req.user?.role !== 'supplier' && req.user?.role !== 'admin') {
+        return res.status(403).json({ success: false, message: 'Access denied: admin or supplier only!'});
     }
     next();
 };
