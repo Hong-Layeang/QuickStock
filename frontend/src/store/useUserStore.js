@@ -1,5 +1,6 @@
 import {create} from 'zustand';
 import axios from 'axios';
+import { API_BASE_URL } from '../configs/config';
 
 const useUserStore = create((set) => ({
     users: [],
@@ -11,7 +12,7 @@ const useUserStore = create((set) => ({
             return { success: false, message: "Please fill in all fields." };
         }
         try {
-            const res = await axios.post("/api/users", newUser);
+            const res = await axios.post(`${API_BASE_URL}/api/users`, newUser);
 
             const createdUser = res.data;
             // automatically updates component without refresh page
