@@ -27,7 +27,7 @@ QuickStock is a streamlined inventory management system designed for efficient s
 
 - **Backend**: [Node.js](https://nodejs.org/) + [Express](https://expressjs.com/)
 - **Frontend**: [JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript) + [Tailwind CSS](https://tailwindcss.com/)
-- **Database**: [MongoDB](https://www.mongodb.com/)
+- **Database**: [Mysql](https://www.mysql.com/)
 
 ## 📂 Project Structure
 
@@ -37,7 +37,7 @@ QuickStock/
 ├── backend/            # Node.js & Express server
 │   ├── routes/         # API routes for admin and supplier
 │   ├── controllers/    # Request handling logic
-│   └── models/         # Database models (MongoDB)
+│   └── models/         # Database models (Squelize ORM)
 │
 ├── frontend/           # Static files, Tailwind CSS, client JS
 │   └── ...
@@ -52,7 +52,7 @@ QuickStock/
 ### Prerequisites
 - Node.js installed
 - npm or yarn
-- MongoDB running locally or with a cloud provider
+- Mysql running locally or with a cloud provider
 
 ### Installation
 
