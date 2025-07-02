@@ -74,20 +74,25 @@ const useAuthStore = create((set) => ({
     loadUserFromStorage: () => {
         set({ loading: true });
 
-        const token = localStorage.getItem('token');
+        const rawToken = localStorage.getItem('token');
+        const rawUser = localStorage.getItem('user');
 
+        let token = typeof rawToken === 'string' && rawToken !== 'undefined' ? rawToken : null;
         let user = null;
+
+        // Parse user only if it's a valid JSON string
         try {
-            const rawUser = localStorage.getItem('user');
             if (rawUser && rawUser !== 'undefined') {
                 user = JSON.parse(rawUser);
             }
         } catch (err) {
             console.error('Invalid user JSON in localStorage:', err);
             localStorage.removeItem('user');
+            user = null;
         }
 
-        if (token) {
+        // Decode token only if it's non-empty and valid format
+        if (token && token.split('.').length === 3) {
             try {
                 const { exp } = jwtDecode(token);
                 const expiryTime = exp * 1000;
@@ -109,6 +114,10 @@ const useAuthStore = create((set) => ({
                 set({ token: null, user: null, loading: false });
                 return;
             }
+        } else {
+            // Token format is invalid
+            localStorage.removeItem('token');
+            token = null;
         }
 
         if (token && user) {
