@@ -75,22 +75,40 @@ const useAuthStore = create((set) => ({
         set({ loading: true });
 
         const token = localStorage.getItem('token');
-        const user = JSON.parse(localStorage.getItem('user'));
+
+        let user = null;
+        try {
+            const rawUser = localStorage.getItem('user');
+            if (rawUser && rawUser !== 'undefined') {
+                user = JSON.parse(rawUser);
+            }
+        } catch (err) {
+            console.error('Invalid user JSON in localStorage:', err);
+            localStorage.removeItem('user');
+        }
 
         if (token) {
-            const { exp } = jwtDecode(token);
-            const expiryTime = exp * 1000;
-            const currentTime = Date.now();
+            try {
+                const { exp } = jwtDecode(token);
+                const expiryTime = exp * 1000;
+                const currentTime = Date.now();
 
-            if (currentTime >= expiryTime) {
+                if (currentTime >= expiryTime) {
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    set({ token: null, user: null, loading: false, sessionExpired: true });
+                    return;
+                }
+
+                setAutoLogout(token, set);
+                axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+            } catch (err) {
+                console.error('Invalid JWT token:', err);
                 localStorage.removeItem('token');
                 localStorage.removeItem('user');
-                set({ token: null, user: null, loading: false, sessionExpired: true });
+                set({ token: null, user: null, loading: false });
                 return;
             }
-
-            setAutoLogout(token, set);
-            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
         }
 
         if (token && user) {
