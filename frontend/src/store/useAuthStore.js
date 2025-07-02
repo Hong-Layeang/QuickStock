@@ -62,7 +62,17 @@ const useAuthStore = create((set) => ({
         set({ loading: true });
 
         const token = localStorage.getItem('token');
-        const user = JSON.parse(localStorage.getItem('user'));
+        let user = null;
+
+        try {
+            const userData = localStorage.getItem('user');
+            if (userData && userData !== "undefined") {
+                user = JSON.parse(userData);
+            }
+        } catch (err) {
+            console.error("Failed to parse user from localStorage:", err);
+            localStorage.removeItem('user'); // clear corrupted data
+        }
 
         if (token) {
             const { exp } = jwtDecode(token);
@@ -72,15 +82,15 @@ const useAuthStore = create((set) => ({
             if (currentTime >= expiryTime) {
                 localStorage.removeItem('token');
                 localStorage.removeItem('user');
-                set({ loading: false });
+                set({ token: null, user: null, loading: false, sessionExpired: true });
                 return;
             }
 
             setAutoLogout(token, set);
+            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
         }
 
         if (token && user) {
-            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
             set({ token, user, loading: false });
         } else {
             set({ loading: false });
