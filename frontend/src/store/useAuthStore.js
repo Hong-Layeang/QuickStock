@@ -45,7 +45,7 @@ const useAuthStore = create((set) => ({
 
             setAutoLogout(token, set);
 
-            return { success: true };
+            return { success: true, role: user.role };
         } catch (error) {
             return { success: false, message: error.response?.data?.message || error.message };
         }
@@ -91,7 +91,12 @@ const useAuthStore = create((set) => ({
         }
 
         if (token && user) {
-            set({ token, user, loading: false });
+        const decoded = jwtDecode(token);
+
+        if (decoded.role) {
+            user.role = decoded.role;
+        }
+        set({ token, user, loading: false });
         } else {
             set({ loading: false });
         }

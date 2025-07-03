@@ -2,12 +2,9 @@ import { useState } from "react";
 import Logo from "../components/Logo";
 import { FaSignInAlt } from "react-icons/fa";
 import useAuthStore from "../store/useAuthStore"; // Assuming you have a user store for authentication
-import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 
 const LoginPage = () => {
-  const navigate = useNavigate();
-
   const [credential, setCredential] = useState({
     email: '',
     password: ''
@@ -24,23 +21,9 @@ const LoginPage = () => {
     }
     const response = await login(credential.email, credential.password);
     
-    if (response.success) {
-      toast.success("Login successful!");
-
-      if (response.role === "admin") {
-        setTimeout(() => {
-          navigate('/adminDashboard');
-        }, 900);
-      } else if (response.role === "supplier") {
-        setTimeout(() => {
-          navigate('/supplierDashboard');
-        }, 900);
-      } else {
-        setTimeout(() => {
-          navigate('/unauthorized');
-        }, 900);
-      }
-    } else {
+  if (response.success) {
+    toast.success("Login successful!");
+  } else {
       toast.error(response.message || "Login failed.");
     }
   };

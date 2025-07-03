@@ -16,15 +16,20 @@ const PrivateRoute = ({ children, role }) => {
   const token = useAuthStore((state) => state.token);
   const user = useAuthStore((state) => state.user);
   const sessionExpired = useAuthStore((state) => state.sessionExpired);
+  const loading = useAuthStore((state) => state.loading);
+
+  if (loading) {
+    // You can customize this loading UI however you want
+    return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+  }
 
   if (sessionExpired) return <Navigate to="/session-expired" />;
-
   if (!token) return <Navigate to="/" />;
-
   if (role && user?.role !== role) return <Navigate to="/unauthorized" />;
 
   return children;
 };
+
 
 // Public route (only for unauthenticated users)
 const PublicRoute = ({ children }) => {
