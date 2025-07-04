@@ -4,28 +4,70 @@ import { API_BASE_URL } from '../configs/config';
 
 const useUserStore = create((set) => ({
     users: [],
+    loading: false,
+    error: null,
     setUser: (users) => set({ users }),
 
-    // create a new supplier by admin
+    // Fetch all users
+    fetchUsers: async () => {
+        set({ loading: true, error: null });
+        try {
+            const res = await axios.get(`${API_BASE_URL}/api/users`);
+            set({ users: res.data, loading: false });
+        } catch (error) {
+            set({ error: error.response?.data?.message || 'Failed to fetch users', loading: false });
+        }
+    },
+
+    // create a new supplier or admin by admin
     createUser: async (newUser) => {
         if (!newUser.email || !newUser.password) {
             return { success: false, message: "Please fill in all fields." };
         }
         try {
             const res = await axios.post(`${API_BASE_URL}/api/users`, newUser);
-
             const createdUser = res.data;
-            // automatically updates component without refresh page
             set((state) => ({ users: [...state.users, createdUser] }));
             return { success: true, message: "User created successfully" };
         } catch (error) {
-            console.log('Error creating user:', error.res?.data || error.message);
             return {
                 success: false,
                 message: error.response?.data?.message || "Something went wrong."
             };
         }
-    }
+    },
+
+    // Edit user
+    editUser: async (id, updates) => {
+        set({ loading: true, error: null });
+        try {
+            const res = await axios.put(`${API_BASE_URL}/api/users/${id}`, updates);
+            set((state) => ({
+                users: state.users.map((u) => (u.id === id ? res.data : u)),
+                loading: false
+            }));
+            return { success: true };
+        } catch (error) {
+            set({ error: error.response?.data?.message || 'Failed to update user', loading: false });
+            return { success: false, message: error.response?.data?.message || 'Failed to update user' };
+        }
+    },
+
+    // Delete user
+    deleteUser: async (id) => {
+        set({ loading: true, error: null });
+        try {
+            await axios.delete(`${API_BASE_URL}/api/users/${id}`);
+            set((state) => ({
+                users: state.users.filter((u) => u.id !== id),
+                loading: false
+            }));
+            return { success: true };
+        } catch (error) {
+            set({ error: error.response?.data?.message || 'Failed to delete user', loading: false });
+            return { success: false, message: error.response?.data?.message || 'Failed to delete user' };
+        }
+    },
 }));
 
 export default useUserStore;

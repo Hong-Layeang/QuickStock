@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Logo from "../components/Logo";
-import { FaSignInAlt } from "react-icons/fa";
+import { FaSignInAlt, FaEye, FaEyeSlash } from "react-icons/fa";
 import useAuthStore from "../store/useAuthStore"; // Assuming you have a user store for authentication
 import { toast } from 'react-hot-toast';
 
@@ -9,6 +9,8 @@ const LoginPage = () => {
     email: '',
     password: ''
   });
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const { login } = useAuthStore(); // Using the auth store for login
 
@@ -17,53 +19,129 @@ const LoginPage = () => {
     const { email, password } = credential;
 
     if (!email || !password) {
-      return alert("Please fill in all fields.");
+      toast.error("Please fill in all fields.");
+      return;
     }
-    const response = await login(credential.email, credential.password);
-    
-  if (response.success) {
-    toast.success("Login successful!");
-  } else {
-      toast.error(response.message || "Login failed.");
+
+    setIsLoading(true);
+    try {
+      const response = await login(credential.email, credential.password);
+      
+      if (response.success) {
+        toast.success("Login successful!");
+      } else {
+        toast.error(response.message || "Login failed.");
+      }
+    } catch (error) {
+      toast.error("An error occurred during login.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="flex flex-col justify-center column w-auto sm:w-125 min-h-screen sm:min-h-128 sm:ml-auto sm:mr-auto rounded-xl sm:shadow-xl">
-        <h4 className="text-orange-500 mb-4 text-xl">Welcome Back!</h4>
-        <Logo />
-        <h2 className="mt-4 text-2xl font-bold text-orange-900">Please sign in to your account</h2>
-        <p className="text-orange-900 mt-0.5 text-sm font-thin">Let's get you signed in and straight to the stock.</p>
-        <form className="text-orange-900 pl-10 pr-10 flex flex-col gap-4 mt-7" 
-          onSubmit={onSubmit}>
-            <div className="flex flex-col mb-3">
-                <label htmlFor="email" className="text-left font-bold mb-2.5">Email Address</label>
-                <input className="w-full h-13 rounded-xl border-3 placeholder: pl-6"
-                  onChange={(e) => setCredential({ ...credential, email: e.target.value })}
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-orange-100 flex items-center justify-center p-4">
+      <div className="w-full max-w-md">
+        {/* Card Container */}
+        <div className="bg-white rounded-2xl shadow-2xl p-8 space-y-8">
+          {/* Header */}
+          <div className="text-center space-y-4">
+            <div className="flex justify-center">
+              <Logo />
+            </div>
+            <div className="space-y-2">
+              <h1 className="text-3xl font-bold text-gray-900">Welcome Back!</h1>
+              <p className="text-gray-600 text-sm">
+                Sign in to access your QuickStock dashboard
+              </p>
+            </div>
+          </div>
+
+          {/* Form */}
+          <form onSubmit={onSubmit} className="space-y-6">
+            {/* Email Field */}
+            <div className="space-y-2">
+              <label htmlFor="email" className="text-left block text-sm font-medium text-gray-700">
+                Email Address
+              </label>
+              <div className="relative">
+                <input
                   type="email"
                   id="email"
                   name="email"
                   value={credential.email}
-                  placeholder="📧 you@example.com"
+                  onChange={(e) => setCredential({ ...credential, email: e.target.value })}
+                  placeholder="Enter your email"
                   required
+                  className="text-black w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 placeholder-gray-400"
                 />
+                <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                  <span className="text-gray-400">📧</span>
+                </div>
+              </div>
             </div>
-            <div className="flex flex-col mb-5">
-                <label htmlFor="password" className="text-left font-bold mb-2.5">Password</label>
-                <input className="w-full h-13 rounded-xl border-3 placeholder: pl-6"
-                  type="password" 
-                  id="password" 
-                  name="password" 
-                  placeholder="🔒 ************" 
-                  required 
+
+            {/* Password Field */}
+            <div className="space-y-2">
+              <label htmlFor="password" className=" text-left block text-sm font-medium text-gray-700">
+                Password
+              </label>
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  id="password"
+                  name="password"
                   value={credential.password}
-                  onChange={(e) => setCredential({ ...credential, password: e.target.value})}
+                  onChange={(e) => setCredential({ ...credential, password: e.target.value })}
+                  placeholder="Enter your password"
+                  required
+                  className="text-black w-full px-4 py-3 pr-12 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 placeholder-gray-400"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  {showPassword ? <FaEyeSlash className="h-4 w-4 hover:cursor-pointer" /> : <FaEye className="h-4 w-4 hover:cursor-pointer" />}
+                </button>
+              </div>
             </div>
-            <button type="submit" className="text-black font-extrabold  bg-orange-500 w-35 h-13 rounded-xl outline-2 border-b-5 outline-black shadow-xl ml-auto mr-auto flex justify-center items-center gap-2">Sign In <FaSignInAlt className="text-xl"/></button>
-        </form>
+
+            {/* Submit Button */}
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold py-3 px-6 rounded-xl hover:from-orange-600 hover:to-orange-700 focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-all duration-200 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2 hover:cursor-pointer"
+            >
+              {isLoading ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                  Signing In...
+                </>
+              ) : (
+                <>
+                  Sign In
+                  <FaSignInAlt className="h-4 w-4" />
+                </>
+              )}
+            </button>
+            {/* Create Account Link */}
+            <div className="text-center mt-4">
+              <span className="text-sm text-gray-600">Don't have an account? </span>
+              <a href="/register" className="text-orange-600 hover:underline font-semibold">Create Account</a>
+            </div>
+          </form>
+
+          {/* Footer */}
+          <div className="text-center">
+            <p className="text-xs text-gray-500">
+              Protected by enterprise-grade security
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
-  )
-}
+  );
+};
 
 export default LoginPage;

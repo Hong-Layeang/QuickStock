@@ -1,13 +1,9 @@
 @import 'tailwindcss';
 
 body {
-  background-color: #F6F6F6;
   font-family: Arial, Helvetica, sans-serif;
-  transition: background-color 0.3s ease;
+  @apply bg-gray-100;
 }
-
 body.dark {
-  background-color: rgb(17 24 39);
-  transition: background-color 0.3s ease;
-  color: white;
+  @apply bg-gray-900;
 }

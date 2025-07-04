@@ -7,6 +7,10 @@ import { API_BASE_URL } from '../configs/config';
 let logoutTimer;
 
 function setAutoLogout(token, set) {
+    // Clear any existing timer to prevent duplicate toasts
+    if (logoutTimer) {
+        clearTimeout(logoutTimer);
+    }
     const { exp } = jwtDecode(token);
     const expiryTime = exp * 1000;
     const timeout = expiryTime - Date.now();
