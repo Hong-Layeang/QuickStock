@@ -122,13 +122,18 @@ npm install
 > The backend API will be running at `http://localhost:5000` (or your configured port)
 > The frontend will be running at `http://localhost:5173` (Vite default)
 
-## 📸 Screenshots
+## 📸 Previews
 
-### Login Page
-![LoginPage](https://github.com/user-attachments/assets/85e467e5-7cfe-4e7a-b42b-6ba9948e08a7)
+### Create User Page
+![Screenshot 2025-07-05 180721](https://github.com/user-attachments/assets/f25a0a57-d594-4bd0-9cc5-342fdc2f32ad)
 
-### Dashboard
-![DashboardPage](https://github.com/user-attachments/assets/2ddd622c-4ffb-43e4-87be-987043c4ee81)
+
+### Login User Page
+![Screenshot 2025-07-05 180703](https://github.com/user-attachments/assets/c390ae13-7837-4e57-bead-b6f06e8fe631)
+
+### Admin Dashboard
+![Screenshot 2025-07-05 192505](https://github.com/user-attachments/assets/a38ed6db-cba6-4b81-bbc0-41e16da0ab00)
+
 
 ## 🔌 API Endpoints
 
