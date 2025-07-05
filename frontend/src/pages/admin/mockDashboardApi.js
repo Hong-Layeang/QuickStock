@@ -8,55 +8,65 @@ export async function getAdminDashboardData() {
     throw new Error('Failed to fetch dashboard data.');
   }
 
+  // Generate dynamic values for more realistic data
+  const totalProducts = Math.floor(Math.random() * 500) + 1000; // 1000-1500
+  const lowStockItems = Math.floor(Math.random() * 20) + 20; // 20-40
+  const recentStockIn = Math.floor(Math.random() * 10) + 1; // 1-10
+  const recentStockOut = Math.floor(Math.random() * 8) + 1; // 1-8
+
   return {
     cards: [
       {
         icon: 'boxes',
         title: 'Total Products',
-        value: '1,245',
+        value: totalProducts.toLocaleString(),
         subtitle: 'products',
-        bg: 'bg-gradient-to-br from-blue-500 to-blue-600',
+        bg: 'bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700',
         text: 'text-white',
-        trend: '+12%',
+        trend: `+${Math.floor(Math.random() * 15) + 5}%`,
         trendDirection: 'up',
         change: 'from last month',
         link: '/admin/products',
+        description: 'Total number of products in inventory'
       },
       {
         icon: 'circle-alert',
         title: 'Low in Stock',
-        value: '32',
+        value: lowStockItems.toString(),
         subtitle: 'items',
-        bg: 'bg-gradient-to-br from-red-500 to-red-600',
+        bg: 'bg-gradient-to-br from-red-500 via-red-600 to-red-700',
         text: 'text-white',
-        trend: '+5%',
+        trend: `+${Math.floor(Math.random() * 10) + 1}%`,
         trendDirection: 'up',
         change: 'from last week',
         link: '/admin/products?filter=low-stock',
+        description: 'Products that need restocking'
       },
       {
         icon: 'package-plus',
         title: 'Recent Stock-In',
-        value: '5',
+        value: recentStockIn.toString(),
         subtitle: 'products',
-        bg: 'bg-gradient-to-br from-green-500 to-green-600',
+        bg: 'bg-gradient-to-br from-green-500 via-green-600 to-green-700',
         text: 'text-white',
-        trend: '+8%',
+        trend: `+${Math.floor(Math.random() * 12) + 3}%`,
         trendDirection: 'up',
         change: 'from yesterday',
         link: '/admin/products?filter=stock-in',
+        description: 'Products added to inventory recently'
       },
       {
         icon: 'package-minus',
         title: 'Recent Stock-Out',
-        value: '3',
+        value: recentStockOut.toString(),
         subtitle: 'products',
-        bg: 'bg-gradient-to-br from-yellow-500 to-yellow-600',
+        bg: 'bg-gradient-to-br from-yellow-500 via-yellow-600 to-orange-600',
         text: 'text-white',
-        trend: '-2%',
+        trend: `-${Math.floor(Math.random() * 5) + 1}%`,
         trendDirection: 'down',
         change: 'from yesterday',
         link: '/admin/products?filter=stock-out',
+        description: 'Products that went out of stock'
       },
     ],
     activities: [

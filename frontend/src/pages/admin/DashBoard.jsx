@@ -53,16 +53,14 @@ export default function DashBoard() {
         <SalesAnalyticsChart loading={loading} error={error} />
 
         {/* Dashboard Cards */}
-        {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 animate-pulse">
-            {[1,2,3,4].map(i => (
-              <div key={i} className="h-36 bg-gray-200 dark:bg-gray-700 rounded-2xl" />
-            ))}
-          </div>
-        ) : error ? (
+        {error ? (
           <div className="text-red-600 dark:text-red-400 font-semibold p-4">{error}</div>
         ) : (
-          <DashboardCards cards={cards} />
+          <DashboardCards 
+            cards={cards} 
+            loading={loading} 
+            onRefresh={fetchDashboard}
+          />
         )}
 
         {/* Tables Section */}

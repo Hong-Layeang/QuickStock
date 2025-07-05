@@ -1,6 +1,4 @@
 import { create } from 'zustand';
-import axios from 'axios';
-import { API_BASE_URL } from '../configs/config';
 
 const mockProducts = [
   {
@@ -41,64 +39,53 @@ const mockProducts = [
 ];
 
 const useProductStore = create((set) => ({
-  products: [],
+  products: mockProducts,
   loading: false,
   error: null,
 
   fetchProducts: async () => {
     set({ loading: true, error: null });
-    try {
-      const res = await axios.get(`${API_BASE_URL}/api/products`);
-      set({ products: res.data, loading: false });
-    } catch (error) {
-      set({
-        products: mockProducts,
-        error: null,
-        loading: false
-      });
-    }
+    // Simulate network delay
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    set({ products: mockProducts, loading: false });
   },
 
   addProduct: async (product) => {
     set({ loading: true, error: null });
-    try {
-      const res = await axios.post(`${API_BASE_URL}/api/products`, product);
-      set((state) => ({ products: [...state.products, res.data], loading: false }));
-      return { success: true };
-    } catch (error) {
-      set({ error: error.response?.data?.message || 'Failed to add product', loading: false });
-      return { success: false, message: error.response?.data?.message || 'Failed to add product' };
-    }
+    // Simulate network delay
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    
+    const newProduct = {
+      ...product,
+      id: Date.now(), // Generate a simple ID
+    };
+    
+    set((state) => ({ products: [...state.products, newProduct], loading: false }));
+    return { success: true };
   },
 
   editProduct: async (id, updates) => {
     set({ loading: true, error: null });
-    try {
-      const res = await axios.put(`${API_BASE_URL}/api/products/${id}`, updates);
-      set((state) => ({
-        products: state.products.map((p) => (p.id === id ? res.data : p)),
-        loading: false
-      }));
-      return { success: true };
-    } catch (error) {
-      set({ error: error.response?.data?.message || 'Failed to update product', loading: false });
-      return { success: false, message: error.response?.data?.message || 'Failed to update product' };
-    }
+    // Simulate network delay
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    
+    set((state) => ({
+      products: state.products.map((p) => (p.id === id ? { ...p, ...updates } : p)),
+      loading: false
+    }));
+    return { success: true };
   },
 
   deleteProduct: async (id) => {
     set({ loading: true, error: null });
-    try {
-      await axios.delete(`${API_BASE_URL}/api/products/${id}`);
-      set((state) => ({
-        products: state.products.filter((p) => p.id !== id),
-        loading: false
-      }));
-      return { success: true };
-    } catch (error) {
-      set({ error: error.response?.data?.message || 'Failed to delete product', loading: false });
-      return { success: false, message: error.response?.data?.message || 'Failed to delete product' };
-    }
+    // Simulate network delay
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    
+    set((state) => ({
+      products: state.products.filter((p) => p.id !== id),
+      loading: false
+    }));
+    return { success: true };
   },
 }));
 
