@@ -125,11 +125,12 @@ npm install
 ## 📸 Previews
 
 ### Create User Page
-![Screenshot 2025-07-05 180721](https://github.com/user-attachments/assets/f25a0a57-d594-4bd0-9cc5-342fdc2f32ad)
+![Screenshot 2025-07-05 192616](https://github.com/user-attachments/assets/aee4d372-676d-4bf6-94a7-3c073df6b9c2)
 
 
 ### Login User Page
-![Screenshot 2025-07-05 180703](https://github.com/user-attachments/assets/c390ae13-7837-4e57-bead-b6f06e8fe631)
+![Screenshot 2025-07-05 192607](https://github.com/user-attachments/assets/ad3e2cf3-205c-4a0e-bdd5-e77c788c0a18)
+
 
 ### Admin Dashboard
 ![Screenshot 2025-07-05 192505](https://github.com/user-attachments/assets/a38ed6db-cba6-4b81-bbc0-41e16da0ab00)
