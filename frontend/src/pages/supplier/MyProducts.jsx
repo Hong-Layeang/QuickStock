@@ -1,8 +1,10 @@
 import SupplierLayout from "../../components/supplier/SupplierLayout.jsx";
 import React, { useEffect, useState } from "react";
 import useSupplierProductStore from "../../store/useSupplierProductStore";
+import useThemeStore from "../../store/useThemeStore";
 
 export default function MyProducts() {
+  const { isDark } = useThemeStore();
   const { products, loading, error, fetchProducts, editProduct } = useSupplierProductStore();
   const [search, setSearch] = useState("");
   const [showStock, setShowStock] = useState(false);
@@ -27,11 +29,17 @@ export default function MyProducts() {
 
   return (
     <SupplierLayout>
-      <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-md border border-gray-200 dark:border-gray-700">
+      <div className={`rounded-2xl p-6 shadow-md border ${
+        isDark 
+          ? 'bg-gray-800 border-gray-700' 
+          : 'bg-white border-gray-200'
+      }`}>
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">My Products</h2>
-            <p className="text-gray-600 dark:text-gray-400">View and manage your assigned products here.</p>
+            <h2 className={`text-2xl font-bold mb-1 ${
+              isDark ? 'text-white' : 'text-gray-900'
+            }`}>My Products</h2>
+            <p className={isDark ? 'text-gray-400' : 'text-gray-600'}>View and manage your assigned products here.</p>
           </div>
         </div>
         <div className="mb-4 flex flex-col sm:flex-row gap-2 sm:items-center">
@@ -40,7 +48,11 @@ export default function MyProducts() {
             placeholder="Search by name or category..."
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="w-full sm:w-64 px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white"
+            className={`w-full sm:w-64 px-4 py-2 border rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent ${
+              isDark 
+                ? 'border-gray-700 bg-gray-900 text-white' 
+                : 'border-gray-300 bg-gray-50 text-gray-900'
+            }`}
           />
         </div>
         {loading && <div className="text-center py-8 text-orange-600 font-semibold">Loading...</div>}
@@ -49,7 +61,9 @@ export default function MyProducts() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-gray-200 dark:border-gray-700">
+                <tr className={`border-b ${
+                  isDark ? 'border-gray-700' : 'border-gray-200'
+                }`}>
                   <th className="py-3 text-left font-semibold">Name</th>
                   <th className="py-3 text-left font-semibold">Category</th>
                   <th className="py-3 text-left font-semibold">Unit Price</th>
@@ -61,7 +75,11 @@ export default function MyProducts() {
                 {filtered.length === 0 ? (
                   <tr><td colSpan={5} className="text-center py-8 text-gray-400">No products found.</td></tr>
                 ) : filtered.map((p) => (
-                  <tr key={p.id} className="border-b border-gray-100 dark:border-gray-800 hover:bg-orange-50 dark:hover:bg-gray-800/40 transition">
+                  <tr key={p.id} className={`border-b transition ${
+                    isDark 
+                      ? 'border-gray-800 hover:bg-gray-800/40' 
+                      : 'border-gray-100 hover:bg-orange-50'
+                  }`}>
                     <td className="py-3 font-medium">{p.name}</td>
                     <td className="py-3">{p.category}</td>
                     <td className="py-3">${p.unitprice.toFixed(2)}</td>
@@ -81,7 +99,9 @@ export default function MyProducts() {
       {/* Update Stock Modal */}
       {showStock && selected && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <form onSubmit={handleStockUpdate} className="bg-white dark:bg-gray-900 p-8 rounded-2xl shadow-xl w-full max-w-md space-y-4">
+          <form onSubmit={handleStockUpdate} className={`p-8 rounded-2xl shadow-xl w-full max-w-md space-y-4 ${
+            isDark ? 'bg-gray-900' : 'bg-white'
+          }`}>
             <h3 className="text-xl font-bold mb-2">Update Stock</h3>
             <input type="number" placeholder="Stock Quantity" value={stockValue} onChange={e => setStockValue(e.target.value)} required className="w-full px-4 py-2 border rounded-xl" min="0" />
             <div className="flex gap-2 justify-end">
@@ -95,7 +115,9 @@ export default function MyProducts() {
       {/* Product Details Modal */}
       {showDetails && selected && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="bg-white dark:bg-gray-900 p-8 rounded-2xl shadow-xl w-full max-w-md">
+          <div className={`p-8 rounded-2xl shadow-xl w-full max-w-md ${
+            isDark ? 'bg-gray-900' : 'bg-white'
+          }`}>
             <h3 className="text-xl font-bold mb-4">Product Details</h3>
             <div className="mb-2"><b>Name:</b> {selected.name}</div>
             <div className="mb-2"><b>Category:</b> {selected.category}</div>

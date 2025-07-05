@@ -1,10 +1,12 @@
 import { Boxes, PackagePlus, CircleAlert, PackageMinus, TrendingUp, TrendingDown, ArrowRight, RefreshCw } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { useState } from "react"
+import useThemeStore from '../store/useThemeStore'
 
 const DashboardCards = ({ cards, loading = false, onRefresh }) => {
   const navigate = useNavigate();
   const [refreshing, setRefreshing] = useState(false);
+  const { isDark } = useThemeStore();
 
   const sampleCards = [
     { 
@@ -78,22 +80,42 @@ const DashboardCards = ({ cards, loading = false, onRefresh }) => {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
         {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+          <div key={i} className={`rounded-2xl shadow-lg border overflow-hidden ${
+            isDark 
+              ? 'bg-gray-800 border-gray-700' 
+              : 'bg-white border-gray-200'
+          }`}>
             <div className="p-6 animate-pulse">
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <div className="w-10 h-10 bg-gray-300 dark:bg-gray-600 rounded-xl"></div>
-                  <div className="w-16 h-4 bg-gray-300 dark:bg-gray-600 rounded"></div>
+                  <div className={`w-10 h-10 rounded-xl ${
+                    isDark ? 'bg-gray-600' : 'bg-gray-300'
+                  }`}></div>
+                  <div className={`w-16 h-4 rounded ${
+                    isDark ? 'bg-gray-600' : 'bg-gray-300'
+                  }`}></div>
                 </div>
                 <div className="space-y-2">
-                  <div className="w-24 h-4 bg-gray-300 dark:bg-gray-600 rounded"></div>
-                  <div className="w-16 h-8 bg-gray-300 dark:bg-gray-600 rounded"></div>
-                  <div className="w-20 h-3 bg-gray-300 dark:bg-gray-600 rounded"></div>
+                  <div className={`w-24 h-4 rounded ${
+                    isDark ? 'bg-gray-600' : 'bg-gray-300'
+                  }`}></div>
+                  <div className={`w-16 h-8 rounded ${
+                    isDark ? 'bg-gray-600' : 'bg-gray-300'
+                  }`}></div>
+                  <div className={`w-20 h-3 rounded ${
+                    isDark ? 'bg-gray-600' : 'bg-gray-300'
+                  }`}></div>
                 </div>
-                <div className="pt-2 border-t border-gray-200 dark:border-gray-700">
+                <div className={`pt-2 border-t ${
+                  isDark ? 'border-gray-700' : 'border-gray-200'
+                }`}>
                   <div className="flex items-center justify-between">
-                    <div className="w-20 h-3 bg-gray-300 dark:bg-gray-600 rounded"></div>
-                    <div className="w-16 h-3 bg-gray-300 dark:bg-gray-600 rounded"></div>
+                    <div className={`w-20 h-3 rounded ${
+                      isDark ? 'bg-gray-600' : 'bg-gray-300'
+                    }`}></div>
+                    <div className={`w-16 h-3 rounded ${
+                      isDark ? 'bg-gray-600' : 'bg-gray-300'
+                    }`}></div>
                   </div>
                 </div>
               </div>
@@ -108,14 +130,20 @@ const DashboardCards = ({ cards, loading = false, onRefresh }) => {
     <div className="space-y-4">
       {/* Header with refresh button */}
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+        <h3 className={`text-lg font-semibold ${
+          isDark ? 'text-white' : 'text-gray-900'
+        }`}>
           Key Metrics
         </h3>
         {onRefresh && (
           <button
             onClick={handleRefresh}
             disabled={refreshing}
-            className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors duration-200 disabled:opacity-50"
+            className={`flex items-center gap-2 px-3 py-2 text-sm font-medium transition-colors duration-200 disabled:opacity-50 hover:cursor-pointer ${
+              isDark 
+                ? 'text-gray-400 hover:text-white' 
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
             aria-label="Refresh dashboard data"
           >
             <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
@@ -207,13 +235,25 @@ const DashboardCards = ({ cards, loading = false, onRefresh }) => {
       </div>
 
       {/* Quick Stats Summary */}
-      <div className="mt-6 p-4 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700">
-        <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400">
+      <div className={`mt-6 p-4 rounded-xl border ${
+        isDark 
+          ? 'bg-gray-800/50 border-gray-700' 
+          : 'bg-gray-50 border-gray-200'
+      }`}>
+        <div className={`flex items-center justify-between text-sm ${
+          isDark ? 'text-gray-400' : 'text-gray-600'
+        }`}>
           <span className="font-medium">Summary:</span>
           <div className="flex items-center gap-4">
-            <span>Total Value: <span className="font-semibold text-gray-900 dark:text-white">$45,230</span></span>
-            <span>Active Products: <span className="font-semibold text-gray-900 dark:text-white">1,213</span></span>
-            <span>Categories: <span className="font-semibold text-gray-900 dark:text-white">24</span></span>
+            <span>Total Value: <span className={`font-semibold ${
+              isDark ? 'text-white' : 'text-gray-900'
+            }`}>$45,230</span></span>
+            <span>Active Products: <span className={`font-semibold ${
+              isDark ? 'text-white' : 'text-gray-900'
+            }`}>1,213</span></span>
+            <span>Categories: <span className={`font-semibold ${
+              isDark ? 'text-white' : 'text-gray-900'
+            }`}>24</span></span>
           </div>
         </div>
       </div>

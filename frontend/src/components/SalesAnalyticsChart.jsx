@@ -1,4 +1,5 @@
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import useThemeStore from '../store/useThemeStore';
 
 const sampleData = [
   { name: 'Mon', sales: 400 },
@@ -11,14 +12,29 @@ const sampleData = [
 ];
 
 const SalesAnalyticsChart = ({ loading, error, data }) => {
+  const { isDark } = useThemeStore();
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-200 dark:border-gray-700 mb-6">
-      <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Sales Analytics</h2>
-      <p className="text-gray-600 dark:text-gray-400 mb-4">Sales performance over the last 7 days</p>
+    <div className={`rounded-2xl p-6 shadow-sm border mb-6 ${
+      isDark 
+        ? 'bg-gray-800 border-gray-700' 
+        : 'bg-white border-gray-200'
+    }`}>
+      <h2 className={`text-xl font-bold mb-2 ${
+        isDark ? 'text-white' : 'text-gray-900'
+      }`}>Sales Analytics</h2>
+      <p className={`mb-4 ${
+        isDark ? 'text-gray-400' : 'text-gray-600'
+      }`}>Sales performance over the last 7 days</p>
       {loading ? (
-        <div className="w-full h-[260px] bg-gray-200 dark:bg-gray-700 rounded-xl animate-pulse" />
+        <div className={`w-full h-[260px] rounded-xl animate-pulse ${
+          isDark ? 'bg-gray-700' : 'bg-gray-200'
+        }`} />
       ) : error ? (
-        <div className="w-full h-[260px] flex items-center justify-center text-red-600 dark:text-red-400 font-semibold rounded-xl bg-red-50 dark:bg-red-900/20">{error}</div>
+        <div className={`w-full h-[260px] flex items-center justify-center font-semibold rounded-xl ${
+          isDark 
+            ? 'text-red-400 bg-red-900/20' 
+            : 'text-red-600 bg-red-50'
+        }`}>{error}</div>
       ) : (
         <div style={{ width: '100%', height: 260 }}>
           <ResponsiveContainer>

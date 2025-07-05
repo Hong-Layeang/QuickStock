@@ -4,6 +4,7 @@ import useProductStore from "../../store/useProductStore";
 import { FaCheckCircle } from "react-icons/fa";
 import { TbAlertTriangle } from "react-icons/tb";
 import { FiEdit2, FiXCircle, FiTrash2 } from "react-icons/fi";
+import useThemeStore from "../../store/useThemeStore";
 
 const initialForm = {
   name: "",
@@ -14,6 +15,7 @@ const initialForm = {
 };
 
 export default function Products() {
+  const { isDark } = useThemeStore();
   const { products, loading, error, fetchProducts, addProduct, editProduct, deleteProduct } = useProductStore();
   const [showAdd, setShowAdd] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
@@ -126,11 +128,17 @@ export default function Products() {
 
   return (
     <AdminLayout>
-      <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-md border border-gray-200 dark:border-gray-700">
+      <div className={`rounded-2xl p-6 shadow-md border ${
+        isDark 
+          ? 'bg-gray-800 border-gray-700' 
+          : 'bg-white border-gray-200'
+      }`}>
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">Products</h2>
-            <p className="text-gray-600 dark:text-gray-400">Manage all products here.</p>
+            <h2 className={`text-2xl font-bold mb-1 ${
+              isDark ? 'text-white' : 'text-gray-900'
+            }`}>Products</h2>
+            <p className={isDark ? 'text-gray-400' : 'text-gray-600'}>Manage all products here.</p>
           </div>
           <button onClick={() => setShowAdd(true)} className="bg-orange-600 hover:bg-orange-700 text-white font-semibold px-5 py-2 rounded-xl shadow transition-all">+ Add Product</button>
         </div>
@@ -140,12 +148,20 @@ export default function Products() {
             placeholder="Search by name or category..."
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="w-full sm:w-64 px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white"
+            className={`w-full sm:w-64 px-4 py-2 border rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent ${
+              isDark 
+                ? 'border-gray-700 bg-gray-900 text-white' 
+                : 'border-gray-300 bg-gray-50 text-gray-900'
+            }`}
           />
           <select
             value={statusFilter}
             onChange={e => setStatusFilter(e.target.value)}
-            className="w-full sm:w-48 px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white"
+            className={`w-full sm:w-48 px-4 py-2 border rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent${
+              isDark 
+                ? 'border-gray-700 bg-gray-900 text-white' 
+                : 'border-gray-300 bg-gray-50 text-gray-900'
+            }`}
           >
             <option value="all">All Statuses</option>
             <option value="in stock">In Stock</option>
@@ -156,7 +172,11 @@ export default function Products() {
           <select
             value={categoryFilter}
             onChange={e => setCategoryFilter(e.target.value)}
-            className="w-full sm:w-48 px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white"
+            className={`w-full sm:w-48 px-4 py-2 border rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent${
+              isDark 
+                ? 'border-gray-700 bg-gray-900 text-white' 
+                : 'border-gray-300 bg-gray-50 text-gray-900'
+            }`}
           >
             <option value="all">All Categories</option>
             {categories.map(cat => (
@@ -168,7 +188,9 @@ export default function Products() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-gray-200 dark:border-gray-700">
+                <tr className={`border-b ${
+                  isDark ? 'border-gray-700' : 'border-gray-200'
+                }`}>
                   <th className="py-3 text-left font-semibold">Name</th>
                   <th className="py-3 text-left font-semibold">Category</th>
                   <th className="py-3 text-left font-semibold">Unit Price</th>
@@ -178,24 +200,42 @@ export default function Products() {
               </thead>
               <tbody>
                 {[1,2,3,4,5].map(i => (
-                  <tr key={i} className="border-b border-gray-100 dark:border-gray-800">
-                    <td className="py-3"><div className="h-4 w-32 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" /></td>
-                    <td className="py-3"><div className="h-4 w-24 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" /></td>
-                    <td className="py-3"><div className="h-4 w-16 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" /></td>
-                    <td className="py-3"><div className="h-4 w-20 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" /></td>
-                    <td className="py-3"><div className="h-8 w-24 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" /></td>
+                  <tr key={i} className={`border-b ${
+                    isDark ? 'border-gray-800' : 'border-gray-100'
+                  }`}>
+                    <td className="py-3"><div className={`h-4 w-32 rounded animate-pulse ${
+                      isDark ? 'bg-gray-700' : 'bg-gray-200'
+                    }`} /></td>
+                    <td className="py-3"><div className={`h-4 w-24 rounded animate-pulse ${
+                      isDark ? 'bg-gray-700' : 'bg-gray-200'
+                    }`} /></td>
+                    <td className="py-3"><div className={`h-4 w-16 rounded animate-pulse ${
+                      isDark ? 'bg-gray-700' : 'bg-gray-200'
+                    }`} /></td>
+                    <td className="py-3"><div className={`h-4 w-20 rounded animate-pulse ${
+                      isDark ? 'bg-gray-700' : 'bg-gray-200'
+                    }`} /></td>
+                    <td className="py-3"><div className={`h-8 w-24 rounded animate-pulse ${
+                      isDark ? 'bg-gray-700' : 'bg-gray-200'
+                    }`} /></td>
                   </tr>
                 ))}
               </tbody>
             </table>
             <div className="flex justify-center mt-4">
-              <div className="h-8 w-32 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+              <div className={`h-8 w-32 rounded animate-pulse ${
+                isDark ? 'bg-gray-700' : 'bg-gray-200'
+              }`} />
             </div>
           </div>
         )}
         {error && (
           <div className="text-center py-8">
-            <div className="inline-block px-4 py-2 rounded-xl bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 font-semibold border border-red-200 dark:border-red-700">
+            <div className={`inline-block px-4 py-2 rounded-xl font-semibold border ${
+              isDark 
+                ? 'bg-red-900/20 text-red-400 border-red-700' 
+                : 'bg-red-50 text-red-600 border-red-200'
+            }`}>
               {error}
             </div>
           </div>
@@ -205,7 +245,9 @@ export default function Products() {
             {/* Bulk Delete Button */}
             {selected.length > 0 && (
               <div className="flex justify-between items-center mb-2">
-                <span className="text-sm text-gray-700 dark:text-gray-200 font-medium">{selected.length} selected</span>
+                <span className={`text-sm font-medium ${
+                  isDark ? 'text-gray-200' : 'text-gray-700'
+                }`}>{selected.length} selected</span>
                 <button
                   className="px-4 py-2 rounded-xl bg-red-600 text-white font-semibold hover:bg-red-700 transition"
                   onClick={() => setShowBulkDelete(true)}
@@ -216,7 +258,9 @@ export default function Products() {
             )}
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-gray-200 dark:border-gray-700">
+                <tr className={`border-b ${
+                  isDark ? 'border-gray-700' : 'border-gray-200'
+                }`}>
                   <th className="py-3 text-left font-semibold w-8">
                     <input
                       type="checkbox"
@@ -236,7 +280,11 @@ export default function Products() {
                 {paginated.length === 0 ? (
                   <tr><td colSpan={6} className="text-center py-8 text-gray-400">No products found.</td></tr>
                 ) : paginated.map((p) => (
-                  <tr key={p.id} className="border-b border-gray-100 dark:border-gray-800 hover:bg-orange-50 dark:hover:bg-gray-800/40 transition">
+                  <tr key={p.id} className={`border-b transition ${
+                    isDark 
+                      ? 'border-gray-800 hover:bg-gray-800/40' 
+                      : 'border-gray-100 hover:bg-orange-50'
+                  }`}>
                     <td className="py-3 text-left w-8">
                       <input
                         type="checkbox"
@@ -250,22 +298,30 @@ export default function Products() {
                     <td className="py-3 text-left">{p.unitprice ? `$${Number(p.unitprice).toLocaleString(undefined, { minimumFractionDigits: 2 })}` : '-'}</td>
                     <td className="py-3 text-left">
                       {p.status === 'in stock' && (
-                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300">
+                        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold ${
+                          isDark ? 'bg-green-900/30 text-green-300' : 'bg-green-100 text-green-700'
+                        }`}>
                           <FaCheckCircle className="mr-1 w-3 h-3" /> In Stock
                         </span>
                       )}
                       {p.status === 'low stock' && (
-                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300">
+                        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold ${
+                          isDark ? 'bg-yellow-900/30 text-yellow-300' : 'bg-yellow-100 text-yellow-800'
+                        }`}>
                           <TbAlertTriangle className="mr-1 w-3 h-3" /> Low Stock
                         </span>
                       )}
                       {p.status === 'out of stock' && (
-                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300">
+                        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold ${
+                          isDark ? 'bg-red-900/30 text-red-300' : 'bg-red-100 text-red-700'
+                        }`}>
                           <FiXCircle className="mr-1 w-3 h-3" /> Out of Stock
                         </span>
                       )}
                       {p.status === 'discontinued' && (
-                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-gray-200 text-gray-700 dark:bg-gray-800/30 dark:text-gray-300">
+                        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold ${
+                          isDark ? 'bg-gray-800/30 text-gray-300' : 'bg-gray-200 text-gray-700'
+                        }`}>
                           <FiXCircle className="mr-1 w-3 h-3" /> Discontinued
                         </span>
                       )}
@@ -285,7 +341,9 @@ export default function Products() {
             {/* Pagination */}
             <div className="flex flex-wrap justify-center items-center gap-2 mt-4">
               <button
-                className="px-3 py-1 rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-semibold disabled:opacity-50"
+                className={`px-3 py-1 rounded-xl font-semibold disabled:opacity-50 ${
+                  isDark ? 'bg-gray-700 text-gray-200' : 'bg-gray-200 text-gray-700'
+                }`}
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage === 1}
               >
@@ -294,14 +352,22 @@ export default function Products() {
               {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
                 <button
                   key={page}
-                  className={`px-3 py-1 rounded-xl font-semibold ${page === currentPage ? 'bg-orange-600 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200'}`}
+                  className={`px-3 py-1 rounded-xl font-semibold ${
+                    page === currentPage 
+                      ? 'bg-orange-600 text-white' 
+                      : isDark 
+                        ? 'bg-gray-800 text-gray-200' 
+                        : 'bg-gray-100 text-gray-700'
+                  }`}
                   onClick={() => handlePageChange(page)}
                 >
                   {page}
                 </button>
               ))}
               <button
-                className="px-3 py-1 rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-semibold disabled:opacity-50"
+                className={`px-3 py-1 rounded-xl font-semibold disabled:opacity-50 ${
+                  isDark ? 'bg-gray-700 text-gray-200' : 'bg-gray-200 text-gray-700'
+                }`}
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
               >
@@ -315,7 +381,9 @@ export default function Products() {
       {/* Add Product Modal */}
       {showAdd && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <form onSubmit={handleAdd} className="bg-white dark:bg-gray-900 p-8 rounded-2xl shadow-xl w-full max-w-md space-y-6">
+          <form onSubmit={handleAdd} className={`p-8 rounded-2xl shadow-xl w-full max-w-md space-y-6 ${
+            isDark ? 'bg-gray-900' : 'bg-white'
+          }`}>
             <h3 className="text-xl font-bold mb-4">Add Product</h3>
             <div className="space-y-3">
               <label className="block text-sm font-semibold mb-1">Name</label>
@@ -353,7 +421,9 @@ export default function Products() {
       {/* Edit Product Modal */}
       {showEdit && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <form onSubmit={handleEdit} className="bg-white dark:bg-gray-900 p-8 rounded-2xl shadow-xl w-full max-w-md space-y-6">
+          <form onSubmit={handleEdit} className={`p-8 rounded-2xl shadow-xl w-full max-w-md space-y-6 ${
+            isDark ? 'bg-gray-900' : 'bg-white'
+          }`}>
             <h3 className="text-xl font-bold mb-4">Edit Product</h3>
             <div className="space-y-3">
               <label className="block text-sm font-semibold mb-1">Name</label>
@@ -391,9 +461,15 @@ export default function Products() {
       {/* Delete Confirmation Modal */}
       {deleteId && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="bg-white dark:bg-gray-900 p-8 rounded-2xl shadow-xl w-full max-w-sm">
-            <h3 className="text-lg font-bold mb-4 text-red-600 dark:text-red-400 flex items-center gap-2"><FiTrash2 className="w-5 h-5" /> Delete Product</h3>
-            <p className="mb-6 text-gray-700 dark:text-gray-300">Are you sure you want to delete this product?</p>
+          <div className={`p-8 rounded-2xl shadow-xl w-full max-w-sm ${
+            isDark ? 'bg-gray-900' : 'bg-white'
+          }`}>
+            <h3 className={`text-lg font-bold mb-4 flex items-center gap-2 ${
+              isDark ? 'text-red-400' : 'text-red-600'
+            }`}><FiTrash2 className="w-5 h-5" /> Delete Product</h3>
+            <p className={`mb-6 ${
+              isDark ? 'text-gray-300' : 'text-gray-700'
+            }`}>Are you sure you want to delete this product?</p>
             <div className="flex gap-2 justify-end mt-6">
               <button onClick={() => setDeleteId(null)} className="px-4 py-2 rounded-xl bg-gray-200">Cancel</button>
               <button onClick={handleDelete} className="px-4 py-2 rounded-xl bg-red-600 text-white">Delete</button>
@@ -405,9 +481,15 @@ export default function Products() {
       {/* Bulk Delete Confirmation Modal */}
       {showBulkDelete && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="bg-white dark:bg-gray-900 p-8 rounded-2xl shadow-xl w-full max-w-sm">
-            <h3 className="text-lg font-bold mb-4 text-red-600 dark:text-red-400 flex items-center gap-2">Bulk Delete Products</h3>
-            <p className="mb-6 text-gray-700 dark:text-gray-300">Are you sure you want to delete {selected.length} selected products?</p>
+          <div className={`p-8 rounded-2xl shadow-xl w-full max-w-sm ${
+            isDark ? 'bg-gray-900' : 'bg-white'
+          }`}>
+            <h3 className={`text-lg font-bold mb-4 flex items-center gap-2 ${
+              isDark ? 'text-red-400' : 'text-red-600'
+            }`}>Bulk Delete Products</h3>
+            <p className={`mb-6 ${
+              isDark ? 'text-gray-300' : 'text-gray-700'
+            }`}>Are you sure you want to delete {selected.length} selected products?</p>
             <div className="flex gap-2 justify-end mt-6">
               <button onClick={() => setShowBulkDelete(false)} className="px-4 py-2 rounded-xl bg-gray-200">Cancel</button>
               <button onClick={handleBulkDelete} className="px-4 py-2 rounded-xl bg-red-600 text-white">Delete</button>

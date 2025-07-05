@@ -3,8 +3,10 @@ import ActivityTable from "../../components/ActivityTable.jsx";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { API_BASE_URL } from "../../configs/config";
+import useThemeStore from "../../store/useThemeStore";
 
 export default function ActivityLog() {
+  const { isDark } = useThemeStore();
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -39,18 +41,28 @@ export default function ActivityLog() {
 
   return (
     <SupplierLayout>
-      <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-md border border-gray-200 dark:border-gray-700">
+      <div className={`rounded-2xl p-6 shadow-md border ${
+        isDark 
+          ? 'bg-gray-800 border-gray-700' 
+          : 'bg-white border-gray-200'
+      }`}>
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Activity Log</h2>
-            <p className="text-gray-600 dark:text-gray-400">View your inventory activity here.</p>
+            <h2 className={`text-2xl font-bold mb-2 ${
+              isDark ? 'text-white' : 'text-gray-900'
+            }`}>Activity Log</h2>
+            <p className={isDark ? 'text-gray-400' : 'text-gray-600'}>View your inventory activity here.</p>
           </div>
         </div>
         
         {loading ? (
-          <div className="h-64 bg-gray-200 dark:bg-gray-700 rounded-2xl animate-pulse" />
+          <div className={`h-64 rounded-2xl animate-pulse ${
+            isDark ? 'bg-gray-700' : 'bg-gray-200'
+          }`} />
         ) : error ? (
-          <div className="text-red-600 dark:text-red-400 font-semibold p-4">{error}</div>
+          <div className={`font-semibold p-4 ${
+            isDark ? 'text-red-400' : 'text-red-600'
+          }`}>{error}</div>
         ) : (
           <ActivityTable activities={activities} />
         )}

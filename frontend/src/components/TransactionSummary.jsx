@@ -1,6 +1,8 @@
 import { TrendingUp, DollarSign, Package, BarChart3 } from "lucide-react"
+import useThemeStore from '../store/useThemeStore'
 
 const TransactionSummary = ({ metrics }) => {
+  const { isDark } = useThemeStore();
   const sampleMetrics = [
     { 
       label: "Total Sales (Today)", 
@@ -8,7 +10,7 @@ const TransactionSummary = ({ metrics }) => {
       change: "+12%",
       icon: <DollarSign className="w-5 h-5" />,
       color: "text-green-600",
-      bgColor: "bg-green-100 dark:bg-green-900/20"
+      bgColor: isDark ? "bg-green-900/20" : "bg-green-100"
     },
     { 
       label: "Total Sales (This Week)", 
@@ -16,7 +18,7 @@ const TransactionSummary = ({ metrics }) => {
       change: "+8%",
       icon: <TrendingUp className="w-5 h-5" />,
       color: "text-blue-600",
-      bgColor: "bg-blue-100 dark:bg-blue-900/20"
+      bgColor: isDark ? "bg-blue-900/20" : "bg-blue-100"
     },
     { 
       label: "Best-Selling Product", 
@@ -24,7 +26,7 @@ const TransactionSummary = ({ metrics }) => {
       change: "Wireless Pro",
       icon: <Package className="w-5 h-5" />,
       color: "text-orange-600",
-      bgColor: "bg-orange-100 dark:bg-orange-900/20"
+      bgColor: isDark ? "bg-orange-900/20" : "bg-orange-100"
     },
     { 
       label: "Total Items Sold (This Week)", 
@@ -32,25 +34,41 @@ const TransactionSummary = ({ metrics }) => {
       change: "+15%",
       icon: <BarChart3 className="w-5 h-5" />,
       color: "text-purple-600",
-      bgColor: "bg-purple-100 dark:bg-purple-900/20"
+      bgColor: isDark ? "bg-purple-900/20" : "bg-purple-100"
     },
   ];
   const displayMetrics = metrics && metrics.length > 0 ? metrics : sampleMetrics;
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700">
+    <div className={`rounded-2xl shadow-sm border ${
+      isDark 
+        ? 'bg-gray-800 border-gray-700' 
+        : 'bg-white border-gray-200'
+    }`}>
       <div className="p-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-green-100 dark:bg-green-900/20 rounded-xl">
-              <TrendingUp className="w-5 h-5 text-green-600 dark:text-green-400" />
+            <div className={`p-2 rounded-xl ${
+              isDark ? 'bg-green-900/20' : 'bg-green-100'
+            }`}>
+              <TrendingUp className={`w-5 h-5 ${
+                isDark ? 'text-green-400' : 'text-green-600'
+              }`} />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white">Transaction Summary</h2>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Sales and performance metrics</p>
+              <h2 className={`text-xl font-bold ${
+                isDark ? 'text-white' : 'text-gray-900'
+              }`}>Transaction Summary</h2>
+              <p className={`text-sm ${
+                isDark ? 'text-gray-400' : 'text-gray-500'
+              }`}>Sales and performance metrics</p>
             </div>
           </div>
-          <button className="text-sm text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300 font-medium transition-colors">
+          <button className={`text-sm font-medium transition-colors ${
+            isDark 
+              ? 'text-green-400 hover:text-green-300' 
+              : 'text-green-600 hover:text-green-700'
+          }`}>
             View Details
           </button>
         </div>
@@ -60,21 +78,33 @@ const TransactionSummary = ({ metrics }) => {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-gray-200 dark:border-gray-700">
-                  <th className="py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                <tr className={`border-b ${
+                  isDark ? 'border-gray-700' : 'border-gray-200'
+                }`}>
+                  <th className={`py-3 text-left text-xs font-medium uppercase tracking-wider ${
+                    isDark ? 'text-gray-400' : 'text-gray-500'
+                  }`}>
                     Metric
                   </th>
-                  <th className="py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  <th className={`py-3 text-left text-xs font-medium uppercase tracking-wider ${
+                    isDark ? 'text-gray-400' : 'text-gray-500'
+                  }`}>
                     Value
                   </th>
-                  <th className="py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  <th className={`py-3 text-left text-xs font-medium uppercase tracking-wider ${
+                    isDark ? 'text-gray-400' : 'text-gray-500'
+                  }`}>
                     Change
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+              <tbody className={`divide-y ${
+                isDark ? 'divide-gray-700' : 'divide-gray-200'
+              }`}>
                 {displayMetrics.map((item, i) => (
-                  <tr key={i} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                  <tr key={i} className={`transition-colors ${
+                    isDark ? 'hover:bg-gray-700/50' : 'hover:bg-gray-50'
+                  }`}>
                     <td className="py-4">
                       <div className="flex items-center gap-3">
                         <div className={`p-2 rounded-xl ${item.bgColor}`}>
@@ -82,13 +112,17 @@ const TransactionSummary = ({ metrics }) => {
                             {item.icon}
                           </div>
                         </div>
-                        <span className="text-sm font-medium text-gray-900 dark:text-white">
+                        <span className={`text-sm font-medium ${
+                          isDark ? 'text-white' : 'text-gray-900'
+                        }`}>
                           {item.label}
                         </span>
                       </div>
                     </td>
                     <td className="py-4">
-                      <span className="text-sm font-semibold text-gray-900 dark:text-white">
+                      <span className={`text-sm font-semibold ${
+                        isDark ? 'text-white' : 'text-gray-900'
+                      }`}>
                         {item.value}
                       </span>
                     </td>
@@ -107,7 +141,11 @@ const TransactionSummary = ({ metrics }) => {
         {/* Mobile/Tablet Card View */}
         <div className="lg:hidden space-y-4">
           {displayMetrics.map((item, i) => (
-            <div key={i} className="border border-gray-200 dark:border-gray-700 rounded-xl p-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+            <div key={i} className={`border rounded-xl p-4 transition-colors ${
+              isDark 
+                ? 'border-gray-700 hover:bg-gray-700/50' 
+                : 'border-gray-200 hover:bg-gray-50'
+            }`}>
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-3">
                   <div className={`p-2 rounded-xl ${item.bgColor}`}>
@@ -115,7 +153,9 @@ const TransactionSummary = ({ metrics }) => {
                       {item.icon}
                     </div>
                   </div>
-                  <span className="text-sm font-medium text-gray-900 dark:text-white">
+                  <span className={`text-sm font-medium ${
+                    isDark ? 'text-white' : 'text-gray-900'
+                  }`}>
                     {item.label}
                   </span>
                 </div>
@@ -125,7 +165,9 @@ const TransactionSummary = ({ metrics }) => {
               </div>
               
               <div className="pl-11">
-                <span className="text-lg font-bold text-gray-900 dark:text-white">
+                <span className={`text-lg font-bold ${
+                  isDark ? 'text-white' : 'text-gray-900'
+                }`}>
                   {item.value}
                 </span>
               </div>
@@ -134,15 +176,25 @@ const TransactionSummary = ({ metrics }) => {
         </div>
 
         {/* Summary Footer */}
-        <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+        <div className={`mt-6 pt-6 border-t ${
+          isDark ? 'border-gray-700' : 'border-gray-200'
+        }`}>
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Total Revenue</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">$11,120</p>
+              <p className={`text-sm ${
+                isDark ? 'text-gray-400' : 'text-gray-500'
+              }`}>Total Revenue</p>
+              <p className={`text-2xl font-bold ${
+                isDark ? 'text-white' : 'text-gray-900'
+              }`}>$11,120</p>
             </div>
             <div className="text-right">
-              <p className="text-sm text-green-600 dark:text-green-400 font-medium">+10.5%</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">vs last week</p>
+              <p className={`text-sm font-medium ${
+                isDark ? 'text-green-400' : 'text-green-600'
+              }`}>+10.5%</p>
+              <p className={`text-xs ${
+                isDark ? 'text-gray-400' : 'text-gray-500'
+              }`}>vs last week</p>
             </div>
           </div>
         </div>

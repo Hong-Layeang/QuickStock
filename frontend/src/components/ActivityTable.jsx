@@ -1,6 +1,8 @@
 import { Clock, User, Activity } from "lucide-react"
+import useThemeStore from '../store/useThemeStore'
 
 const ActivityTable = ({ activities }) => {
+  const { isDark } = useThemeStore();
   const sampleActivities = [
     {
       date: "2025-05-17 10:45AM",
@@ -62,19 +64,35 @@ const ActivityTable = ({ activities }) => {
   }
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700">
+    <div className={`rounded-2xl shadow-sm border ${
+      isDark 
+        ? 'bg-gray-800 border-gray-700' 
+        : 'bg-white border-gray-200'
+    }`}>
       <div className="p-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-orange-100 dark:bg-orange-900/20 rounded-xl">
-              <Activity className="w-5 h-5 text-orange-600 dark:text-orange-400" />
+            <div className={`p-2 rounded-xl ${
+              isDark ? 'bg-orange-900/20' : 'bg-orange-100'
+            }`}>
+              <Activity className={`w-5 h-5 ${
+                isDark ? 'text-orange-400' : 'text-orange-600'
+              }`} />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white">Recent Activities</h2>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Latest inventory activities</p>
+              <h2 className={`text-xl font-bold ${
+                isDark ? 'text-white' : 'text-gray-900'
+              }`}>Recent Activities</h2>
+              <p className={`text-sm ${
+                isDark ? 'text-gray-400' : 'text-gray-500'
+              }`}>Latest inventory activities</p>
             </div>
           </div>
-          <button className="text-sm text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300 font-medium transition-colors">
+          <button className={`text-sm font-medium transition-colors ${
+            isDark 
+              ? 'text-orange-400 hover:text-orange-300' 
+              : 'text-orange-600 hover:text-orange-700'
+          }`}>
             View All
           </button>
         </div>
@@ -84,28 +102,44 @@ const ActivityTable = ({ activities }) => {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-gray-200 dark:border-gray-700">
-                  <th className="py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                <tr className={`border-b ${
+                  isDark ? 'border-gray-700' : 'border-gray-200'
+                }`}>
+                  <th className={`py-3 text-left text-xs font-medium uppercase tracking-wider ${
+                    isDark ? 'text-gray-400' : 'text-gray-500'
+                  }`}>
                     Activity
                   </th>
-                  <th className="py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  <th className={`py-3 text-left text-xs font-medium uppercase tracking-wider ${
+                    isDark ? 'text-gray-400' : 'text-gray-500'
+                  }`}>
                     Performed By
                   </th>
-                  <th className="py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  <th className={`py-3 text-left text-xs font-medium uppercase tracking-wider ${
+                    isDark ? 'text-gray-400' : 'text-gray-500'
+                  }`}>
                     Date/Time
                   </th>
-                  <th className="py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  <th className={`py-3 text-left text-xs font-medium uppercase tracking-wider ${
+                    isDark ? 'text-gray-400' : 'text-gray-500'
+                  }`}>
                     Status
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+              <tbody className={`divide-y ${
+                isDark ? 'divide-gray-700' : 'divide-gray-200'
+              }`}>
                 {displayActivities.map((item, i) => (
-                  <tr key={i} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                  <tr key={i} className={`transition-colors ${
+                    isDark ? 'hover:bg-gray-700/50' : 'hover:bg-gray-50'
+                  }`}>
                     <td className="py-4">
                       <div className="flex items-center gap-3">
                         {getActivityIcon(item.type)}
-                        <span className="text-sm font-medium text-gray-900 dark:text-white">
+                        <span className={`text-sm font-medium ${
+                          isDark ? 'text-white' : 'text-gray-900'
+                        }`}>
                           {item.activity}
                         </span>
                       </div>
@@ -113,13 +147,17 @@ const ActivityTable = ({ activities }) => {
                     <td className="py-4">
                       <div className="flex items-center gap-2">
                         <User className="w-4 h-4 text-gray-400" />
-                        <span className="text-sm text-gray-600 dark:text-gray-300">{item.by}</span>
+                        <span className={`text-sm ${
+                          isDark ? 'text-gray-300' : 'text-gray-600'
+                        }`}>{item.by}</span>
                       </div>
                     </td>
                     <td className="py-4">
                       <div className="flex items-center gap-2">
                         <Clock className="w-4 h-4 text-gray-400" />
-                        <span className="text-sm text-gray-600 dark:text-gray-300">{item.date}</span>
+                        <span className={`text-sm ${
+                          isDark ? 'text-gray-300' : 'text-gray-600'
+                        }`}>{item.date}</span>
                       </div>
                     </td>
                     <td className="py-4">
@@ -137,11 +175,17 @@ const ActivityTable = ({ activities }) => {
         {/* Mobile/Tablet Card View */}
         <div className="lg:hidden space-y-4">
           {displayActivities.map((item, i) => (
-            <div key={i} className="border border-gray-200 dark:border-gray-700 rounded-xl p-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+            <div key={i} className={`border rounded-xl p-4 transition-colors ${
+              isDark 
+                ? 'border-gray-700 hover:bg-gray-700/50' 
+                : 'border-gray-200 hover:bg-gray-50'
+            }`}>
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-3">
                   {getActivityIcon(item.type)}
-                  <span className="text-sm font-medium text-gray-900 dark:text-white">
+                  <span className={`text-sm font-medium ${
+                    isDark ? 'text-white' : 'text-gray-900'
+                  }`}>
                     {item.activity}
                   </span>
                 </div>
@@ -151,11 +195,15 @@ const ActivityTable = ({ activities }) => {
               </div>
               
               <div className="space-y-2">
-                <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+                <div className={`flex items-center gap-2 text-sm ${
+                  isDark ? 'text-gray-300' : 'text-gray-600'
+                }`}>
                   <User className="w-4 h-4" />
                   <span>{item.by}</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+                <div className={`flex items-center gap-2 text-sm ${
+                  isDark ? 'text-gray-300' : 'text-gray-600'
+                }`}>
                   <Clock className="w-4 h-4" />
                   <span>{item.date}</span>
                 </div>

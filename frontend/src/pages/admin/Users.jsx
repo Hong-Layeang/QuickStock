@@ -3,6 +3,7 @@ import SideBar from "../../components/admin/SideBar.jsx";
 import React, { useEffect, useState } from "react";
 import useUserStore from "../../store/useUserStore";
 import AdminLayout from "../../components/admin/AdminLayout.jsx";
+import useThemeStore from "../../store/useThemeStore";
 
 const initialForm = {
   name: "",
@@ -12,6 +13,7 @@ const initialForm = {
 };
 
 export default function Users() {
+  const { isDark } = useThemeStore();
   const { users, loading, error, fetchUsers, createUser, editUser, deleteUser } = useUserStore();
   const [showAdd, setShowAdd] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
@@ -48,11 +50,17 @@ export default function Users() {
 
   return (
     <AdminLayout>
-      <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-md border border-gray-200 dark:border-gray-700">
+      <div className={`rounded-2xl p-6 shadow-md border ${
+        isDark 
+          ? 'bg-gray-800 border-gray-700' 
+          : 'bg-white border-gray-200'
+      }`}>
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">Users</h2>
-            <p className="text-gray-600 dark:text-gray-400">Manage all users here.</p>
+            <h2 className={`text-2xl font-bold mb-1 ${
+              isDark ? 'text-white' : 'text-gray-900'
+            }`}>Users</h2>
+            <p className={isDark ? 'text-gray-400' : 'text-gray-600'}>Manage all users here.</p>
           </div>
           <button onClick={() => setShowAdd(true)} className="bg-orange-600 hover:bg-orange-700 text-white font-semibold px-5 py-2 rounded-xl shadow transition-all">+ Add User</button>
         </div>
@@ -62,7 +70,11 @@ export default function Users() {
             placeholder="Search by name, email, or role..."
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="w-full sm:w-64 px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white"
+            className={`w-full sm:w-64 px-4 py-2 border rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent ${
+              isDark 
+                ? 'border-gray-700 bg-gray-900 text-white' 
+                : 'border-gray-300 bg-gray-50 text-gray-900'
+            }`}
           />
         </div>
         {loading && <div className="text-center py-8 text-orange-600 font-semibold">Loading...</div>}
@@ -71,7 +83,9 @@ export default function Users() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-gray-200 dark:border-gray-700">
+                <tr className={`border-b ${
+                  isDark ? 'border-gray-700' : 'border-gray-200'
+                }`}>
                   <th className="py-3 text-left font-semibold">Name</th>
                   <th className="py-3 text-left font-semibold">Email</th>
                   <th className="py-3 text-left font-semibold">Role</th>
@@ -82,7 +96,11 @@ export default function Users() {
                 {filtered.length === 0 ? (
                   <tr><td colSpan={4} className="text-center py-8 text-gray-400">No users found.</td></tr>
                 ) : filtered.map((u) => (
-                  <tr key={u.id} className="border-b border-gray-100 dark:border-gray-800 hover:bg-orange-50 dark:hover:bg-gray-800/40 transition">
+                  <tr key={u.id} className={`border-b transition ${
+                    isDark 
+                      ? 'border-gray-800 hover:bg-gray-800/40' 
+                      : 'border-gray-100 hover:bg-orange-50'
+                  }`}>
                     <td className="py-3 font-medium">{u.name || '-'}</td>
                     <td className="py-3">{u.email}</td>
                     <td className="py-3 capitalize">{u.role}</td>
@@ -102,7 +120,9 @@ export default function Users() {
       {/* Add User Modal */}
       {showAdd && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <form onSubmit={handleAdd} className="bg-white dark:bg-gray-900 p-8 rounded-2xl shadow-xl w-full max-w-md space-y-4">
+          <form onSubmit={handleAdd} className={`p-8 rounded-2xl shadow-xl w-full max-w-md space-y-4 ${
+            isDark ? 'bg-gray-900' : 'bg-white'
+          }`}>
             <h3 className="text-xl font-bold mb-2">Add User</h3>
             <input type="text" placeholder="Name" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} className="w-full px-4 py-2 border rounded-xl" />
             <input type="email" placeholder="Email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} required className="w-full px-4 py-2 border rounded-xl" />
@@ -122,7 +142,9 @@ export default function Users() {
       {/* Edit User Modal */}
       {showEdit && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <form onSubmit={handleEdit} className="bg-white dark:bg-gray-900 p-8 rounded-2xl shadow-xl w-full max-w-md space-y-4">
+          <form onSubmit={handleEdit} className={`p-8 rounded-2xl shadow-xl w-full max-w-md space-y-4 ${
+            isDark ? 'bg-gray-900' : 'bg-white'
+          }`}>
             <h3 className="text-xl font-bold mb-2">Edit User</h3>
             <input type="text" placeholder="Name" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} className="w-full px-4 py-2 border rounded-xl" />
             <input type="email" placeholder="Email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} required className="w-full px-4 py-2 border rounded-xl" />
@@ -142,7 +164,9 @@ export default function Users() {
       {/* Delete Confirmation Modal */}
       {deleteId && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="bg-white dark:bg-gray-900 p-8 rounded-2xl shadow-xl w-full max-w-sm">
+          <div className={`p-8 rounded-2xl shadow-xl w-full max-w-sm ${
+            isDark ? 'bg-gray-900' : 'bg-white'
+          }`}>
             <h3 className="text-lg font-bold mb-4">Delete User</h3>
             <p className="mb-6">Are you sure you want to delete this user?</p>
             <div className="flex gap-2 justify-end">

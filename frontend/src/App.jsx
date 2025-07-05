@@ -78,6 +78,7 @@ const App = () => {
   const loading = useAuthStore((state) => state.loading);
   const initializeTheme = useThemeStore((state) => state.initializeTheme);
   const theme = useThemeStore((state) => state.theme);
+  const isDark = useThemeStore((state) => state.isDark);
 
   // Initialize theme system
   useEffect(() => {
@@ -123,21 +124,23 @@ const App = () => {
         toastOptions={{
           duration: 4000,
           style: {
-            background: 'var(--toast-bg, #363636)',
-            color: 'var(--toast-color, #fff)',
+            background: isDark ? '#23272e' : '#fff',
+            color: isDark ? '#fff' : '#23272e',
+            boxShadow: isDark ? '0 2px 16px 0 #0004' : '0 2px 16px 0 #0002',
+            border: isDark ? '1px solid #333' : '1px solid #eee',
           },
           success: {
             duration: 3000,
             iconTheme: {
               primary: '#10b981',
-              secondary: '#fff',
+              secondary: isDark ? '#23272e' : '#fff',
             },
           },
           error: {
             duration: 4000,
             iconTheme: {
               primary: '#ef4444',
-              secondary: '#fff',
+              secondary: isDark ? '#23272e' : '#fff',
             },
           },
         }}

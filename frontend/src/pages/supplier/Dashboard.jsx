@@ -7,8 +7,10 @@ import SalesAnalyticsChart from "../../components/SalesAnalyticsChart.jsx"
 import { useEffect, useState, useCallback } from "react"
 import axios from "axios"
 import { API_BASE_URL } from "../../configs/config"
+import useThemeStore from "../../store/useThemeStore"
 
 export default function DashBoard() {
+  const { isDark } = useThemeStore();
   const [cards, setCards] = useState(undefined)
   const [activities, setActivities] = useState(undefined)
   const [metrics, setMetrics] = useState(undefined)
@@ -53,11 +55,17 @@ export default function DashBoard() {
         <DashboardAlerts loading={loading} error={error} />
 
         {/* Welcome Section */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-md border border-gray-200 dark:border-gray-700">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+        <div className={`rounded-2xl p-6 shadow-md border ${
+          isDark 
+            ? 'bg-gray-800 border-gray-700' 
+            : 'bg-white border-gray-200'
+        }`}>
+          <h2 className={`text-2xl font-bold mb-2 ${
+            isDark ? 'text-white' : 'text-gray-900'
+          }`}>
             Welcome back! 👋
           </h2>
-          <p className="text-gray-600 dark:text-gray-400">
+          <p className={isDark ? 'text-gray-400' : 'text-gray-600'}>
             Here's what's happening with your inventory today.
           </p>
         </div>
@@ -67,7 +75,9 @@ export default function DashBoard() {
 
         {/* Dashboard Cards */}
         {error ? (
-          <div className="text-red-600 dark:text-red-400 font-semibold p-4">{error}</div>
+          <div className={`font-semibold p-4 ${
+            isDark ? 'text-red-400' : 'text-red-600'
+          }`}>{error}</div>
         ) : (
           <DashboardCards 
             cards={cards} 
@@ -81,9 +91,13 @@ export default function DashBoard() {
           {/* Activity Table - Takes 2/3 on large screens */}
           <div className="xl:col-span-2">
             {loading ? (
-              <div className="h-64 bg-gray-200 dark:bg-gray-700 rounded-2xl animate-pulse" />
+              <div className={`h-64 rounded-2xl animate-pulse ${
+                isDark ? 'bg-gray-700' : 'bg-gray-200'
+              }`} />
             ) : error ? (
-              <div className="text-red-600 dark:text-red-400 font-semibold p-4">{error}</div>
+              <div className={`font-semibold p-4 ${
+                isDark ? 'text-red-400' : 'text-red-600'
+              }`}>{error}</div>
             ) : (
               <ActivityTable activities={activities} />
             )}
@@ -92,9 +106,13 @@ export default function DashBoard() {
           {/* Transaction Summary - Takes 1/3 on large screens */}
           <div className="xl:col-span-1">
             {loading ? (
-              <div className="h-64 bg-gray-200 dark:bg-gray-700 rounded-2xl animate-pulse" />
+              <div className={`h-64 rounded-2xl animate-pulse ${
+                isDark ? 'bg-gray-700' : 'bg-gray-200'
+              }`} />
             ) : error ? (
-              <div className="text-red-600 dark:text-red-400 font-semibold p-4">{error}</div>
+              <div className={`font-semibold p-4 ${
+                isDark ? 'text-red-400' : 'text-red-600'
+              }`}>{error}</div>
             ) : (
               <TransactionSummary metrics={metrics} />
             )}
