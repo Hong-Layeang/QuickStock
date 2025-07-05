@@ -8,8 +8,10 @@ QuickStock is a streamlined inventory management system designed for efficient s
 - 📦 **Product Management**: Add, update, or remove items from inventory
 - 📈 **Inventory Tracking**: View current stock levels and changes over time
 - 🔔 **Low Stock Alerts**: Notifications for products that need restocking
-- 📊 **Dashboard Analytics**: Quick overview of stock status
-- 💡 **Responsive Design**: Optimized UI using Tailwind CSS
+- 📊 **Dashboard Analytics**: Quick overview of stock status with charts and metrics
+- 💡 **Responsive Design**: Modern UI built with React and Tailwind CSS
+- 🔒 **Secure Authentication**: JWT-based authentication with role-based access control
+- 📱 **Real-time Updates**: Live inventory tracking and activity monitoring
 
 ## 👥 User Roles
 
@@ -17,89 +19,160 @@ QuickStock is a streamlined inventory management system designed for efficient s
 - Full access to the system
 - Manage all products and suppliers
 - Monitor stock levels and system activity
+- View comprehensive analytics and reports
+- User management and system settings
 
 ### Supplier
-- Limited access
-- View assigned product listings
-- Update stock quantities
+- Limited access to assigned products
+- Update stock quantities and product information
+- View activity logs and performance metrics
+- Manage their product portfolio
 
 ## 🛠️ Tech Stack
 
-- **Backend**: [Node.js](https://nodejs.org/) + [Express](https://expressjs.com/)
-- **Frontend**: [JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript) + [Tailwind CSS](https://tailwindcss.com/)
-- **Database**: [Mysql](https://www.mysql.com/)
+### Backend
+- **Runtime**: [Node.js](https://nodejs.org/)
+- **Framework**: [Express.js](https://expressjs.com/)
+- **Database**: [MySQL](https://www.mysql.com/)
+- **Authentication**: JWT (JSON Web Tokens)
+- **Password Hashing**: bcrypt
+- **Validation**: Express middleware
+
+### Frontend
+- **Framework**: [React](https://reactjs.org/) with Vite
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+- **State Management**: Zustand
+- **Routing**: React Router
+- **Charts**: Chart.js for analytics
 
 ## 📂 Project Structure
 
 ```
 QuickStock/
+├── backend/                    # Node.js & Express server
+│   ├── config/                # Database configuration
+│   ├── controllers/           # Request handling logic
+│   ├── middleware/            # Custom middleware (auth, validation)
+│   ├── models/                # Database models
+│   ├── routes/                # API routes
+│   └── server.js              # Main server file
 │
-├── backend/            # Node.js & Express server
-│   ├── routes/         # API routes for admin and supplier
-│   ├── controllers/    # Request handling logic
-│   └── models/         # Database models (Squelize ORM)
+├── frontend/                   # React application
+│   ├── src/
+│   │   ├── components/        # Reusable UI components
+│   │   │   ├── admin/         # Admin-specific components
+│   │   │   └── supplier/      # Supplier-specific components
+│   │   ├── pages/             # Page components
+│   │   │   ├── admin/         # Admin pages
+│   │   │   └── supplier/      # Supplier pages
+│   │   ├── store/             # Zustand state management
+│   │   └── configs/           # Configuration files
+│   ├── public/                # Static assets
+│   └── package.json           # Frontend dependencies
 │
-├── frontend/           # Static files, Tailwind CSS, client JS
-│   └── ...
-│
-├── .env                # Environment variables
-├── package.json        # Project dependencies
-└── README.md
+└── README.md                  # Project documentation
 ```
 
 ## 🔧 Getting Started
 
 ### Prerequisites
-- Node.js installed
+- Node.js (v16 or higher)
 - npm or yarn
-- Mysql running locally or with a cloud provider
+- MySQL database (local or cloud)
 
 ### Installation
 
-1. Clone the repo:
-
+1. **Clone the repository:**
 ```bash
 git clone https://github.com/your-username/quickstock.git
 cd quickstock
 ```
 
-2. Install dependencies:
-
+2. **Set up the Backend:**
 ```bash
+cd backend
 npm install
 ```
 
-3. Configure environment variables:
+3. **Configure the database:**
+   - Create a MySQL database
+   - Copy `.env.example` to `.env` (if available) or create your own
+   - Update the database connection settings in `config/database.js`
 
+4. **Set up the Frontend:**
 ```bash
-cp .env.example .env
-# Then edit .env with your MongoDB URI and other settings
+cd ../frontend
+npm install
 ```
 
-4. Start the development server:
+5. **Start the development servers:**
 
-```bash
-npm run dev
-```
+   **Backend (from backend directory):**
+   ```bash
+   npm start
+   # or for development with nodemon
+   npm run dev
+   ```
 
-> The app should now be running at `http://localhost:3000`
+   **Frontend (from frontend directory):**
+   ```bash
+   npm run dev
+   ```
 
-<<<<<<< HEAD
-## 📸 Processing Preview
-=======
-## 📸 Progressing Preview
->>>>>>> b736cd6577b64771450460a6355da9ba3a045985
+> The backend API will be running at `http://localhost:5000` (or your configured port)
+> The frontend will be running at `http://localhost:5173` (Vite default)
 
+## 📸 Screenshots
+
+### Login Page
 ![LoginPage](https://github.com/user-attachments/assets/85e467e5-7cfe-4e7a-b42b-6ba9948e08a7)
+
+### Dashboard
 ![DashboardPage](https://github.com/user-attachments/assets/2ddd622c-4ffb-43e4-87be-987043c4ee81)
+
+## 🔌 API Endpoints
+
+The backend provides RESTful APIs for:
+
+- **Authentication**: `/api/auth/login`, `/api/auth/register`
+- **Products**: `/api/products/*` (CRUD operations)
+- **Users**: `/api/users/*` (Admin only)
+- **Suppliers**: `/api/suppliers/*` (Admin only)
+- **Admin**: `/api/admin/*` (Admin dashboard data)
 
 ## 📌 Future Improvements
 
-- Email notifications
-- Search and filter inventory
-- Export reports (PDF/CSV)
-- Multi-language support
+- [ ] Email notifications for low stock alerts
+- [ ] Advanced search and filtering capabilities
+- [ ] Export reports (PDF/CSV)
+- [ ] Multi-language support
+- [ ] Mobile app development
+- [ ] Barcode scanning integration
+- [ ] Advanced analytics and forecasting
+- [ ] API rate limiting and caching
 
 ## 🤝 Contributing
 
-Contributions are welcome! Feel free to fork the project and submit a pull request.
+Contributions are welcome! Please feel free to submit a pull request. For major changes, please open an issue first to discuss what you would like to change.
+
+### Development Guidelines
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🆘 Support
+
+If you encounter any issues or have questions, please:
+1. Check the existing issues
+2. Create a new issue with detailed information
+3. Contact the development team
+
+---
+
+**QuickStock** - Streamlining inventory management for modern businesses 🚀
