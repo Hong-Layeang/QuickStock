@@ -1,38 +1,9 @@
 import {create} from 'zustand';
-
-const mockUsers = [
-  {
-    id: 1,
-    name: 'Alice Johnson',
-    email: 'alice@example.com',
-    role: 'admin',
-    status: 'active',
-  },
-  {
-    id: 2,
-    name: 'Bob Smith',
-    email: 'bob@example.com',
-    role: 'supplier',
-    status: 'active',
-  },
-  {
-    id: 3,
-    name: 'Charlie Brown',
-    email: 'charlie@example.com',
-    role: 'supplier',
-    status: 'inactive',
-  },
-  {
-    id: 4,
-    name: 'Diana Prince',
-    email: 'diana@example.com',
-    role: 'admin',
-    status: 'active',
-  },
-];
+import axios from 'axios';
+import { API_BASE_URL } from '../configs/config';
 
 const useUserStore = create((set) => ({
-    users: mockUsers,
+    users: [],
     loading: false,
     error: null,
     setUser: (users) => set({ users }),
@@ -40,9 +11,17 @@ const useUserStore = create((set) => ({
     // Fetch all users
     fetchUsers: async () => {
         set({ loading: true, error: null });
-        // Simulate network delay
-        await new Promise((resolve) => setTimeout(resolve, 500));
-        set({ users: mockUsers, loading: false });
+        try {
+            const token = localStorage.getItem('token');
+            const res = await axios.get(`${API_BASE_URL}/api/users`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            set({ users: res.data, loading: false });
+        } catch (error) {
+            set({ error: error.response?.data?.message || 'Failed to fetch users', loading: false });
+        }
     },
 
     // create a new supplier or admin by admin
@@ -50,44 +29,64 @@ const useUserStore = create((set) => ({
         if (!newUser.email || !newUser.password) {
             return { success: false, message: "Please fill in all fields." };
         }
-        
-        // Simulate network delay
-        await new Promise((resolve) => setTimeout(resolve, 500));
-        
-        const createdUser = {
-            ...newUser,
-            id: Date.now(), // Generate a simple ID
-            status: 'active',
-        };
-        
-        set((state) => ({ users: [...state.users, createdUser] }));
-        return { success: true, message: "User created successfully" };
+        try {
+            const token = localStorage.getItem('token');
+            const res = await axios.post(`${API_BASE_URL}/api/users`, newUser, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            const createdUser = res.data;
+            set((state) => ({ users: [...state.users, createdUser] }));
+            return { success: true, message: "User created successfully" };
+        } catch (error) {
+            return {
+                success: false,
+                message: error.response?.data?.message || "Something went wrong."
+            };
+        }
     },
 
     // Edit user
     editUser: async (id, updates) => {
         set({ loading: true, error: null });
-        // Simulate network delay
-        await new Promise((resolve) => setTimeout(resolve, 500));
-        
-        set((state) => ({
-            users: state.users.map((u) => (u.id === id ? { ...u, ...updates } : u)),
-            loading: false
-        }));
-        return { success: true };
+        try {
+            const token = localStorage.getItem('token');
+            const res = await axios.put(`${API_BASE_URL}/api/users/${id}`, updates, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            set((state) => ({
+                users: state.users.map((u) => (u.id === id ? res.data : u)),
+                loading: false
+            }));
+            return { success: true };
+        } catch (error) {
+            set({ error: error.response?.data?.message || 'Failed to update user', loading: false });
+            return { success: false, message: error.response?.data?.message || 'Failed to update user' };
+        }
     },
 
     // Delete user
     deleteUser: async (id) => {
         set({ loading: true, error: null });
-        // Simulate network delay
-        await new Promise((resolve) => setTimeout(resolve, 500));
-        
-        set((state) => ({
-            users: state.users.filter((u) => u.id !== id),
-            loading: false
-        }));
-        return { success: true };
+        try {
+            const token = localStorage.getItem('token');
+            await axios.delete(`${API_BASE_URL}/api/users/${id}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            set((state) => ({
+                users: state.users.filter((u) => u.id !== id),
+                loading: false
+            }));
+            return { success: true };
+        } catch (error) {
+            set({ error: error.response?.data?.message || 'Failed to delete user', loading: false });
+            return { success: false, message: error.response?.data?.message || 'Failed to delete user' };
+        }
     },
 }));
 

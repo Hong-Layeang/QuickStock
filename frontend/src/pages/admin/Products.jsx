@@ -9,6 +9,7 @@ const initialForm = {
   name: "",
   category: "",
   unitprice: "",
+  stock: 0,
   status: "in stock",
 };
 
@@ -270,7 +271,7 @@ export default function Products() {
                       )}
                     </td>
                     <td className="py-3 flex gap-2">
-                      <button onClick={() => { setShowEdit(true); setEditId(p.id); setForm({ name: p.name, category: p.category, unitprice: p.unitprice, status: p.status }); }} className="flex items-center gap-1 px-3 py-1 rounded bg-blue-500 text-white hover:bg-blue-600 transition">
+                      <button onClick={() => { setShowEdit(true); setEditId(p.id); setForm({ name: p.name, category: p.category, unitprice: p.unitprice, stock: p.stock || 0, status: p.status }); }} className="flex items-center gap-1 px-3 py-1 rounded bg-blue-500 text-white hover:bg-blue-600 transition">
                         <FiEdit2 className="w-4 h-4" /> Edit
                       </button>
                       <button onClick={() => setDeleteId(p.id)} className="flex items-center gap-1 px-3 py-1 rounded bg-red-500 text-white hover:bg-red-600 transition">
@@ -329,6 +330,10 @@ export default function Products() {
               <input type="number" placeholder="Unit Price" value={form.unitprice} onChange={e => setForm({ ...form, unitprice: e.target.value })} required className="w-full px-4 py-2 border rounded-xl" min="0" step="0.01" />
             </div>
             <div className="space-y-3">
+              <label className="block text-sm font-semibold mb-1">Stock</label>
+              <input type="number" placeholder="Stock Quantity" value={form.stock} onChange={e => setForm({ ...form, stock: parseInt(e.target.value) || 0 })} required className="w-full px-4 py-2 border rounded-xl" min="0" />
+            </div>
+            <div className="space-y-3">
               <label className="block text-sm font-semibold mb-1">Status</label>
               <select value={form.status} onChange={e => setForm({ ...form, status: e.target.value })} className="w-full px-4 py-2 border rounded-xl">
                 <option value="in stock">In Stock</option>
@@ -361,6 +366,10 @@ export default function Products() {
             <div className="space-y-3">
               <label className="block text-sm font-semibold mb-1">Unit Price</label>
               <input type="number" placeholder="Unit Price" value={form.unitprice} onChange={e => setForm({ ...form, unitprice: e.target.value })} required className="w-full px-4 py-2 border rounded-xl" min="0" step="0.01" />
+            </div>
+            <div className="space-y-3">
+              <label className="block text-sm font-semibold mb-1">Stock</label>
+              <input type="number" placeholder="Stock Quantity" value={form.stock} onChange={e => setForm({ ...form, stock: parseInt(e.target.value) || 0 })} required className="w-full px-4 py-2 border rounded-xl" min="0" />
             </div>
             <div className="space-y-3">
               <label className="block text-sm font-semibold mb-1">Status</label>

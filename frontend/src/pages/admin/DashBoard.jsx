@@ -5,7 +5,8 @@ import TransactionSummary from "../../components/TransactionSummary.jsx"
 import SalesAnalyticsChart from "../../components/SalesAnalyticsChart.jsx"
 import DashboardAlerts from "../../components/DashboardAlerts.jsx"
 import { useEffect, useState, useCallback } from "react"
-import { getAdminDashboardData } from "./mockDashboardApi.js"
+import axios from "axios"
+import { API_BASE_URL } from "../../configs/config"
 
 export default function DashBoard() {
   const [cards, setCards] = useState(undefined)
@@ -18,12 +19,24 @@ export default function DashBoard() {
     setLoading(true)
     setError(null)
     try {
-      const data = await getAdminDashboardData()
-      setCards(data.cards)
-      setActivities(data.activities)
-      setMetrics(data.metrics)
+      const token = localStorage.getItem('token')
+      const response = await axios.get(`${API_BASE_URL}/api/admin/dashboard`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      
+      if (response.data.success) {
+        const data = response.data.data
+        setCards(data.cards)
+        setActivities(data.activities)
+        setMetrics(data.metrics)
+      } else {
+        setError('Failed to load dashboard data.')
+      }
     } catch (err) {
-      setError(err.message || 'Failed to load dashboard data.')
+      console.error('Dashboard fetch error:', err)
+      setError(err.response?.data?.message || 'Failed to load dashboard data.')
     } finally {
       setLoading(false)
     }

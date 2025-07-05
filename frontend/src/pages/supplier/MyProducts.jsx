@@ -1,9 +1,9 @@
 import SupplierLayout from "../../components/supplier/SupplierLayout.jsx";
 import React, { useEffect, useState } from "react";
-import useProductStore from "../../store/useProductStore";
+import useSupplierProductStore from "../../store/useSupplierProductStore";
 
 export default function MyProducts() {
-  const { products, loading, error, fetchProducts, editProduct } = useProductStore();
+  const { products, loading, error, fetchProducts, editProduct } = useSupplierProductStore();
   const [search, setSearch] = useState("");
   const [showStock, setShowStock] = useState(false);
   const [stockValue, setStockValue] = useState(0);

@@ -7,7 +7,18 @@ import hashPassword from "../node.bcrypt.js";
 export const getUsers = async (req, res) => {
     try {
         const users = await User.findAll(); // ✅ Sequelize correct method
-        res.status(200).json({ success: true, data: users });
+        
+        // Transform users to include name field for frontend compatibility
+        const usersWithName = users.map(user => ({
+            id: user.id,
+            name: user.username,
+            email: user.email,
+            role: user.role,
+            createdAt: user.createdAt,
+            updatedAt: user.updatedAt
+        }));
+        
+        res.status(200).json(usersWithName);
     } catch (error) {
         console.error("Error in fetching users data:", error.message);
         res.status(500).json({ success: false, message: "Server Error" });
@@ -31,20 +42,30 @@ export const getUsersById = async (req, res) => {
 
 // Create a new user
 export const createUser = async (req, res) => {
-    const { email, password, role } = req.body;
+    const { name, email, password, role } = req.body;
 
     try {
         const hashedPassword = await hashPassword(password);
-        const namePart = email.split("@")[0];
+        const username = name || email.split("@")[0];
 
         const newUser = await User.create({
-            username: namePart,
+            username,
             email,
             password: hashedPassword,
             role: role || "supplier", // fallback just in case
         });
 
-        res.status(201).json({ success: true, data: newUser });
+        // Return user data with name field for frontend compatibility
+        const userData = {
+            id: newUser.id,
+            name: newUser.username,
+            email: newUser.email,
+            role: newUser.role,
+            createdAt: newUser.createdAt,
+            updatedAt: newUser.updatedAt
+        };
+
+        res.status(201).json(userData);
     } catch (error) {
         console.error("Error creating user:", error.message);
         res.status(500).json({ success: false, message: "Server Error" });
@@ -54,7 +75,7 @@ export const createUser = async (req, res) => {
 // Edit user
 export const editUser = async (req, res) => {
     const { id } = req.params;
-    const { username, email, password } = req.body;
+    const { name, email, password } = req.body;
 
     try {
         const user = await User.findByPk(id);
@@ -62,14 +83,25 @@ export const editUser = async (req, res) => {
             return res.status(404).json({ success: false, message: "User not found" });
         }
 
-        user.username = username || user.username;
+        user.username = name || user.username;
         user.email = email || user.email;
         if (password) {
             user.password = await hashPassword(password);
         }
 
         await user.save();
-        res.status(200).json({ success: true, data: user });
+        
+        // Return user data with name field for frontend compatibility
+        const userData = {
+            id: user.id,
+            name: user.username,
+            email: user.email,
+            role: user.role,
+            createdAt: user.createdAt,
+            updatedAt: user.updatedAt
+        };
+        
+        res.status(200).json(userData);
     } catch (error) {
         console.error("Error editing user:", error.message);
         res.status(500).json({ success: false, message: "Server Error" });

@@ -2,45 +2,7 @@ import { create } from 'zustand';
 import axios from 'axios';
 import { API_BASE_URL } from '../configs/config';
 
-const mockProducts = [
-  {
-    id: 1,
-    name: 'Wireless Mouse',
-    category: 'Accessories',
-    unitprice: 19.99,
-    status: 'in stock',
-  },
-  {
-    id: 2,
-    name: 'Mechanical Keyboard',
-    category: 'Accessories',
-    unitprice: 59.99,
-    status: 'in stock',
-  },
-  {
-    id: 3,
-    name: 'HD Monitor',
-    category: 'Displays',
-    unitprice: 129.99,
-    status: 'low stock',
-  },
-  {
-    id: 4,
-    name: 'USB-C Cable',
-    category: 'Cables',
-    unitprice: 7.99,
-    status: 'out of stock',
-  },
-  {
-    id: 5,
-    name: 'Laptop Stand',
-    category: 'Accessories',
-    unitprice: 24.99,
-    status: 'in stock',
-  },
-];
-
-const useProductStore = create((set) => ({
+const useSupplierProductStore = create((set) => ({
   products: [],
   loading: false,
   error: null,
@@ -49,19 +11,15 @@ const useProductStore = create((set) => ({
     set({ loading: true, error: null });
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get(`${API_BASE_URL}/api/products`, {
+      const res = await axios.get(`${API_BASE_URL}/api/supplier/products`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
       set({ products: res.data, loading: false });
     } catch (error) {
-      console.error('Products fetch error:', error);
-      set({
-        products: mockProducts,
-        error: null,
-        loading: false
-      });
+      console.error('Supplier products fetch error:', error);
+      set({ error: error.response?.data?.message || 'Failed to fetch products', loading: false });
     }
   },
 
@@ -123,4 +81,4 @@ const useProductStore = create((set) => ({
   },
 }));
 
-export default useProductStore; 
+export default useSupplierProductStore; 

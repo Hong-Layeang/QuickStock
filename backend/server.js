@@ -4,23 +4,31 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 
 import sequelize from './config/database.js'; //
-import userRoutes from './routes/UserRoutes.js';
-import authRoutes from './routes/authRoutes.js';
-import productRoutes from './routes/productRoutes.js';
+import apiRoutes from './routes/index.js';
+import { errorHandler, notFound } from './middleware/errorHandler.js';
+import { requestLogger, errorLogger } from './middleware/logger.js';
 
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 5001;
 
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use(requestLogger);
 
 // Routes
-app.use("/api/users", userRoutes);
-app.use("/api/login", authRoutes);
-app.use("/api/products", productRoutes);
+app.use("/api", apiRoutes);
+
+// 404 handler for unmatched routes
+app.use(notFound);
+
+// Error logging (before error handler)
+app.use(errorLogger);
+
+// Global error handler (must be last)
+app.use(errorHandler);
 
 // DB connection + table syncing
 sequelize.authenticate()
