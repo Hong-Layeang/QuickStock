@@ -8,6 +8,10 @@ import apiRoutes from './routes/index.js';
 import { errorHandler, notFound } from './middleware/errorHandler.js';
 import { requestLogger, errorLogger } from './middleware/logger.js';
 
+// Import models to ensure they are registered with Sequelize
+import './models/User.js';
+import './models/Product.js';
+
 dotenv.config();
 
 const app = express();
@@ -35,7 +39,7 @@ sequelize.authenticate()
   .then(() => {
     console.log("✅ Connected to MySQL via Railway!");
 
-    // Auto-create tables if they don’t exist
+    // Auto-create tables if they don't exist
     return sequelize.sync({ force: false });
   })
   .then(() => {
