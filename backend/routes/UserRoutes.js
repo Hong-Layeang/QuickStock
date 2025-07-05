@@ -1,3 +1,4 @@
+// User routes for QuickStock API
 import express from 'express';
 import { getUsers, createUser, editUser, deleteUser, getUsersById} from "../controllers/userController.js";
 
