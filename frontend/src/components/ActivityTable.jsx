@@ -1,5 +1,5 @@
 import { Clock, User, Activity } from "lucide-react"
-import useThemeStore from '../store/useThemeStore'
+import useThemeStore from '../stores/useThemeStore'
 
 const ActivityTable = ({ activities }) => {
   const { isDark } = useThemeStore();

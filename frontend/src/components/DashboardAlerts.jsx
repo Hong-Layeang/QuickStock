@@ -1,5 +1,5 @@
 import { AlertTriangle, Bell, Package, Clock } from "lucide-react";
-import useThemeStore from '../store/useThemeStore';
+import useThemeStore from '../stores/useThemeStore';
 
 const iconMap = {
   warning: <AlertTriangle className="w-5 h-5 text-yellow-500" />,

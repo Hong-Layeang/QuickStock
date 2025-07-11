@@ -1,5 +1,5 @@
 import AdminLayout from "../../components/admin/AdminLayout.jsx"
-import useThemeStore from "../../store/useThemeStore";
+import useThemeStore from "../../stores/useThemeStore.js";
 import Header from "../../components/admin/Header.jsx";
 import SideBar from "../../components/admin/SideBar.jsx";
 

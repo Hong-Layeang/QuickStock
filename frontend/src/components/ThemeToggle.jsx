@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Sun, Moon, Monitor, ChevronDown } from 'lucide-react'
-import useThemeStore from '../store/useThemeStore'
+import useThemeStore from '../stores/useThemeStore'
 
 const ThemeToggle = ({ variant = 'button' }) => {
   const [isOpen, setIsOpen] = useState(false)

@@ -20,7 +20,7 @@ export const getAdminDashboard = async (req, res) => {
 
     // Get out of stock products
     const outOfStockProducts = await Product.count({ 
-      where: { 
+      where: {
         stock: { [Op.eq]: 0 } 
       } 
     });

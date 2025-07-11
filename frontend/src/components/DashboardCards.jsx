@@ -1,7 +1,7 @@
 import { Boxes, PackagePlus, CircleAlert, PackageMinus, TrendingUp, TrendingDown, ArrowRight, RefreshCw } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { useState } from "react"
-import useThemeStore from '../store/useThemeStore'
+import useThemeStore from '../stores/useThemeStore'
 
 const DashboardCards = ({ cards, loading = false, onRefresh }) => {
   const navigate = useNavigate();

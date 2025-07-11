@@ -3,8 +3,8 @@
 import { ChartNoAxesCombined, Package, ClipboardList, Users, X, Menu, Settings } from "lucide-react"
 import { useState, useEffect, useRef } from "react"
 import Logo from "../Logo"
-import useAuthStore from "../../store/useAuthStore"
-import useThemeStore from "../../store/useThemeStore"
+import useAuthStore from "../../stores/useAuthStore"
+import useThemeStore from "../../stores/useThemeStore"
 import { Link, useLocation } from "react-router-dom"
 
 const SideBar = () => {
@@ -150,7 +150,7 @@ const SideBar = () => {
           <div className="relative h-full">
             <button
               onClick={() => setMobileMenuOpen(false)}
-              className={`absolute top-4 right-4 p-2 rounded-lg transition-colors ${
+              className={`absolute top-4 right-4 p-2 rounded-lg transition-colors hover:cursor-pointer ${
                 isDark ? 'hover:bg-gray-800' : 'hover:bg-gray-100'
               }`}
             >

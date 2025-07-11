@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Logo from "../components/Logo";
 import { FaSignInAlt, FaEye, FaEyeSlash } from "react-icons/fa";
-import useAuthStore from "../store/useAuthStore"; // Assuming you have a user store for authentication
+import useAuthStore from "../stores/useAuthStore"; // Assuming you have a user store for authentication
 import { toast } from 'react-hot-toast';
 
 const LoginPage = () => {

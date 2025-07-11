@@ -1,10 +1,10 @@
 import AdminLayout from "../../components/admin/AdminLayout.jsx";
 import React, { useEffect, useState } from "react";
-import useProductStore from "../../store/useProductStore";
+import useProductStore from "../../stores/useProductStore.js";
 import { FaCheckCircle } from "react-icons/fa";
 import { TbAlertTriangle } from "react-icons/tb";
 import { FiEdit2, FiXCircle, FiTrash2 } from "react-icons/fi";
-import useThemeStore from "../../store/useThemeStore";
+import useThemeStore from "../../stores/useThemeStore.js";
 
 const initialForm = {
   name: "",

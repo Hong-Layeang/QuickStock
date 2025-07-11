@@ -1,8 +1,8 @@
 import './App.css';
 import { Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
-import useAuthStore from './store/useAuthStore';
-import useThemeStore from './store/useThemeStore';
+import useAuthStore from './stores/useAuthStore.js';
+import useThemeStore from './stores/useThemeStore.js';
 import { Toaster } from 'react-hot-toast';
 
 import LoginPage from './pages/LoginPage.jsx';

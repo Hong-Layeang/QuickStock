@@ -3,8 +3,8 @@
 import { ChartNoAxesCombined, Package, ClipboardList, Users, X, Menu } from "lucide-react"
 import { useState } from "react"
 import Logo from "../Logo"
-import useAuthStore from "../../store/useAuthStore"
-import useThemeStore from "../../store/useThemeStore"
+import useAuthStore from "../../stores/useAuthStore"
+import useThemeStore from "../../stores/useThemeStore"
 
 const SideBar = () => {
   const [active, setActive] = useState("dashboard")
@@ -122,7 +122,7 @@ const SideBar = () => {
                 isDark ? 'hover:bg-gray-800' : 'hover:bg-gray-100'
               }`}
             >
-              <X className={`h-5 w-5 ${
+              <X className={`h-5 w-5 hover:cursor-pointer ${
                 isDark ? 'text-gray-400' : 'text-gray-500'
               }`} />
             </button>

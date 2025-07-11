@@ -1,5 +1,5 @@
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
-import useThemeStore from '../store/useThemeStore';
+import useThemeStore from '../stores/useThemeStore';
 
 const sampleData = [
   { name: 'Mon', sales: 400 },

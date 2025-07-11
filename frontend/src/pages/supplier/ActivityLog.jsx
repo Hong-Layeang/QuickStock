@@ -3,7 +3,7 @@ import ActivityTable from "../../components/ActivityTable.jsx";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { API_BASE_URL } from "../../configs/config";
-import useThemeStore from "../../store/useThemeStore";
+import useThemeStore from "../../stores/useThemeStore.js";
 
 export default function ActivityLog() {
   const { isDark } = useThemeStore();

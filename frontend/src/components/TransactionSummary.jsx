@@ -1,5 +1,5 @@
 import { TrendingUp, DollarSign, Package, BarChart3 } from "lucide-react"
-import useThemeStore from '../store/useThemeStore'
+import useThemeStore from '../stores/useThemeStore'
 
 const TransactionSummary = ({ metrics }) => {
   const { isDark } = useThemeStore();

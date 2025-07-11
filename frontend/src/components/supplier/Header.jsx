@@ -2,8 +2,8 @@
 
 import { Bell, User, Search, Settings } from "lucide-react"
 import { useState } from "react"
-import useAuthStore from "../../store/useAuthStore"
-import useThemeStore from "../../store/useThemeStore"
+import useAuthStore from "../../stores/useAuthStore"
+import useThemeStore from "../../stores/useThemeStore"
 import ThemeToggle from "../ThemeToggle"
 
 const Header = () => {

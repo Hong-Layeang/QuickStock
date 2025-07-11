@@ -1,5 +1,5 @@
 import SupplierLayout from "../../components/supplier/SupplierLayout.jsx"
-import useThemeStore from "../../store/useThemeStore";
+import useThemeStore from "../../stores/useThemeStore.js";
 import Header from "../../components/supplier/Header.jsx";
 import SideBar from "../../components/supplier/Sidebar.jsx";
 

@@ -2,8 +2,8 @@
 
 import { Bell, User, Search, Settings } from "lucide-react"
 import { useState } from "react"
-import useAuthStore from "../../store/useAuthStore"
-import useThemeStore from "../../store/useThemeStore"
+import useAuthStore from "../../stores/useAuthStore"
+import useThemeStore from "../../stores/useThemeStore"
 import ThemeToggle from "../ThemeToggle"
 
 const Header = () => {
@@ -57,7 +57,7 @@ const Header = () => {
           {/* Right Section - Actions */}
           <div className="flex items-center space-x-2 sm:space-x-4">
             {/* Search Button (Mobile) */}
-            <button className={`md:hidden p-2 rounded-xl transition-colors ${
+            <button className={`md:hidden p-2 rounded-xl transition-colors hover:cursor-pointer ${
               isDark ? 'hover:bg-gray-800' : 'hover:bg-gray-100'
             }`}>
               <Search className={`h-5 w-5 ${
@@ -69,10 +69,10 @@ const Header = () => {
             <ThemeToggle variant="dropdown" />
 
             {/* Notifications */}
-            <button className={`p-2 rounded-xl transition-colors relative group ${
+            <button className={`p-2 rounded-xl transition-colors relative group hover:cursor-pointer ${
               isDark ? 'hover:bg-gray-800' : 'hover:bg-gray-100'
             }`}>
-              <Bell className={`h-5 w-5 group-hover:scale-110 transition-transform hover:cursor-pointer ${
+              <Bell className={`h-5 w-5 group-hover:scale-110 transition-transform ${
                 isDark ? 'text-gray-300' : 'text-gray-600'
               }`} />
               {notifications > 0 && (
@@ -83,7 +83,7 @@ const Header = () => {
             </button>
 
             {/* Settings */}
-            <button className={`p-2 rounded-xl transition-colors group ${
+            <button className={`p-2 rounded-xl transition-colors group hover:cursor-pointer ${
               isDark ? 'hover:bg-gray-800' : 'hover:bg-gray-100'
             }`}>
               <Settings className={`h-5 w-5 group-hover:scale-110 transition-transform hover:cursor-pointer ${

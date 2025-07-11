@@ -1,9 +1,9 @@
 import Header from "../../components/admin/Header.jsx";
 import SideBar from "../../components/admin/SideBar.jsx";
 import React, { useEffect, useState } from "react";
-import useUserStore from "../../store/useUserStore";
+import useUserStore from "../../stores/useUserStore.js";
 import AdminLayout from "../../components/admin/AdminLayout.jsx";
-import useThemeStore from "../../store/useThemeStore";
+import useThemeStore from "../../stores/useThemeStore.js";
 
 const initialForm = {
   name: "",

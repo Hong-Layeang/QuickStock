@@ -1,7 +1,7 @@
 import SupplierLayout from "../../components/supplier/SupplierLayout.jsx";
 import React, { useEffect, useState } from "react";
-import useSupplierProductStore from "../../store/useSupplierProductStore";
-import useThemeStore from "../../store/useThemeStore";
+import useSupplierProductStore from "../../stores/useSupplierProductStore.js";
+import useThemeStore from "../../stores/useThemeStore.js";
 
 export default function MyProducts() {
   const { isDark } = useThemeStore();

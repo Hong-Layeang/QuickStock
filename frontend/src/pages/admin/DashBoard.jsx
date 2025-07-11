@@ -7,7 +7,7 @@ import DashboardAlerts from "../../components/DashboardAlerts.jsx"
 import { useEffect, useState, useCallback } from "react"
 import axios from "axios"
 import { API_BASE_URL } from "../../configs/config"
-import useThemeStore from "../../store/useThemeStore"
+import useThemeStore from "../../stores/useThemeStore.js"
 
 export default function DashBoard() {
   const { isDark } = useThemeStore();
