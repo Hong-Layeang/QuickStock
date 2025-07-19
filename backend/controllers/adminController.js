@@ -1,31 +1,33 @@
-import { Op } from 'sequelize';
 import User from '../models/User.js';
 import Product from '../models/Product.js';
-import Report from '../models/Report.js';
+import { Op } from 'sequelize';
+import Order from '../models/Order.js';
 import ActivityLog from '../models/ActivityLog.js';
 
 // Get admin dashboard data
 export const getAdminDashboard = async (req, res) => {
   try {
-    // Get counts
+    // Get counts and data for dashboard
     const totalProducts = await Product.count();
     const totalUsers = await User.count();
     const totalSuppliers = await User.count({ where: { role: 'supplier' } });
     const totalAdmins = await User.count({ where: { role: 'admin' } });
-
-    // Get low stock and out of stock products
-    const lowStockProducts = await Product.count({
-      where: {
-        stock: { [Op.lt]: 10 }
-      }
-    });
-    const outOfStockProducts = await Product.count({
-      where: {
-        stock: { [Op.eq]: 0 }
-      }
+    
+    // Get low stock products (less than 10 items)
+    const lowStockProducts = await Product.count({ 
+      where: { 
+        stock: { [Op.lt]: 10 } 
+      } 
     });
 
-    // Get recent products (last 7 days)
+    // Get out of stock products
+    const outOfStockProducts = await Product.count({ 
+      where: {
+        stock: { [Op.eq]: 0 } 
+      } 
+    });
+
+    // Get recent products (created in last 7 days)
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
     const recentProducts = await Product.count({
@@ -34,14 +36,14 @@ export const getAdminDashboard = async (req, res) => {
       }
     });
 
-    // Get recent users (last 7 days)
+    // Get recent users (created in last 7 days)
     const recentUsers = await User.count({
       where: {
         createdAt: { [Op.gte]: sevenDaysAgo }
       }
     });
 
-    // Generate sales analytics data for the last 7 days using real reports
+    // Generate sales analytics data for the last 7 days using real orders
     const salesData = [];
     const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
     for (let i = 6; i >= 0; i--) {
@@ -50,17 +52,17 @@ export const getAdminDashboard = async (req, res) => {
       const startOfDay = new Date(date.setHours(0, 0, 0, 0));
       const endOfDay = new Date(date.setHours(23, 59, 59, 999));
       const dayName = days[startOfDay.getDay() === 0 ? 6 : startOfDay.getDay() - 1];
-      const reports = await Report.findAll({
+      const orders = await Order.findAll({
         where: {
           createdAt: { [Op.between]: [startOfDay, endOfDay] },
           status: 'completed',
         },
       });
-      const totalReports = reports.length;
-      const totalValue = reports.reduce((sum, report) => sum + report.totalPrice, 0);
+      const totalOrders = orders.length;
+      const totalValue = orders.reduce((sum, order) => sum + order.totalPrice, 0);
       salesData.push({
         name: dayName,
-        orders: totalReports,
+        orders: totalOrders,
         value: totalValue,
       });
     }
@@ -86,7 +88,7 @@ export const getAdminDashboard = async (req, res) => {
     const now = new Date();
     const startOfThisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-    const endOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 0, 23, 59, 59, 999);
+    const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59, 999);
 
     // Total Products
     const totalProductsLastMonth = await Product.count({
@@ -265,20 +267,20 @@ export const getAdminDashboard = async (req, res) => {
   }
 };
 
-// Get admin reports (placeholder for future implementation)
-export const getAdminReports = async (req, res) => {
+// Get admin orders (placeholder for future implementation)
+export const getAdminOrders = async (req, res) => {
   try {
-    // This would typically fetch from a Report model
+    // This would typically fetch from an Order model
     // For now, return empty array
     res.json({
       success: true,
       data: []
     });
   } catch (error) {
-    console.error('Error fetching admin reports:', error);
+    console.error('Error fetching admin orders:', error);
     res.status(500).json({
       success: false,
-      message: 'Failed to fetch reports'
+      message: 'Failed to fetch orders'
     });
   }
 };
@@ -329,20 +331,20 @@ export const getAnalyticsData = async (req, res) => {
         dayName = days[dataPoints - 1 - i];
       }
       
-      const reports = await Report.findAll({
+      const orders = await Order.findAll({
         where: {
           createdAt: { [Op.between]: [startOfDay, endOfDay] },
           status: 'completed',
         },
       });
       
-      const totalReports = reports.length;
-      const dayValue = reports.reduce((sum, report) => sum + report.totalPrice, 0);
+      const totalOrders = orders.length;
+      const dayValue = orders.reduce((sum, order) => sum + order.totalPrice, 0);
       totalValue += dayValue;
       
       analyticsData.push({
         name: dayName,
-        orders: totalReports,
+        orders: totalOrders,
         value: dayValue,
       });
     }

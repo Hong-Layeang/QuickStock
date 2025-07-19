@@ -1,7 +1,7 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../config/database.js';
 
-const Report = sequelize.define('Report', {
+const Order = sequelize.define('Order', {
   id: {
     type: DataTypes.INTEGER,
     autoIncrement: true,
@@ -11,12 +11,8 @@ const Report = sequelize.define('Report', {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
-  supplierId: {
+  userId: {
     type: DataTypes.INTEGER,
-    allowNull: false,
-  },
-  customerName: {
-    type: DataTypes.STRING,
     allowNull: false,
   },
   quantity: {
@@ -37,4 +33,4 @@ const Report = sequelize.define('Report', {
   timestamps: true,
 });
 
-export default Report; 
+export default Order; 

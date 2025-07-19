@@ -86,7 +86,7 @@ const SalesAnalyticsChart = ({ loading, data }) => {
         }`}>
           <p className="font-semibold">{label}</p>
           <p className="text-blue-600">
-            Reports: <span className="font-bold">{payload[0].value}</span>
+            Orders: <span className="font-bold">{payload[0].value}</span>
           </p>
         </div>
       );
@@ -180,7 +180,7 @@ const SalesAnalyticsChart = ({ loading, data }) => {
                 strokeWidth={3} 
                 dot={{ r: 5, fill: '#2563eb' }} 
                 activeDot={{ r: 8, fill: '#1d4ed8' }}
-                name="Total Reports"
+                name="Total Orders"
               />
             </LineChart>
           </ResponsiveContainer>
