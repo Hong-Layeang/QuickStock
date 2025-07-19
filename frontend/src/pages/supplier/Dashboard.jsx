@@ -2,7 +2,6 @@ import SupplierLayout from "../../components/supplier/SupplierLayout.jsx"
 import DashboardCards from "../../components/DashboardCards.jsx"
 import ActivityTable from "../../components/ActivityTable.jsx"
 import TransactionSummary from "../../components/TransactionSummary.jsx"
-import DashboardAlerts from "../../components/DashboardAlerts.jsx"
 import SalesAnalyticsChart from "../../components/SalesAnalyticsChart.jsx"
 import { useEffect, useState, useCallback } from "react"
 import axios from "axios"
@@ -51,9 +50,6 @@ export default function DashBoard() {
   return (
     <SupplierLayout>
       <div className="space-y-6 lg:space-y-8">
-        {/* Alerts Section */}
-        <DashboardAlerts loading={loading} error={error} />
-
         {/* Welcome Section */}
         <div className={`rounded-2xl p-6 shadow-md border ${
           isDark 
@@ -71,7 +67,7 @@ export default function DashBoard() {
         </div>
 
         {/* Sales Analytics Chart */}
-        <SalesAnalyticsChart loading={loading} error={error} />
+        <SalesAnalyticsChart loading={loading} />
 
         {/* Dashboard Cards */}
         {error ? (

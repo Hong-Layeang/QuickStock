@@ -3,44 +3,6 @@ import useThemeStore from '../stores/useThemeStore'
 
 const ActivityTable = ({ activities }) => {
   const { isDark } = useThemeStore();
-  const sampleActivities = [
-    {
-      date: "2025-05-17 10:45AM",
-      activity: "Stocked In Keyboard (20 pcs)",
-      by: "Admin (Alice)",
-      type: "stock-in",
-      status: "completed"
-    },
-    {
-      date: "2025-05-17 09:30AM",
-      activity: "Deleted Old Printer",
-      by: "Admin (Bob)",
-      type: "delete",
-      status: "completed"
-    },
-    {
-      date: "2025-05-17 08:15AM",
-      activity: "Updated Product Price",
-      by: "Supplier (John)",
-      type: "update",
-      status: "completed"
-    },
-    {
-      date: "2025-05-16 16:20PM",
-      activity: "Low Stock Alert - Mouse",
-      by: "System",
-      type: "alert",
-      status: "pending"
-    },
-    {
-      date: "2025-05-16 14:10PM",
-      activity: "New Order Received",
-      by: "Customer Portal",
-      type: "order",
-      status: "completed"
-    }
-  ];
-  const displayActivities = activities && activities.length > 0 ? activities : sampleActivities;
 
   const getActivityIcon = (type) => {
     switch (type) {
@@ -54,6 +16,8 @@ const ActivityTable = ({ activities }) => {
         return <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
       case 'order':
         return <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+      case 'info':
+        return <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
       default:
         return <div className="w-2 h-2 bg-gray-500 rounded-full"></div>
     }
@@ -61,6 +25,50 @@ const ActivityTable = ({ activities }) => {
 
   const getStatusColor = (status) => {
     return status === 'completed' ? 'text-green-600' : 'text-yellow-600'
+  }
+
+  // Show message if no activities data
+  if (!activities || activities.length === 0) {
+    return (
+      <div className={`rounded-2xl shadow-sm border ${
+        isDark 
+          ? 'bg-gray-800 border-gray-700' 
+          : 'bg-white border-gray-200'
+      }`}>
+        <div className="p-6">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <div className={`p-2 rounded-xl ${
+                isDark ? 'bg-orange-900/20' : 'bg-orange-100'
+              }`}>
+                <Activity className={`w-5 h-5 ${
+                  isDark ? 'text-orange-400' : 'text-orange-600'
+                }`} />
+              </div>
+              <div>
+                <h2 className={`text-xl font-bold ${
+                  isDark ? 'text-white' : 'text-gray-900'
+                }`}>Recent Activities</h2>
+                <p className={`text-sm ${
+                  isDark ? 'text-gray-400' : 'text-gray-500'
+                }`}>Latest inventory activities</p>
+              </div>
+            </div>
+          </div>
+          <div className={`p-8 text-center rounded-xl border ${
+            isDark 
+              ? 'bg-gray-700 border-gray-600' 
+              : 'bg-gray-50 border-gray-200'
+          }`}>
+            <p className={`text-lg ${
+              isDark ? 'text-gray-400' : 'text-gray-600'
+            }`}>
+              No recent activities.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -130,7 +138,7 @@ const ActivityTable = ({ activities }) => {
               <tbody className={`divide-y ${
                 isDark ? 'divide-gray-700' : 'divide-gray-200'
               }`}>
-                {displayActivities.map((item, i) => (
+                {activities.map((item, i) => (
                   <tr key={i} className={`transition-colors ${
                     isDark ? 'hover:bg-gray-700/50' : 'hover:bg-gray-50'
                   }`}>
@@ -157,7 +165,7 @@ const ActivityTable = ({ activities }) => {
                         <Clock className="w-4 h-4 text-gray-400" />
                         <span className={`text-sm ${
                           isDark ? 'text-gray-300' : 'text-gray-600'
-                        }`}>{item.date}</span>
+                        }`}>{new Date(item.date).toLocaleString()}</span>
                       </div>
                     </td>
                     <td className="py-4">
@@ -174,7 +182,7 @@ const ActivityTable = ({ activities }) => {
 
         {/* Mobile/Tablet Card View */}
         <div className="lg:hidden space-y-4">
-          {displayActivities.map((item, i) => (
+          {activities.map((item, i) => (
             <div key={i} className={`border rounded-xl p-4 transition-colors ${
               isDark 
                 ? 'border-gray-700 hover:bg-gray-700/50' 
@@ -205,7 +213,7 @@ const ActivityTable = ({ activities }) => {
                   isDark ? 'text-gray-300' : 'text-gray-600'
                 }`}>
                   <Clock className="w-4 h-4" />
-                  <span>{item.date}</span>
+                  <span>{new Date(item.date).toLocaleString()}</span>
                 </div>
               </div>
             </div>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Logo from "../components/Logo";
 import { FaSignInAlt, FaEye, FaEyeSlash } from "react-icons/fa";
 import useAuthStore from "../stores/useAuthStore"; // Assuming you have a user store for authentication
@@ -12,7 +12,11 @@ const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const { login } = useAuthStore(); // Using the auth store for login
+  const { login, resetSessionExpired } = useAuthStore(); // Using the auth store for login
+
+  useEffect(() => {
+    resetSessionExpired();
+  }, [resetSessionExpired]);
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -32,7 +36,7 @@ const LoginPage = () => {
       } else {
         toast.error(response.message || "Login failed.");
       }
-    } catch (error) {
+    } catch {
       toast.error("An error occurred during login.");
     } finally {
       setIsLoading(false);

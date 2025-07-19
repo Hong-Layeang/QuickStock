@@ -1,6 +1,8 @@
 // models/User.js
 import { DataTypes } from "sequelize";
 import sequelize from "../config/database.js";
+import Order from './Order.js';
+import ActivityLog from './ActivityLog.js';
 
 const User = sequelize.define("User", {
   username: {
@@ -24,5 +26,12 @@ const User = sequelize.define("User", {
 }, {
   timestamps: true,
 });
+
+// Add associations
+User.hasMany(Order, { foreignKey: 'userId' });
+Order.belongsTo(User, { foreignKey: 'userId' });
+
+User.hasMany(ActivityLog, { foreignKey: 'userId' });
+ActivityLog.belongsTo(User, { foreignKey: 'userId' });
 
 export default User;

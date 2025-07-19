@@ -1,13 +1,12 @@
 "use client"
 
-import { Bell, User, Search, Settings } from "lucide-react"
-import { useState } from "react"
+import { User, Search, Settings } from "lucide-react"
 import useAuthStore from "../../stores/useAuthStore"
 import useThemeStore from "../../stores/useThemeStore"
 import ThemeToggle from "../ThemeToggle"
+import NotificationDropdown from "../NotificationDropdown"
 
 const Header = () => {
-  const [notifications] = useState(3)
   const user = useAuthStore((state) => state.user)
   const { isDark } = useThemeStore()
 
@@ -69,18 +68,7 @@ const Header = () => {
             <ThemeToggle variant="dropdown" />
 
             {/* Notifications */}
-            <button className={`p-2 rounded-xl transition-colors relative group hover:cursor-pointer ${
-              isDark ? 'hover:bg-gray-800' : 'hover:bg-gray-100'
-            }`}>
-              <Bell className={`h-5 w-5 group-hover:scale-110 transition-transform ${
-                isDark ? 'text-gray-300' : 'text-gray-600'
-              }`} />
-              {notifications > 0 && (
-                <span className="absolute -top-1 -right-1 h-5 w-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-medium">
-                  {notifications > 9 ? '9+' : notifications}
-                </span>
-              )}
-            </button>
+            <NotificationDropdown />
 
             {/* Settings */}
             <button className={`p-2 rounded-xl transition-colors group hover:cursor-pointer ${

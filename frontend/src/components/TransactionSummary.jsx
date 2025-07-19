@@ -3,41 +3,29 @@ import useThemeStore from '../stores/useThemeStore'
 
 const TransactionSummary = ({ metrics }) => {
   const { isDark } = useThemeStore();
-  const sampleMetrics = [
-    { 
-      label: "Total Sales (Today)", 
-      value: "$1,240", 
-      change: "+12%",
-      icon: <DollarSign className="w-5 h-5" />,
-      color: "text-green-600",
-      bgColor: isDark ? "bg-green-900/20" : "bg-green-100"
-    },
-    { 
-      label: "Total Sales (This Week)", 
-      value: "$9,880", 
-      change: "+8%",
-      icon: <TrendingUp className="w-5 h-5" />,
-      color: "text-blue-600",
-      bgColor: isDark ? "bg-blue-900/20" : "bg-blue-100"
-    },
-    { 
-      label: "Best-Selling Product", 
-      value: "Mouse", 
-      change: "Wireless Pro",
-      icon: <Package className="w-5 h-5" />,
-      color: "text-orange-600",
-      bgColor: isDark ? "bg-orange-900/20" : "bg-orange-100"
-    },
-    { 
-      label: "Total Items Sold (This Week)", 
-      value: "340 units", 
-      change: "+15%",
-      icon: <BarChart3 className="w-5 h-5" />,
-      color: "text-purple-600",
-      bgColor: isDark ? "bg-purple-900/20" : "bg-purple-100"
-    },
-  ];
-  const displayMetrics = metrics && metrics.length > 0 ? metrics : sampleMetrics;
+
+  // Icon mapping for dynamic icons
+  const getIcon = (iconName) => {
+    const iconMap = {
+      'package': <Package className="w-5 h-5" />,
+      'trending-up': <TrendingUp className="w-5 h-5" />,
+      'dollar-sign': <DollarSign className="w-5 h-5" />,
+      'bar-chart-3': <BarChart3 className="w-5 h-5" />
+    };
+    return iconMap[iconName] || <Package className="w-5 h-5" />;
+  };
+
+  // Show message if no metrics data or error
+  if ((!metrics || metrics.length === 0)) {
+    // Fallback: show 4 metrics with zero/default values
+    const fallbackMetrics = [
+      { label: 'Total Products', value: '0', change: '0%', icon: 'package', color: 'text-blue-600', bgColor: 'bg-blue-100 dark:bg-blue-900/20' },
+      { label: 'Total Users', value: '0', change: '0%', icon: 'users', color: 'text-green-600', bgColor: 'bg-green-100 dark:bg-green-900/20' },
+      { label: 'Low Stock Items', value: '0', change: '0%', icon: 'alert-triangle', color: 'text-red-600', bgColor: 'bg-red-100 dark:bg-red-900/20' },
+      { label: 'Out of Stock', value: '0', change: '0%', icon: 'package-x', color: 'text-orange-600', bgColor: 'bg-orange-100 dark:bg-orange-900/20' }
+    ];
+    metrics = fallbackMetrics;
+  }
 
   return (
     <div className={`rounded-2xl shadow-sm border ${
@@ -101,7 +89,7 @@ const TransactionSummary = ({ metrics }) => {
               <tbody className={`divide-y ${
                 isDark ? 'divide-gray-700' : 'divide-gray-200'
               }`}>
-                {displayMetrics.map((item, i) => (
+                {metrics.map((item, i) => (
                   <tr key={i} className={`transition-colors ${
                     isDark ? 'hover:bg-gray-700/50' : 'hover:bg-gray-50'
                   }`}>
@@ -109,7 +97,7 @@ const TransactionSummary = ({ metrics }) => {
                       <div className="flex items-center gap-3">
                         <div className={`p-2 rounded-xl ${item.bgColor}`}>
                           <div className={item.color}>
-                            {item.icon}
+                            {getIcon(item.icon)}
                           </div>
                         </div>
                         <span className={`text-sm font-medium ${
@@ -140,7 +128,7 @@ const TransactionSummary = ({ metrics }) => {
 
         {/* Mobile/Tablet Card View */}
         <div className="lg:hidden space-y-4">
-          {displayMetrics.map((item, i) => (
+          {metrics.map((item, i) => (
             <div key={i} className={`border rounded-xl p-4 transition-colors ${
               isDark 
                 ? 'border-gray-700 hover:bg-gray-700/50' 
@@ -150,7 +138,7 @@ const TransactionSummary = ({ metrics }) => {
                 <div className="flex items-center gap-3">
                   <div className={`p-2 rounded-xl ${item.bgColor}`}>
                     <div className={item.color}>
-                      {item.icon}
+                      {getIcon(item.icon)}
                     </div>
                   </div>
                   <span className={`text-sm font-medium ${
@@ -183,18 +171,18 @@ const TransactionSummary = ({ metrics }) => {
             <div>
               <p className={`text-sm ${
                 isDark ? 'text-gray-400' : 'text-gray-500'
-              }`}>Total Revenue</p>
+              }`}>Total Products</p>
               <p className={`text-2xl font-bold ${
                 isDark ? 'text-white' : 'text-gray-900'
-              }`}>$11,120</p>
+              }`}>{metrics.find(m => m.label === 'Total Products')?.value || '0'}</p>
             </div>
             <div className="text-right">
               <p className={`text-sm font-medium ${
                 isDark ? 'text-green-400' : 'text-green-600'
-              }`}>+10.5%</p>
+              }`}>Active</p>
               <p className={`text-xs ${
                 isDark ? 'text-gray-400' : 'text-gray-500'
-              }`}>vs last week</p>
+              }`}>in inventory</p>
             </div>
           </div>
         </div>

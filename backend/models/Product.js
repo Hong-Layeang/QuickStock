@@ -2,6 +2,8 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../config/database.js";
 import User from "./User.js";
+import Order from './Order.js';
+import ActivityLog from './ActivityLog.js';
 
 const Product = sequelize.define("Product", {
   name: {
@@ -30,5 +32,12 @@ const Product = sequelize.define("Product", {
 });
 
 Product.belongsTo(User, { foreignKey: "supplierId", as: "supplier" });
+
+// Add associations
+Product.hasMany(Order, { foreignKey: 'productId' });
+Order.belongsTo(Product, { foreignKey: 'productId' });
+
+Product.hasMany(ActivityLog, { foreignKey: 'productId' });
+ActivityLog.belongsTo(Product, { foreignKey: 'productId' });
 
 export default Product;

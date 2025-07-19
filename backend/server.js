@@ -11,6 +11,8 @@ import { requestLogger, errorLogger } from './middleware/logger.js';
 // Import models to ensure they are registered with Sequelize
 import './models/User.js';
 import './models/Product.js';
+import './models/Order.js';
+import './models/ActivityLog.js';
 
 dotenv.config();
 
@@ -44,6 +46,11 @@ sequelize.authenticate()
   })
   .then(() => {
     console.log("✅ Tables synced");
+
+    // Sync all models
+    sequelize.sync().then(() => {
+      console.log('Database & tables synced!');
+    });
 
     app.listen(PORT, () => {
       console.log(`🚀 Server is running at http://localhost:${PORT}`);

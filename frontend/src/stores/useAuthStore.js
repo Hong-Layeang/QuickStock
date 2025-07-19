@@ -42,7 +42,7 @@ const useAuthStore = create((set) => ({
             const { token, user } = res.data;
 
             axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-            set({ token, user });
+            set({ token, user, sessionExpired: false });
 
             localStorage.setItem('token', token);
             localStorage.setItem('user', JSON.stringify(user));

@@ -2,44 +2,6 @@ import { create } from 'zustand';
 import axios from 'axios';
 import { API_BASE_URL } from '../configs/config';
 
-const mockProducts = [
-  {
-    id: 1,
-    name: 'Wireless Mouse',
-    category: 'Accessories',
-    unitprice: 19.99,
-    status: 'in stock',
-  },
-  {
-    id: 2,
-    name: 'Mechanical Keyboard',
-    category: 'Accessories',
-    unitprice: 59.99,
-    status: 'in stock',
-  },
-  {
-    id: 3,
-    name: 'HD Monitor',
-    category: 'Displays',
-    unitprice: 129.99,
-    status: 'low stock',
-  },
-  {
-    id: 4,
-    name: 'USB-C Cable',
-    category: 'Cables',
-    unitprice: 7.99,
-    status: 'out of stock',
-  },
-  {
-    id: 5,
-    name: 'Laptop Stand',
-    category: 'Accessories',
-    unitprice: 24.99,
-    status: 'in stock',
-  },
-];
-
 const useProductStore = create((set) => ({
   products: [],
   loading: false,
@@ -58,8 +20,8 @@ const useProductStore = create((set) => ({
     } catch (error) {
       console.error('Products fetch error:', error);
       set({
-        products: mockProducts,
-        error: null,
+        products: [], // Set to empty array on error
+        error: error.response?.data?.message || 'Failed to fetch products',
         loading: false
       });
     }

@@ -76,24 +76,7 @@ const App = () => {
   const loadUserFromStorage = useAuthStore((state) => state.loadUserFromStorage);
   const resetSessionExpired = useAuthStore((state) => state.resetSessionExpired);
   const loading = useAuthStore((state) => state.loading);
-  const initializeTheme = useThemeStore((state) => state.initializeTheme);
-  const theme = useThemeStore((state) => state.theme);
   const isDark = useThemeStore((state) => state.isDark);
-
-  // Initialize theme system
-  useEffect(() => {
-    const cleanup = initializeTheme();
-    return cleanup;
-  }, [initializeTheme]);
-
-  // Ensure body class matches theme
-  useEffect(() => {
-    if (theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-      document.body.classList.add('dark');
-    } else {
-      document.body.classList.remove('dark');
-    }
-  }, [theme]);
 
   useEffect(() => {
     loadUserFromStorage();

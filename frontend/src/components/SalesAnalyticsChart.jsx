@@ -1,50 +1,187 @@
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
+import { API_BASE_URL } from '../configs/config';
 import useThemeStore from '../stores/useThemeStore';
 
-const sampleData = [
-  { name: 'Mon', sales: 400 },
-  { name: 'Tue', sales: 700 },
-  { name: 'Wed', sales: 600 },
-  { name: 'Thu', sales: 900 },
-  { name: 'Fri', sales: 800 },
-  { name: 'Sat', sales: 1100 },
-  { name: 'Sun', sales: 950 },
-];
+const EyeIcon = ({ open }) => open ? (
+  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 hover:cursor-pointer" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+) : (
+  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 hover:cursor-pointer" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.477 0-8.268-2.943-9.542-7a9.956 9.956 0 012.223-3.592m3.31-2.252A9.956 9.956 0 0112 5c4.477 0 8.268 2.943 9.542 7a9.956 9.956 0 01-4.043 5.306M15 12a3 3 0 11-6 0 3 3 0 016 0zm-6.364 6.364L6 18m12-12l-1.414 1.414" /></svg>
+);
 
-const SalesAnalyticsChart = ({ loading, error, data }) => {
+const SalesAnalyticsChart = ({ loading, data }) => {
   const { isDark } = useThemeStore();
+  const [timePeriod, setTimePeriod] = useState('7d');
+  const [isValueBlurred, setIsValueBlurred] = useState(false);
+  const [chartData, setChartData] = useState([]);
+  const [analyticsLoading, setAnalyticsLoading] = useState(false);
+  const [totalValue, setTotalValue] = useState(0);
+
+  // Time period options
+  const timeOptions = [
+    { value: '7d', label: '7 Days' },
+    { value: '14d', label: '14 Days' },
+    { value: '30d', label: '30 Days' },
+    { value: '90d', label: '90 Days' }
+  ];
+
+  // Fetch analytics data for different time periods
+  const fetchAnalyticsData = async (period) => {
+    setAnalyticsLoading(true);
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`${API_BASE_URL}/api/admin/analytics?period=${period}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      
+      if (response.data.success) {
+        setChartData(response.data.data);
+        // Use totalValue from backend if present
+        if (typeof response.data.totalValue === 'number') {
+          setTotalValue(response.data.totalValue);
+        } else {
+          const total = response.data.data.reduce((sum, item) => sum + (item.value || 0), 0);
+          setTotalValue(total);
+        }
+      } else {
+        console.error('Failed to fetch analytics data');
+      }
+    } catch (error) {
+      console.error('Error fetching analytics data:', error);
+    } finally {
+      setAnalyticsLoading(false);
+    }
+  };
+
+  // Process data based on selected time period
+  useEffect(() => {
+    if (timePeriod === '7d' && data && data.length > 0) {
+      // Use existing data for 7 days
+      const processedData = data.map(item => ({
+        name: item.name,
+        orders: item.orders || 0,
+        value: item.value || 0
+      }));
+      setChartData(processedData);
+      // Calculate total value
+      const total = processedData.reduce((sum, item) => sum + (item.value || 0), 0);
+      setTotalValue(total);
+    } else {
+      // Fetch data for other time periods
+      fetchAnalyticsData(timePeriod);
+    }
+  }, [data, timePeriod]);
+
+  // Custom tooltip formatter
+  const CustomTooltip = ({ active, payload, label }) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className={`p-3 rounded-lg shadow-lg border ${
+          isDark 
+            ? 'bg-gray-800 border-gray-600 text-white' 
+            : 'bg-white border-gray-200 text-gray-900'
+        }`}>
+          <p className="font-semibold">{label}</p>
+          <p className="text-blue-600">
+            Reports: <span className="font-bold">{payload[0].value}</span>
+          </p>
+        </div>
+      );
+    }
+    return null;
+  };
+
   return (
     <div className={`rounded-2xl p-6 shadow-sm border mb-6 ${
       isDark 
         ? 'bg-gray-800 border-gray-700' 
         : 'bg-white border-gray-200'
     }`}>
-      <h2 className={`text-xl font-bold mb-2 ${
-        isDark ? 'text-white' : 'text-gray-900'
-      }`}>Sales Analytics</h2>
-      <p className={`mb-4 ${
-        isDark ? 'text-gray-400' : 'text-gray-600'
-      }`}>Sales performance over the last 7 days</p>
-      {loading ? (
+      {/* Header with controls and total value */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
+        <div>
+          <h2 className={`text-xl font-bold mb-2 ${
+            isDark ? 'text-white' : 'text-gray-900'
+          }`}>Total Sales</h2>
+          <p className={`${
+            isDark ? 'text-gray-400' : 'text-gray-600'
+          }`}>Track your sales performance over time</p>
+        </div>
+        {/* Total Value Display with Blur Toggle */}
+        <div className="flex flex-col items-end gap-1">
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-medium text-gray-500">Total Value</span>
+            <button
+              aria-label={isValueBlurred ? 'Show value' : 'Hide value'}
+              onClick={() => setIsValueBlurred(v => !v)}
+              className={`rounded-full p-1.5 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors`}
+            >
+              <EyeIcon open={!isValueBlurred} />
+            </button>
+          </div>
+          <span className={`text-2xl font-bold text-green-600 transition-all duration-200 ${isValueBlurred ? 'blur-sm select-none' : ''}`}>${totalValue.toFixed(2)}</span>
+        </div>
+      </div>
+
+      {/* Controls */}
+      <div className="flex flex-wrap items-center gap-4 mb-6">
+        {/* Time Period Selector */}
+        <div className="flex items-center gap-2">
+          <label className={`text-sm font-medium ${
+            isDark ? 'text-gray-300' : 'text-gray-700'
+          }`}>Period:</label>
+          <select
+            value={timePeriod}
+            onChange={(e) => setTimePeriod(e.target.value)}
+            className={`px-3 py-1.5 rounded-lg border text-sm hover:cursor-pointer ${
+              isDark 
+                ? 'bg-gray-700 border-gray-600 text-white' 
+                : 'bg-white border-gray-300 text-gray-900'
+            } focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+          >
+            {timeOptions.map(option => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      {/* Chart */}
+      {loading || analyticsLoading ? (
         <div className={`w-full h-[260px] rounded-xl animate-pulse ${
           isDark ? 'bg-gray-700' : 'bg-gray-200'
         }`} />
-      ) : error ? (
-        <div className={`w-full h-[260px] flex items-center justify-center font-semibold rounded-xl ${
-          isDark 
-            ? 'text-red-400 bg-red-900/20' 
-            : 'text-red-600 bg-red-50'
-        }`}>{error}</div>
       ) : (
-        <div style={{ width: '100%', height: 260 }}>
+        <div className="w-full h-[260px] transition-all duration-300">
           <ResponsiveContainer>
-            <LineChart data={data && data.length > 0 ? data : sampleData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" stroke="#8884d8" />
-              <YAxis stroke="#8884d8" />
-              <Tooltip />
+            <LineChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke={isDark ? '#374151' : '#e5e7eb'} />
+              <XAxis 
+                dataKey="name" 
+                stroke={isDark ? '#9ca3af' : '#6b7280'}
+                tick={{ fill: isDark ? '#9ca3af' : '#6b7280' }}
+              />
+              <YAxis 
+                stroke={isDark ? '#9ca3af' : '#6b7280'}
+                tick={{ fill: isDark ? '#9ca3af' : '#6b7280' }}
+                allowDecimals={false}
+              />
+              <Tooltip content={<CustomTooltip />} />
               <Legend />
-              <Line type="monotone" dataKey="sales" stroke="#2563eb" strokeWidth={3} dot={{ r: 5 }} activeDot={{ r: 8 }} />
+              <Line 
+                type="monotone" 
+                dataKey="orders" 
+                stroke="#2563eb" 
+                strokeWidth={3} 
+                dot={{ r: 5, fill: '#2563eb' }} 
+                activeDot={{ r: 8, fill: '#1d4ed8' }}
+                name="Total Reports"
+              />
             </LineChart>
           </ResponsiveContainer>
         </div>

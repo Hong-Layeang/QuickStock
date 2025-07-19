@@ -3,7 +3,6 @@ import DashboardCards from "../../components/DashboardCards.jsx"
 import ActivityTable from "../../components/ActivityTable.jsx"
 import TransactionSummary from "../../components/TransactionSummary.jsx"
 import SalesAnalyticsChart from "../../components/SalesAnalyticsChart.jsx"
-import DashboardAlerts from "../../components/DashboardAlerts.jsx"
 import { useEffect, useState, useCallback } from "react"
 import axios from "axios"
 import { API_BASE_URL } from "../../configs/config"
@@ -14,6 +13,7 @@ export default function DashBoard() {
   const [cards, setCards] = useState(undefined)
   const [activities, setActivities] = useState(undefined)
   const [metrics, setMetrics] = useState(undefined)
+  const [salesData, setSalesData] = useState(undefined)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
@@ -33,6 +33,7 @@ export default function DashBoard() {
         setCards(data.cards)
         setActivities(data.activities)
         setMetrics(data.metrics)
+        setSalesData(data.salesData)
       } else {
         setError('Failed to load dashboard data.')
       }
@@ -51,9 +52,6 @@ export default function DashBoard() {
   return (
     <AdminLayout>
       <div className="space-y-6 lg:space-y-8">
-        {/* Alerts Section */}
-        <DashboardAlerts loading={loading} error={error} />
-
         {/* Welcome Section */}
         <div className={`rounded-2xl p-6 shadow-md border ${
           isDark 
@@ -70,21 +68,24 @@ export default function DashBoard() {
           </p>
         </div>
 
+        {/* Error message as warning, but always show dashboard */}
+        {error && (
+          <div className={`font-semibold p-4 rounded-xl border ${
+            isDark ? 'bg-red-900/20 text-red-400 border-red-700' : 'bg-red-50 text-red-600 border-red-200'
+          }`}>
+            {error}
+          </div>
+        )}
+
         {/* Sales Analytics Chart */}
-        <SalesAnalyticsChart loading={loading} error={error} />
+        <SalesAnalyticsChart loading={loading} data={salesData} />
 
         {/* Dashboard Cards */}
-        {error ? (
-          <div className={`font-semibold p-4 ${
-            isDark ? 'text-red-400' : 'text-red-600'
-          }`}>{error}</div>
-        ) : (
-          <DashboardCards 
-            cards={cards} 
-            loading={loading} 
-            onRefresh={fetchDashboard}
-          />
-        )}
+        <DashboardCards 
+          cards={cards} 
+          loading={loading} 
+          onRefresh={fetchDashboard}
+        />
 
         {/* Tables Section */}
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 lg:gap-8">
@@ -94,25 +95,16 @@ export default function DashBoard() {
               <div className={`h-64 rounded-2xl animate-pulse ${
                 isDark ? 'bg-gray-700' : 'bg-gray-200'
               }`} />
-            ) : error ? (
-              <div className={`font-semibold p-4 ${
-                isDark ? 'text-red-400' : 'text-red-600'
-              }`}>{error}</div>
             ) : (
               <ActivityTable activities={activities} />
             )}
           </div>
-          
           {/* Transaction Summary - Takes 1/3 on large screens */}
           <div className="xl:col-span-1">
             {loading ? (
               <div className={`h-64 rounded-2xl animate-pulse ${
                 isDark ? 'bg-gray-700' : 'bg-gray-200'
               }`} />
-            ) : error ? (
-              <div className={`font-semibold p-4 ${
-                isDark ? 'text-red-400' : 'text-red-600'
-              }`}>{error}</div>
             ) : (
               <TransactionSummary metrics={metrics} />
             )}

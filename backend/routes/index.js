@@ -1,5 +1,5 @@
 import express from 'express';
-// import userRoutes from './userRoutes.js';
+import userRoutes from './userRoutes.js';
 import authRoutes from './authRoutes.js';
 import productRoutes from './productRoutes.js';
 import adminRoutes from './adminRoutes.js';
@@ -8,7 +8,7 @@ import supplierRoutes from './supplierRoutes.js';
 const router = express.Router();
 
 // API Routes
-// router.use('/users', userRoutes);
+router.use('/users', userRoutes);
 router.use('/login', authRoutes);
 router.use('/products', productRoutes);
 router.use('/admin', adminRoutes);

@@ -89,7 +89,8 @@ const ThemeToggle = ({ variant = 'button' }) => {
                   key={themeOption.value}
                   onClick={() => {
                     if (themeOption.value === 'system') {
-                      // For system theme, we'll use the system preference
+                      // For system theme, save 'system' to localStorage and use current system preference
+                      localStorage.setItem('theme', 'system')
                       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
                       setTheme(prefersDark)
                     } else {

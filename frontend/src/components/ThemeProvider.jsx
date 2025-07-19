@@ -5,7 +5,7 @@ const ThemeProvider = ({ children }) => {
   const { initializeTheme } = useThemeStore();
   
   useEffect(() => {
-    // Initialize theme on mount
+    // Initialize theme store state (DOM is already set in main.jsx)
     initializeTheme();
   }, []);
   

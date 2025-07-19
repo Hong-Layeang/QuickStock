@@ -1,6 +1,6 @@
 import {create} from 'zustand';
 import axios from 'axios';
-import { API_BASE_URL } from '../configs/config';
+import { API_BASE_URL } from '../configs/config.js';
 
 const useUserStore = create((set) => ({
     users: [],

@@ -1,5 +1,6 @@
 import User from '../models/User.js';
 import Product from '../models/Product.js';
+import ActivityLog from '../models/ActivityLog.js';
 import { Op } from 'sequelize';
 
 // Get supplier dashboard data
@@ -40,37 +41,22 @@ export const getSupplierDashboard = async (req, res) => {
       }
     });
 
-    // Sample activities for supplier
-    const activities = [
-      {
-        date: new Date().toISOString(),
-        activity: `You have ${totalProducts} products in inventory`,
-        by: 'System',
-        type: 'info',
-        status: 'completed'
+    // Fetch recent activities for this supplier (last 7 days, limit 10)
+    const recentActivities = await ActivityLog.findAll({
+      where: {
+        userId: supplierId,
+        createdAt: { [Op.gte]: sevenDaysAgo },
       },
-      {
-        date: new Date(Date.now() - 86400000).toISOString(), // 1 day ago
-        activity: `${lowStockProducts} of your products are low in stock`,
-        by: 'System',
-        type: 'alert',
-        status: 'pending'
-      },
-      {
-        date: new Date(Date.now() - 172800000).toISOString(), // 2 days ago
-        activity: `${recentProducts} new products added recently`,
-        by: 'System',
-        type: 'info',
-        status: 'completed'
-      },
-      {
-        date: new Date(Date.now() - 259200000).toISOString(), // 3 days ago
-        activity: 'Supplier account activated successfully',
-        by: 'System',
-        type: 'info',
-        status: 'completed'
-      }
-    ];
+      order: [['createdAt', 'DESC']],
+      limit: 10,
+    });
+    const activities = recentActivities.map(act => ({
+      date: act.createdAt,
+      activity: act.activity,
+      by: act.userId,
+      type: act.type,
+      status: act.status,
+    }));
 
     // Dashboard metrics
     const metrics = [
@@ -221,42 +207,22 @@ export const getSupplierProducts = async (req, res) => {
 export const getSupplierActivityLog = async (req, res) => {
   try {
     const supplierId = req.user.id;
-    
-    // This would typically fetch from an Activity model
-    // For now, return sample activities
-    const activities = [
-      {
-        id: 1,
-        date: new Date().toISOString(),
-        activity: 'Product "Wireless Mouse" stock updated',
-        type: 'stock-update',
-        status: 'completed',
-        productId: 1,
-        productName: 'Wireless Mouse'
-      },
-      {
-        id: 2,
-        date: new Date(Date.now() - 86400000).toISOString(),
-        activity: 'New product "Mechanical Keyboard" added',
-        type: 'product-added',
-        status: 'completed',
-        productId: 2,
-        productName: 'Mechanical Keyboard'
-      },
-      {
-        id: 3,
-        date: new Date(Date.now() - 172800000).toISOString(),
-        activity: 'Product "HD Monitor" price updated',
-        type: 'price-update',
-        status: 'completed',
-        productId: 3,
-        productName: 'HD Monitor'
-      }
-    ];
-    
+    // Fetch all activities for this supplier (limit 30, most recent first)
+    const activities = await ActivityLog.findAll({
+      where: { userId: supplierId },
+      order: [['createdAt', 'DESC']],
+      limit: 30,
+    });
     res.json({
       success: true,
-      data: activities
+      data: activities.map(act => ({
+        id: act.id,
+        date: act.createdAt,
+        activity: act.activity,
+        type: act.type,
+        status: act.status,
+        productId: act.productId,
+      }))
     });
   } catch (error) {
     console.error('Error fetching supplier activity log:', error);

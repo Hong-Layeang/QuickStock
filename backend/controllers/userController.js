@@ -44,6 +44,9 @@ export const getUsersById = async (req, res) => {
 export const createUser = async (req, res) => {
     const { name, email, password, role } = req.body;
 
+    // Ensure only supplier role can be created through registration
+    const userRole = role === "admin" ? "supplier" : (role || "supplier");
+
     try {
         const hashedPassword = await hashPassword(password);
         const username = name || email.split("@")[0];
@@ -52,7 +55,7 @@ export const createUser = async (req, res) => {
             username,
             email,
             password: hashedPassword,
-            role: role || "supplier", // fallback just in case
+            role: userRole,
         });
 
         // Return user data with name field for frontend compatibility

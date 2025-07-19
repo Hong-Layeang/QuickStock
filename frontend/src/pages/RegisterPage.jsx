@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import Logo from '../components/Logo';
 import { useNavigate } from 'react-router-dom';
-import useUserStore from '../stores/useUserStore';
+import useUserStore from '../stores/useUserStore.js';
 
 const RegisterPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState('supplier');
+  const role = 'supplier'; // Fixed role for registration
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const createUser = useUserStore((state) => state.createUser);
@@ -65,17 +65,7 @@ const RegisterPage = () => {
                 className="text-black w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 placeholder-gray-400"
               />
             </div>
-            <div className="space-y-2">
-              <label className="text-left block text-sm font-medium text-gray-700">Role</label>
-              <select
-                value={role}
-                onChange={(e) => setRole(e.target.value)}
-                className="text-black w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 hover:cursor-pointer"
-              >
-                <option value="admin">Admin</option>
-                <option value="supplier">Supplier</option>
-              </select>
-            </div>
+
             <button
               type="submit"
               className="w-full bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold py-3 px-6 rounded-xl hover:from-orange-600 hover:to-orange-700 focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-all duration-200 transform hover:scale-[1.02] hover:cursor-pointer"
