@@ -1,6 +1,5 @@
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 import { API_BASE_URL } from '../configs/config';
 import useThemeStore from '../stores/useThemeStore';
 
@@ -12,68 +11,26 @@ const EyeIcon = ({ open }) => open ? (
 
 const SalesAnalyticsChart = ({ loading, data }) => {
   const { isDark } = useThemeStore();
-  const [timePeriod, setTimePeriod] = useState('7d');
   const [isValueBlurred, setIsValueBlurred] = useState(false);
   const [chartData, setChartData] = useState([]);
-  const [analyticsLoading, setAnalyticsLoading] = useState(false);
   const [totalValue, setTotalValue] = useState(0);
 
-  // Time period options
-  const timeOptions = [
-    { value: '7d', label: '7 Days' },
-    { value: '14d', label: '14 Days' },
-    { value: '30d', label: '30 Days' },
-    { value: '90d', label: '90 Days' }
-  ];
-
-  // Fetch analytics data for different time periods
-  const fetchAnalyticsData = async (period) => {
-    setAnalyticsLoading(true);
-    try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get(`${API_BASE_URL}/api/admin/analytics?period=${period}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      
-      if (response.data.success) {
-        setChartData(response.data.data);
-        // Use totalValue from backend if present
-        if (typeof response.data.totalValue === 'number') {
-          setTotalValue(response.data.totalValue);
-        } else {
-          const total = response.data.data.reduce((sum, item) => sum + (item.value || 0), 0);
-          setTotalValue(total);
-        }
-      } else {
-        console.error('Failed to fetch analytics data');
-      }
-    } catch (error) {
-      console.error('Error fetching analytics data:', error);
-    } finally {
-      setAnalyticsLoading(false);
-    }
-  };
-
-  // Process data based on selected time period
+  // Process data for 7 days only
   useEffect(() => {
-    if (timePeriod === '7d' && data && data.length > 0) {
-      // Use existing data for 7 days
+    if (data && data.length > 0) {
       const processedData = data.map(item => ({
         name: item.name,
-        orders: item.orders || 0,
+        sales: item.orders || 0,
         value: item.value || 0
       }));
       setChartData(processedData);
-      // Calculate total value
       const total = processedData.reduce((sum, item) => sum + (item.value || 0), 0);
       setTotalValue(total);
     } else {
-      // Fetch data for other time periods
-      fetchAnalyticsData(timePeriod);
+      setChartData([]);
+      setTotalValue(0);
     }
-  }, [data, timePeriod]);
+  }, [data]);
 
   // Custom tooltip formatter
   const CustomTooltip = ({ active, payload, label }) => {
@@ -86,7 +43,7 @@ const SalesAnalyticsChart = ({ loading, data }) => {
         }`}>
           <p className="font-semibold">{label}</p>
           <p className="text-blue-600">
-            Orders: <span className="font-bold">{payload[0].value}</span>
+            Sales: <span className="font-bold">{payload[0].value}</span>
           </p>
         </div>
       );
@@ -117,7 +74,7 @@ const SalesAnalyticsChart = ({ loading, data }) => {
             <button
               aria-label={isValueBlurred ? 'Show value' : 'Hide value'}
               onClick={() => setIsValueBlurred(v => !v)}
-              className={`rounded-full p-1.5 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors`}
+              className={`rounded-full p-1.5 hover:bg-gray-200 hover:cursor-pointer dark:hover:bg-gray-700 transition-colors`}
             >
               <EyeIcon open={!isValueBlurred} />
             </button>
@@ -126,33 +83,8 @@ const SalesAnalyticsChart = ({ loading, data }) => {
         </div>
       </div>
 
-      {/* Controls */}
-      <div className="flex flex-wrap items-center gap-4 mb-6">
-        {/* Time Period Selector */}
-        <div className="flex items-center gap-2">
-          <label className={`text-sm font-medium ${
-            isDark ? 'text-gray-300' : 'text-gray-700'
-          }`}>Period:</label>
-          <select
-            value={timePeriod}
-            onChange={(e) => setTimePeriod(e.target.value)}
-            className={`px-3 py-1.5 rounded-lg border text-sm hover:cursor-pointer ${
-              isDark 
-                ? 'bg-gray-700 border-gray-600 text-white' 
-                : 'bg-white border-gray-300 text-gray-900'
-            } focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
-          >
-            {timeOptions.map(option => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-
       {/* Chart */}
-      {loading || analyticsLoading ? (
+      {loading ? (
         <div className={`w-full h-[260px] rounded-xl animate-pulse ${
           isDark ? 'bg-gray-700' : 'bg-gray-200'
         }`} />
@@ -175,12 +107,12 @@ const SalesAnalyticsChart = ({ loading, data }) => {
               <Legend />
               <Line 
                 type="monotone" 
-                dataKey="orders" 
+                dataKey="sales" 
                 stroke="#2563eb" 
                 strokeWidth={3} 
                 dot={{ r: 5, fill: '#2563eb' }} 
                 activeDot={{ r: 8, fill: '#1d4ed8' }}
-                name="Total Orders"
+                name="Total Sales"
               />
             </LineChart>
           </ResponsiveContainer>

@@ -34,12 +34,15 @@ Authorization: Bearer <your-jwt-token>
 
 ### Admin Routes
 - `GET /admin/dashboard` - Get admin dashboard data
-- `GET /admin/orders` - Get admin orders (placeholder)
+- `GET /admin/reports` - Get admin reports (sales reports submitted by suppliers)
+- `GET /admin/analytics` - Get 7-day sales analytics for admin dashboard
 
 ### Supplier Routes
 - `GET /supplier/dashboard` - Get supplier dashboard data
 - `GET /supplier/products` - Get supplier's products
 - `GET /supplier/activity-log` - Get supplier activity log
+- `POST /supplier/reports` - Supplier submits a sales report
+- `GET /supplier/reports` - Supplier views their submitted sales reports
 
 ## Detailed Endpoints
 
@@ -181,6 +184,24 @@ Get supplier dashboard data.
       "recentProducts": 2
     }
   }
+}
+```
+
+### Admin Analytics
+
+#### GET /admin/analytics
+Get 7-day sales analytics for admin dashboard.
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": [
+    { "name": "Tue", "orders": 3, "value": 120.00 },
+    { "name": "Wed", "orders": 2, "value": 80.00 },
+    ...
+  ],
+  "totalValue": 200.00
 }
 ```
 

@@ -23,38 +23,29 @@ const DashboardCards = ({ cards, loading = false, onRefresh }) => {
   // Get theme-aware card styling
   const getCardStyling = (card) => {
     const baseClasses = "rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:scale-105 group cursor-pointer relative overflow-hidden";
-    
-    // Define theme-aware gradients and colors
+    // If card.bg is provided by backend, use it directly
+    if (card.bg) return `${baseClasses} ${card.bg} ${card.text || ''}`;
+    // Otherwise, use themeStyles fallback
     const themeStyles = {
       'Total Products': {
-        light: 'bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700 text-white',
-        dark: 'bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 text-white'
+        light: 'bg-gradient-to-br from-blue-400 via-blue-500 to-blue-600 text-white',
+        dark: 'bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700 text-white'
       },
       'Low in Stock': {
-        light: 'bg-gradient-to-br from-red-500 via-red-600 to-red-700 text-white',
-        dark: 'bg-gradient-to-br from-red-600 via-red-700 to-red-800 text-white'
+        light: 'bg-gradient-to-br from-yellow-400 via-yellow-500 to-orange-500 text-white',
+        dark: 'bg-gradient-to-br from-yellow-500 via-yellow-600 to-orange-600 text-white'
+      },
+      'Out of Stock': {
+        light: 'bg-gradient-to-br from-red-400 via-red-500 to-red-600 text-white',
+        dark: 'bg-gradient-to-br from-red-500 via-red-600 to-red-700 text-white'
       },
       'Recent Products': {
-        light: 'bg-gradient-to-br from-green-500 via-green-600 to-green-700 text-white',
-        dark: 'bg-gradient-to-br from-green-600 via-green-700 to-green-800 text-white'
-      },
-      'Total Users': {
-        light: 'bg-gradient-to-br from-purple-500 via-purple-600 to-purple-700 text-white',
-        dark: 'bg-gradient-to-br from-purple-600 via-purple-700 to-purple-800 text-white'
-      },
-      'Recent Stock-In': {
-        light: 'bg-gradient-to-br from-green-500 via-green-600 to-green-700 text-white',
-        dark: 'bg-gradient-to-br from-green-600 via-green-700 to-green-800 text-white'
-      },
-      'Recent Stock-Out': {
-        light: 'bg-gradient-to-br from-yellow-500 via-yellow-600 to-orange-600 text-white',
-        dark: 'bg-gradient-to-br from-yellow-600 via-yellow-700 to-orange-700 text-white'
+        light: 'bg-gradient-to-br from-green-400 via-green-500 to-green-600 text-white',
+        dark: 'bg-gradient-to-br from-green-500 via-green-600 to-green-700 text-white'
       }
     };
-
     const cardStyle = themeStyles[card.title] || themeStyles['Total Products'];
     const themeStyle = isDark ? cardStyle.dark : cardStyle.light;
-    
     return `${baseClasses} ${themeStyle}`;
   };
 
@@ -274,11 +265,7 @@ const DashboardCards = ({ cards, loading = false, onRefresh }) => {
                     ) : (
                       <TrendingDown className="w-4 h-4 text-red-200" />
                     )}
-                    <span className={`text-xs font-semibold px-2 py-1 rounded-full ${
-                      card.trendDirection === "up" 
-                        ? "bg-green-500/30 text-green-100" 
-                        : "bg-red-500/30 text-red-100"
-                    }`}>
+                    <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-white/40 text-white shadow-sm">
                       {card.trend}
                     </span>
                   </div>

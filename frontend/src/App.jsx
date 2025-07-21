@@ -5,14 +5,14 @@ import useAuthStore from './stores/useAuthStore.js';
 import useThemeStore from './stores/useThemeStore.js';
 import { Toaster } from 'react-hot-toast';
 
-import LoginPage from './pages/LoginPage.jsx';
-import UnauthorizedPage from './pages/UnauthorizedPage.jsx';
-import SessionExpiredPage from './pages/SessionExpiredPage.jsx';
-import RegisterPage from './pages/RegisterPage.jsx';
+import LoginPage from './pages/shared/LoginPage.jsx';
+import UnauthorizedPage from './pages/shared/UnauthorizedPage.jsx';
+import SessionExpiredPage from './pages/shared/SessionExpiredPage.jsx';
+import RegisterPage from './pages/shared/RegisterPage.jsx';
 
 import AdminDashBoardPage from './pages/admin/DashBoard.jsx';
 import AdminProductsPage from './pages/admin/Products.jsx';
-import AdminOrdersPage from './pages/admin/Orders.jsx';
+import AdminReportsPage from './pages/admin/Reports.jsx';
 import AdminSuppliersPage from './pages/admin/Suppliers.jsx';
 import AdminUsersPage from './pages/admin/Users.jsx';
 import AdminSettingsPage from './pages/admin/Settings.jsx';
@@ -153,7 +153,7 @@ const App = () => {
         <Route path="/admin" element={<AdminLayout />}>
           <Route path="dashboard" element={<AdminDashBoardPage />} />
           <Route path="products" element={<AdminProductsPage />} />
-          <Route path="orders" element={<AdminOrdersPage />} />
+          <Route path="reports" element={<AdminReportsPage />} />
           <Route path="suppliers" element={<AdminSuppliersPage />} />
           <Route path="users" element={<AdminUsersPage />} />
           <Route path="settings" element={<AdminSettingsPage />} />

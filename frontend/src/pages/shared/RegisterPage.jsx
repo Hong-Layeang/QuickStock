@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import Logo from '../components/Logo';
+import Logo from '../../components/Logo';
 import { useNavigate } from 'react-router-dom';
-import useUserStore from '../stores/useUserStore.js';
+import useUserStore from '../../stores/useUserStore.js';
 
 const RegisterPage = () => {
   const [email, setEmail] = useState('');

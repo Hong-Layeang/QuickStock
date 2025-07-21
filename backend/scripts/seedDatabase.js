@@ -3,7 +3,7 @@ import User from '../models/User.js';
 import Product from '../models/Product.js';
 import { faker } from '@faker-js/faker';
 import bcrypt from 'bcrypt';
-import Order from '../models/Order.js';
+import Report from '../models/Report.js';
 import ActivityLog from '../models/ActivityLog.js';
 
 // Number of suppliers and products to create
@@ -59,7 +59,7 @@ async function seed() {
     // Disable foreign key checks, truncate all tables, then re-enable
     await sequelize.query('SET FOREIGN_KEY_CHECKS = 0');
     await ActivityLog.destroy({ where: {}, truncate: true, restartIdentity: true });
-    await Order.destroy({ where: {}, truncate: true, restartIdentity: true });
+    await Report.destroy({ where: {}, truncate: true, restartIdentity: true });
     await Product.destroy({ where: {}, truncate: true, restartIdentity: true });
     await User.destroy({ where: {}, truncate: true, restartIdentity: true });
     await sequelize.query('SET FOREIGN_KEY_CHECKS = 1');
@@ -132,40 +132,6 @@ async function seed() {
     }
     console.log(`${suppliers.length} suppliers created.`);
 
-    // Create regular users (customers)
-    const customers = [];
-    for (let i = 0; i < 10; i++) {
-      const username = faker.internet.username();
-      const email = `user${i + 1}@user.com`;
-      const rawPassword = `${username}@123`;
-      const hashedPassword = await bcrypt.hash(rawPassword, 10);
-      
-      // Generate a realistic timestamp within the last 6 months
-      const now = new Date();
-      const daysAgo = faker.number.int({ min: 0, max: 180 });
-      const hoursAgo = faker.number.int({ min: 0, max: 23 });
-      const minutesAgo = faker.number.int({ min: 0, max: 59 });
-      
-      const userDate = new Date(now);
-      userDate.setDate(userDate.getDate() - daysAgo);
-      userDate.setHours(userDate.getHours() - hoursAgo);
-      userDate.setMinutes(userDate.getMinutes() - minutesAgo);
-      
-      const [customer, created] = await User.findOrCreate({
-        where: { email },
-        defaults: {
-          username,
-          email,
-          password: hashedPassword,
-          role: 'user',
-          createdAt: userDate,
-          updatedAt: userDate
-        },
-      });
-      customers.push(customer);
-    }
-    console.log(`${customers.length} customers created.`);
-
     // Admins create products and assign them to suppliers
     let totalProducts = 0;
     for (let j = 0; j < PRODUCTS_PER_SUPPLIER * NUM_SUPPLIERS; j++) {
@@ -217,51 +183,49 @@ async function seed() {
     }
     console.log(`${totalProducts} products created by admins.`);
 
-    // Fetch all products and customers for orders
+    // Fetch all products for reports
     const allProducts = await Product.findAll();
-    const allCustomers = customers; // Only customers place orders
 
-    // Seed sample orders (only customers place orders)
-    const NUM_ORDERS = 50;
-    for (let i = 0; i < NUM_ORDERS; i++) {
-      const customer = faker.helpers.arrayElement(allCustomers);
-      const product = faker.helpers.arrayElement(allProducts);
-      const quantity = faker.number.int({ min: 1, max: 5 });
-      const totalPrice = product.unitprice * quantity;
-      
-      // Generate a realistic timestamp within the last 90 days
-      const now = new Date();
-      const daysAgo = faker.number.int({ min: 0, max: 89 });
-      const hoursAgo = faker.number.int({ min: 0, max: 23 });
-      const minutesAgo = faker.number.int({ min: 0, max: 59 });
-      
-      const orderDate = new Date(now);
-      orderDate.setDate(orderDate.getDate() - daysAgo);
-      orderDate.setHours(orderDate.getHours() - hoursAgo);
-      orderDate.setMinutes(orderDate.getMinutes() - minutesAgo);
-      
-      const order = await Order.create({
-        productId: product.id,
-        userId: customer.id,
-        quantity,
-        totalPrice,
-        status: faker.helpers.arrayElement(['completed', 'pending', 'cancelled']),
-        createdAt: orderDate,
-        updatedAt: orderDate
-      });
-
-      // Create activity log for the order
-      await ActivityLog.create({
-        userId: customer.id,
-        activity: `Customer placed order for '${product.name}' (${quantity} units)`,
-        type: 'order',
-        status: order.status,
-        productId: product.id,
-        createdAt: orderDate,
-        updatedAt: orderDate
-      });
+    // Seed sample reports (suppliers submit sales reports for their products)
+    const NUM_REPORTS_PER_SUPPLIER = 10;
+    for (const supplier of suppliers) {
+      // Get products for this supplier
+      const supplierProducts = await Product.findAll({ where: { supplierId: supplier.id } });
+      for (let i = 0; i < NUM_REPORTS_PER_SUPPLIER; i++) {
+        const product = faker.helpers.arrayElement(supplierProducts);
+        const quantity = faker.number.int({ min: 1, max: 20 });
+        const totalPrice = product.unitprice * quantity;
+        // Generate a realistic timestamp within the last 90 days
+        const now = new Date();
+        const daysAgo = faker.number.int({ min: 0, max: 89 });
+        const hoursAgo = faker.number.int({ min: 0, max: 23 });
+        const minutesAgo = faker.number.int({ min: 0, max: 59 });
+        const reportDate = new Date(now);
+        reportDate.setDate(reportDate.getDate() - daysAgo);
+        reportDate.setHours(reportDate.getHours() - hoursAgo);
+        reportDate.setMinutes(reportDate.getMinutes() - minutesAgo);
+        const report = await Report.create({
+          productId: product.id,
+          userId: supplier.id,
+          quantity,
+          totalPrice,
+          status: 'completed',
+          createdAt: reportDate,
+          updatedAt: reportDate
+        });
+        // Create activity log for the report
+        await ActivityLog.create({
+          userId: supplier.id,
+          activity: `Supplier submitted sales report for '${product.name}' (${quantity} units)`,
+          type: 'report',
+          status: report.status,
+          productId: product.id,
+          createdAt: reportDate,
+          updatedAt: reportDate
+        });
+      }
     }
-    console.log(`${NUM_ORDERS} orders created by customers.`);
+    console.log(`${NUM_REPORTS_PER_SUPPLIER * suppliers.length} sales reports created by suppliers.`);
 
     // Seed additional admin activity logs
     const NUM_ADMIN_ACTIVITIES = 20;

@@ -15,7 +15,7 @@ const SideBar = () => {
   const menuItems = [
     { key: "dashboard", label: "Dashboard", icon: <ChartNoAxesCombined className="w-5 h-5" /> },
     { key: "products", label: "Products", icon: <Package className="w-5 h-5" /> },
-    { key: "orders", label: "Orders", icon: <ClipboardList className="w-5 h-5" /> },
+    { key: "reports", label: "Reports", icon: <ClipboardList className="w-5 h-5" /> },
     { key: "suppliers", label: "Suppliers", icon: <Users className="w-5 h-5" /> },
   ]
 

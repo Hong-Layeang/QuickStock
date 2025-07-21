@@ -19,7 +19,7 @@ const SideBar = () => {
   const menuItems = [
     { key: "dashboard", label: "Dashboard", icon: <ChartNoAxesCombined className="w-5 h-5" />, path: "/admin/dashboard" },
     { key: "products", label: "Products", icon: <Package className="w-5 h-5" />, path: "/admin/products" },
-    { key: "orders", label: "Orders", icon: <ClipboardList className="w-5 h-5" />, path: "/admin/orders" },
+    { key: "reports", label: "Reports", icon: <ClipboardList className="w-5 h-5" />, path: "/admin/reports" },
     { key: "suppliers", label: "Suppliers", icon: <Users className="w-5 h-5" />, path: "/admin/suppliers" },
     { key: "users", label: "Users", icon: <Users className="w-5 h-5" />, path: "/admin/users" },
     { key: "settings", label: "Settings", icon: <Settings className="w-5 h-5" />, path: "/admin/settings" },

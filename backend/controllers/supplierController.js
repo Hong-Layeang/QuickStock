@@ -1,6 +1,7 @@
 import User from '../models/User.js';
 import Product from '../models/Product.js';
 import ActivityLog from '../models/ActivityLog.js';
+import Report from '../models/Report.js';
 import { Op } from 'sequelize';
 
 // Get supplier dashboard data
@@ -101,7 +102,7 @@ export const getSupplierDashboard = async (req, res) => {
         title: 'My Products',
         value: totalProducts.toString(),
         subtitle: 'products',
-        bg: 'bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700',
+        bg: 'bg-gradient-to-br from-blue-400 via-blue-500 to-blue-600',
         text: 'text-white',
         trend: '+5%',
         trendDirection: 'up',
@@ -114,7 +115,7 @@ export const getSupplierDashboard = async (req, res) => {
         title: 'Low in Stock',
         value: lowStockProducts.toString(),
         subtitle: 'items',
-        bg: 'bg-gradient-to-br from-red-500 via-red-600 to-red-700',
+        bg: 'bg-gradient-to-br from-yellow-400 via-yellow-500 to-orange-500',
         text: 'text-white',
         trend: '+2%',
         trendDirection: 'up',
@@ -127,7 +128,7 @@ export const getSupplierDashboard = async (req, res) => {
         title: 'Recent Products',
         value: recentProducts.toString(),
         subtitle: 'products',
-        bg: 'bg-gradient-to-br from-green-500 via-green-600 to-green-700',
+        bg: 'bg-gradient-to-br from-green-400 via-green-500 to-green-600',
         text: 'text-white',
         trend: '+8%',
         trendDirection: 'up',
@@ -140,13 +141,26 @@ export const getSupplierDashboard = async (req, res) => {
         title: 'In Stock',
         value: inStockProducts.toString(),
         subtitle: 'products',
-        bg: 'bg-gradient-to-br from-green-500 via-green-600 to-green-700',
+        bg: 'bg-gradient-to-br from-green-400 via-green-500 to-green-600',
         text: 'text-white',
         trend: '+12%',
         trendDirection: 'up',
         change: 'from last month',
         link: '/supplier/my-products?filter=in-stock',
         description: 'Your products currently in stock'
+      },
+      {
+        icon: 'package-minus',
+        title: 'Out of Stock',
+        value: outOfStockProducts.toString(),
+        subtitle: 'items',
+        bg: 'bg-gradient-to-br from-red-400 via-red-500 to-red-600',
+        text: 'text-white',
+        trend: '+0%',
+        trendDirection: 'flat',
+        change: 'from last week',
+        link: '/supplier/my-products?filter=out-of-stock',
+        description: 'Your products that are out of stock'
       }
     ];
 
@@ -230,5 +244,42 @@ export const getSupplierActivityLog = async (req, res) => {
       success: false,
       message: 'Failed to fetch activity log'
     });
+  }
+}; 
+
+// Supplier submits a sales report
+export const submitReport = async (req, res) => {
+  try {
+    const supplierId = req.user.id;
+    const { productId, quantity, totalPrice } = req.body;
+    if (!productId || !quantity || !totalPrice) {
+      return res.status(400).json({ success: false, message: 'Missing required fields' });
+    }
+    const report = await Report.create({
+      productId,
+      userId: supplierId,
+      quantity,
+      totalPrice,
+      status: 'completed',
+    });
+    res.status(201).json({ success: true, data: report });
+  } catch (error) {
+    console.error('Error submitting report:', error);
+    res.status(500).json({ success: false, message: 'Failed to submit report' });
+  }
+};
+
+// Supplier views their submitted reports
+export const getSupplierReports = async (req, res) => {
+  try {
+    const supplierId = req.user.id;
+    const reports = await Report.findAll({
+      where: { userId: supplierId },
+      order: [['createdAt', 'DESC']],
+    });
+    res.json({ success: true, data: reports });
+  } catch (error) {
+    console.error('Error fetching supplier reports:', error);
+    res.status(500).json({ success: false, message: 'Failed to fetch reports' });
   }
 }; 

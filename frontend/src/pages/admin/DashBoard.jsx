@@ -13,8 +13,9 @@ export default function DashBoard() {
   const [cards, setCards] = useState(undefined)
   const [activities, setActivities] = useState(undefined)
   const [metrics, setMetrics] = useState(undefined)
-  const [salesData, setSalesData] = useState(undefined)
+  const [analyticsData, setAnalyticsData] = useState(undefined)
   const [loading, setLoading] = useState(true)
+  const [analyticsLoading, setAnalyticsLoading] = useState(true)
   const [error, setError] = useState(null)
 
   const fetchDashboard = useCallback(async () => {
@@ -27,13 +28,11 @@ export default function DashBoard() {
           Authorization: `Bearer ${token}`
         }
       })
-      
       if (response.data.success) {
         const data = response.data.data
         setCards(data.cards)
         setActivities(data.activities)
         setMetrics(data.metrics)
-        setSalesData(data.salesData)
       } else {
         setError('Failed to load dashboard data.')
       }
@@ -45,9 +44,32 @@ export default function DashBoard() {
     }
   }, [])
 
+  const fetchAdminAnalytics = useCallback(async () => {
+    setAnalyticsLoading(true)
+    try {
+      const token = localStorage.getItem('token')
+      const response = await axios.get(`${API_BASE_URL}/api/admin/analytics`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      if (response.data.success) {
+        setAnalyticsData(response.data.data)
+      } else {
+        setAnalyticsData([])
+      }
+    } catch (err) {
+      console.error('Admin analytics fetch error:', err)
+      setAnalyticsData([])
+    } finally {
+      setAnalyticsLoading(false)
+    }
+  }, [])
+
   useEffect(() => {
     fetchDashboard()
-  }, [fetchDashboard])
+    fetchAdminAnalytics()
+  }, [fetchDashboard, fetchAdminAnalytics])
 
   return (
     <AdminLayout>
@@ -78,19 +100,19 @@ export default function DashBoard() {
         )}
 
         {/* Sales Analytics Chart */}
-        <SalesAnalyticsChart loading={loading} data={salesData} />
+        <SalesAnalyticsChart loading={loading || analyticsLoading} data={analyticsData} />
 
         {/* Dashboard Cards */}
         <DashboardCards 
           cards={cards} 
           loading={loading} 
-          onRefresh={fetchDashboard}
+          onRefresh={() => { fetchDashboard(); fetchAdminAnalytics(); }}
         />
 
         {/* Tables Section */}
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 lg:gap-8">
-          {/* Activity Table - Takes 2/3 on large screens */}
-          <div className="xl:col-span-2">
+        <div className="grid grid-cols-1 xl:grid-cols-5 gap-6 lg:gap-8">
+          {/* Activity Table - Takes 3/5 on large screens */}
+          <div className="xl:col-span-3">
             {loading ? (
               <div className={`h-64 rounded-2xl animate-pulse ${
                 isDark ? 'bg-gray-700' : 'bg-gray-200'
@@ -99,8 +121,8 @@ export default function DashBoard() {
               <ActivityTable activities={activities} />
             )}
           </div>
-          {/* Transaction Summary - Takes 1/3 on large screens */}
-          <div className="xl:col-span-1">
+          {/* Transaction Summary - Takes 2/5 on large screens */}
+          <div className="xl:col-span-2">
             {loading ? (
               <div className={`h-64 rounded-2xl animate-pulse ${
                 isDark ? 'bg-gray-700' : 'bg-gray-200'

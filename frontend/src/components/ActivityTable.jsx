@@ -5,21 +5,13 @@ const ActivityTable = ({ activities }) => {
   const { isDark } = useThemeStore();
 
   const getActivityIcon = (type) => {
-    switch (type) {
-      case 'stock-in':
-        return <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-      case 'delete':
-        return <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-      case 'update':
-        return <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-      case 'alert':
-        return <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-      case 'order':
-        return <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-      case 'info':
-        return <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-      default:
-        return <div className="w-2 h-2 bg-gray-500 rounded-full"></div>
+    // Use blue for admin, green for supplier, gray for others
+    if (type === 'admin') {
+      return <div className="w-2.5 h-2.5 bg-blue-500 rounded-full"></div>;
+    } else if (type === 'supplier') {
+      return <div className="w-2.5 h-2.5 bg-green-500 rounded-full"></div>;
+    } else {
+      return <div className="w-2.5 h-2.5 bg-gray-400 rounded-full"></div>;
     }
   }
 
@@ -96,7 +88,7 @@ const ActivityTable = ({ activities }) => {
               }`}>Latest inventory activities</p>
             </div>
           </div>
-          <button className={`text-sm font-medium transition-colors ${
+          <button className={`text-sm font-medium transition-colors hover:cursor-pointer ${
             isDark 
               ? 'text-orange-400 hover:text-orange-300' 
               : 'text-orange-600 hover:text-orange-700'
@@ -107,28 +99,27 @@ const ActivityTable = ({ activities }) => {
 
         {/* Desktop Table View */}
         <div className="hidden lg:block">
-          <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="w-full table-fixed">
               <thead>
                 <tr className={`border-b ${
                   isDark ? 'border-gray-700' : 'border-gray-200'
                 }`}>
-                  <th className={`py-3 text-left text-xs font-medium uppercase tracking-wider ${
+                  <th className={`py-3 px-4 text-left text-xs font-medium uppercase tracking-wider ${
                     isDark ? 'text-gray-400' : 'text-gray-500'
                   }`}>
                     Activity
                   </th>
-                  <th className={`py-3 text-left text-xs font-medium uppercase tracking-wider ${
+                  <th className={`py-3 text-center text-xs font-medium uppercase tracking-wider ${
                     isDark ? 'text-gray-400' : 'text-gray-500'
                   }`}>
                     Performed By
                   </th>
-                  <th className={`py-3 text-left text-xs font-medium uppercase tracking-wider ${
+                  <th className={`py-3 text-center text-xs font-medium uppercase tracking-wider ${
                     isDark ? 'text-gray-400' : 'text-gray-500'
                   }`}>
                     Date/Time
                   </th>
-                  <th className={`py-3 text-left text-xs font-medium uppercase tracking-wider ${
+                  <th className={`py-3 text-center text-xs font-medium uppercase tracking-wider ${
                     isDark ? 'text-gray-400' : 'text-gray-500'
                   }`}>
                     Status
@@ -142,33 +133,47 @@ const ActivityTable = ({ activities }) => {
                   <tr key={i} className={`transition-colors ${
                     isDark ? 'hover:bg-gray-700/50' : 'hover:bg-gray-50'
                   }`}>
-                    <td className="py-4">
-                      <div className="flex items-center gap-3">
+                    <td className="py-5 px-4 text-left w-2/3 max-w-lg truncate align-middle">
+                      <div className="flex items-center gap-3 min-w-0">
                         {getActivityIcon(item.type)}
-                        <span className={`text-sm font-medium ${
-                          isDark ? 'text-white' : 'text-gray-900'
-                        }`}>
+                        <span
+                          className={`text-sm font-medium ${
+                            isDark ? 'text-white' : 'text-gray-900'
+                          } truncate max-w-lg`}
+                          title={item.activity}
+                          style={{ display: 'inline-block', maxWidth: '28rem', verticalAlign: 'middle' }}
+                        >
                           {item.activity}
                         </span>
                       </div>
                     </td>
-                    <td className="py-4">
-                      <div className="flex items-center gap-2">
+                    <td className="py-5 px-4 text-center">
+                      <div className="flex items-center gap-2 justify-center">
                         <User className="w-4 h-4 text-gray-400" />
                         <span className={`text-sm ${
                           isDark ? 'text-gray-300' : 'text-gray-600'
                         }`}>{item.by}</span>
                       </div>
                     </td>
-                    <td className="py-4">
-                      <div className="flex items-center gap-2">
+                    <td className="py-5 px-4 text-center">
+                      <div className="flex items-center gap-2 justify-center">
                         <Clock className="w-4 h-4 text-gray-400" />
                         <span className={`text-sm ${
                           isDark ? 'text-gray-300' : 'text-gray-600'
-                        }`}>{new Date(item.date).toLocaleString()}</span>
+                        }`}>
+                          {new Date(item.date).toLocaleString(undefined, {
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            second: '2-digit',
+                            hour12: true
+                          })}
+                        </span>
                       </div>
                     </td>
-                    <td className="py-4">
+                    <td className="py-5 px-4 text-center">
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(item.status)}`}>
                         {item.status}
                       </span>
@@ -178,22 +183,25 @@ const ActivityTable = ({ activities }) => {
               </tbody>
             </table>
           </div>
-        </div>
 
         {/* Mobile/Tablet Card View */}
-        <div className="lg:hidden space-y-4">
+        <div className="lg:hidden space-y-6">
           {activities.map((item, i) => (
-            <div key={i} className={`border rounded-xl p-4 transition-colors ${
+            <div key={i} className={`border rounded-xl p-6 shadow-sm transition-colors mt-2 ${
               isDark 
-                ? 'border-gray-700 hover:bg-gray-700/50' 
-                : 'border-gray-200 hover:bg-gray-50'
+                ? 'border-gray-700 bg-gray-800 hover:bg-gray-700/50' 
+                : 'border-gray-200 bg-white hover:bg-gray-50'
             }`}>
-              <div className="flex items-start justify-between mb-3">
-                <div className="flex items-center gap-3">
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex items-center gap-3 min-w-0">
                   {getActivityIcon(item.type)}
-                  <span className={`text-sm font-medium ${
-                    isDark ? 'text-white' : 'text-gray-900'
-                  }`}>
+                  <span
+                    className={`text-base font-medium ${
+                      isDark ? 'text-white' : 'text-gray-900'
+                    } truncate max-w-[12rem]`}
+                    title={item.activity}
+                    style={{ display: 'inline-block', maxWidth: '12rem', verticalAlign: 'bottom' }}
+                  >
                     {item.activity}
                   </span>
                 </div>
@@ -201,8 +209,7 @@ const ActivityTable = ({ activities }) => {
                   {item.status}
                 </span>
               </div>
-              
-              <div className="space-y-2">
+              <div className="space-y-2 pl-7">
                 <div className={`flex items-center gap-2 text-sm ${
                   isDark ? 'text-gray-300' : 'text-gray-600'
                 }`}>
@@ -213,7 +220,17 @@ const ActivityTable = ({ activities }) => {
                   isDark ? 'text-gray-300' : 'text-gray-600'
                 }`}>
                   <Clock className="w-4 h-4" />
-                  <span>{new Date(item.date).toLocaleString()}</span>
+                  <span>
+                    {new Date(item.date).toLocaleString(undefined, {
+                      year: 'numeric',
+                      month: '2-digit',
+                      day: '2-digit',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      second: '2-digit',
+                      hour12: true
+                    })}
+                  </span>
                 </div>
               </div>
             </div>

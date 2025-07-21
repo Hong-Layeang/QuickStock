@@ -1,4 +1,4 @@
-import { TrendingUp, DollarSign, Package, BarChart3 } from "lucide-react"
+import { TrendingUp, DollarSign, Package, BarChart3, ClipboardList, Star, UserCheck, Layers, Users } from "lucide-react"
 import useThemeStore from '../stores/useThemeStore'
 
 const TransactionSummary = ({ metrics }) => {
@@ -10,22 +10,24 @@ const TransactionSummary = ({ metrics }) => {
       'package': <Package className="w-5 h-5" />,
       'trending-up': <TrendingUp className="w-5 h-5" />,
       'dollar-sign': <DollarSign className="w-5 h-5" />,
-      'bar-chart-3': <BarChart3 className="w-5 h-5" />
+      'bar-chart-3': <BarChart3 className="w-5 h-5" />,
+      'clipboard-list': <ClipboardList className="w-5 h-5" />,
+      'star': <Star className="w-5 h-5" />,
+      'user-check': <UserCheck className="w-5 h-5" />,
+      'layers': <Layers className="w-5 h-5" />,
+      'users': <Users className="w-5 h-5" />,
     };
     return iconMap[iconName] || <Package className="w-5 h-5" />;
   };
 
   // Show message if no metrics data or error
   if ((!metrics || metrics.length === 0)) {
-    // Fallback: show 4 metrics with zero/default values
-    const fallbackMetrics = [
-      { label: 'Total Products', value: '0', change: '0%', icon: 'package', color: 'text-blue-600', bgColor: 'bg-blue-100 dark:bg-blue-900/20' },
-      { label: 'Total Users', value: '0', change: '0%', icon: 'users', color: 'text-green-600', bgColor: 'bg-green-100 dark:bg-green-900/20' },
-      { label: 'Low Stock Items', value: '0', change: '0%', icon: 'alert-triangle', color: 'text-red-600', bgColor: 'bg-red-100 dark:bg-red-900/20' },
-      { label: 'Out of Stock', value: '0', change: '0%', icon: 'package-x', color: 'text-orange-600', bgColor: 'bg-orange-100 dark:bg-orange-900/20' }
-    ];
-    metrics = fallbackMetrics;
+    // Fallback: show empty
+    metrics = [];
   }
+
+  // Find total inventory value metric (for bottom display)
+  const totalValueMetric = metrics.find(m => m.label === 'Total Inventory Value');
 
   return (
     <div className={`rounded-2xl shadow-sm border ${
@@ -52,7 +54,7 @@ const TransactionSummary = ({ metrics }) => {
               }`}>Sales and performance metrics</p>
             </div>
           </div>
-          <button className={`text-sm font-medium transition-colors ${
+          <button className={`text-sm font-medium transition-colors hover:cursor-pointer ${
             isDark 
               ? 'text-green-400 hover:text-green-300' 
               : 'text-green-600 hover:text-green-700'
@@ -69,31 +71,26 @@ const TransactionSummary = ({ metrics }) => {
                 <tr className={`border-b ${
                   isDark ? 'border-gray-700' : 'border-gray-200'
                 }`}>
-                  <th className={`py-3 text-left text-xs font-medium uppercase tracking-wider ${
+                  <th className={`py-3 px-4 text-left text-xs font-medium uppercase tracking-wider ${
                     isDark ? 'text-gray-400' : 'text-gray-500'
                   }`}>
                     Metric
                   </th>
-                  <th className={`py-3 text-left text-xs font-medium uppercase tracking-wider ${
+                  <th className={`py-3 text-center text-xs font-medium uppercase tracking-wider ${
                     isDark ? 'text-gray-400' : 'text-gray-500'
                   }`}>
                     Value
-                  </th>
-                  <th className={`py-3 text-left text-xs font-medium uppercase tracking-wider ${
-                    isDark ? 'text-gray-400' : 'text-gray-500'
-                  }`}>
-                    Change
                   </th>
                 </tr>
               </thead>
               <tbody className={`divide-y ${
                 isDark ? 'divide-gray-700' : 'divide-gray-200'
               }`}>
-                {metrics.map((item, i) => (
+                {metrics.filter(m => m.label !== 'Total Inventory Value').map((item, i) => (
                   <tr key={i} className={`transition-colors ${
                     isDark ? 'hover:bg-gray-700/50' : 'hover:bg-gray-50'
                   }`}>
-                    <td className="py-4">
+                    <td className="py-4 text-left">
                       <div className="flex items-center gap-3">
                         <div className={`p-2 rounded-xl ${item.bgColor}`}>
                           <div className={item.color}>
@@ -107,16 +104,11 @@ const TransactionSummary = ({ metrics }) => {
                         </span>
                       </div>
                     </td>
-                    <td className="py-4">
+                    <td className="py-4 text-center">
                       <span className={`text-sm font-semibold ${
                         isDark ? 'text-white' : 'text-gray-900'
                       }`}>
                         {item.value}
-                      </span>
-                    </td>
-                    <td className="py-4">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${item.color} bg-opacity-10`}>
-                        {item.change}
                       </span>
                     </td>
                   </tr>
@@ -127,33 +119,29 @@ const TransactionSummary = ({ metrics }) => {
         </div>
 
         {/* Mobile/Tablet Card View */}
-        <div className="lg:hidden space-y-4">
-          {metrics.map((item, i) => (
-            <div key={i} className={`border rounded-xl p-4 transition-colors ${
+        <div className="lg:hidden space-y-6">
+          {metrics.filter(m => m.label !== 'Total Inventory Value').map((item, i) => (
+            <div key={i} className={`border rounded-xl p-6 transition-colors mt-2 ${
               isDark 
-                ? 'border-gray-700 hover:bg-gray-700/50' 
-                : 'border-gray-200 hover:bg-gray-50'
+                ? 'border-gray-700 bg-gray-800 hover:bg-gray-700/50' 
+                : 'border-gray-200 bg-white hover:bg-gray-50'
             }`}>
-              <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
                   <div className={`p-2 rounded-xl ${item.bgColor}`}>
                     <div className={item.color}>
                       {getIcon(item.icon)}
                     </div>
                   </div>
-                  <span className={`text-sm font-medium ${
+                  <span className={`text-base font-medium ${
                     isDark ? 'text-white' : 'text-gray-900'
                   }`}>
                     {item.label}
                   </span>
                 </div>
-                <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${item.color} bg-opacity-10`}>
-                  {item.change}
-                </span>
               </div>
-              
-              <div className="pl-11">
-                <span className={`text-lg font-bold ${
+              <div className="pl-11 text-center">
+                <span className={`text-xl font-bold ${
                   isDark ? 'text-white' : 'text-gray-900'
                 }`}>
                   {item.value}
@@ -163,29 +151,19 @@ const TransactionSummary = ({ metrics }) => {
           ))}
         </div>
 
-        {/* Summary Footer */}
-        <div className={`mt-6 pt-6 border-t ${
-          isDark ? 'border-gray-700' : 'border-gray-200'
-        }`}>
-          <div className="flex items-center justify-between">
-            <div>
-              <p className={`text-sm ${
+        {/* Total Inventory Value at the bottom */}
+        {totalValueMetric && (
+          <div className={`mt-8 pt-6 border-t ${
+            isDark ? 'border-gray-700' : 'border-gray-200'
+          }`}>
+            <div className="flex flex-col items-center justify-center">
+              <p className={`text-lg font-medium mb-1 ${
                 isDark ? 'text-gray-400' : 'text-gray-500'
-              }`}>Total Products</p>
-              <p className={`text-2xl font-bold ${
-                isDark ? 'text-white' : 'text-gray-900'
-              }`}>{metrics.find(m => m.label === 'Total Products')?.value || '0'}</p>
-            </div>
-            <div className="text-right">
-              <p className={`text-sm font-medium ${
-                isDark ? 'text-green-400' : 'text-green-600'
-              }`}>Active</p>
-              <p className={`text-xs ${
-                isDark ? 'text-gray-400' : 'text-gray-500'
-              }`}>in inventory</p>
+              }`}>Total Value</p>
+              <p className="text-3xl font-extrabold text-green-500">{totalValueMetric.value}</p>
             </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   )

@@ -4,10 +4,10 @@ import { getProducts, getProductById, createProduct ,editProduct, deleteProduct 
 import { verifyToken } from '../middleware/verifyToken.js';
 import { roleCheck } from '../middleware/roleCheck.js';
 
-router.get("/", verifyToken, roleCheck ,getProducts);
-router.get("/:id", verifyToken, roleCheck, getProductById);
-router.post("/", verifyToken, roleCheck, createProduct);
-router.put("/:id", verifyToken, roleCheck, editProduct);
-router.delete("/:id", verifyToken, roleCheck, deleteProduct);
+router.get("/", verifyToken, roleCheck('admin'), getProducts);
+router.get("/:id", verifyToken, roleCheck('admin'), getProductById);
+router.post("/", verifyToken, roleCheck('admin'), createProduct);
+router.put("/:id", verifyToken, roleCheck('admin'), editProduct);
+router.delete("/:id", verifyToken, roleCheck('admin'), deleteProduct);
 
 export default router;

@@ -1,7 +1,7 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../config/database.js';
 
-const Order = sequelize.define('Order', {
+const Report = sequelize.define('Report', {
   id: {
     type: DataTypes.INTEGER,
     autoIncrement: true,
@@ -33,4 +33,4 @@ const Order = sequelize.define('Order', {
   timestamps: true,
 });
 
-export default Order; 
+export default Report; 

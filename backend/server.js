@@ -11,8 +11,9 @@ import { requestLogger, errorLogger } from './middleware/logger.js';
 // Import models to ensure they are registered with Sequelize
 import './models/User.js';
 import './models/Product.js';
-import './models/Order.js';
+import './models/Report.js';
 import './models/ActivityLog.js';
+import './models/association.js';
 
 dotenv.config();
 
