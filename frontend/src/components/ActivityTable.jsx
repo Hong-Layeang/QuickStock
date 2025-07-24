@@ -99,7 +99,7 @@ const ActivityTable = ({ activities }) => {
 
         {/* Desktop Table View */}
         <div className="hidden lg:block">
-            <table className="w-full table-fixed">
+            <table className="w-full table-auto">
               <thead>
                 <tr className={`border-b ${
                   isDark ? 'border-gray-700' : 'border-gray-200'
@@ -129,19 +129,19 @@ const ActivityTable = ({ activities }) => {
               <tbody className={`divide-y ${
                 isDark ? 'divide-gray-700' : 'divide-gray-200'
               }`}>
-                {activities.map((item, i) => (
+                {activities.slice(0, 9).map((item, i) => (
                   <tr key={i} className={`transition-colors ${
                     isDark ? 'hover:bg-gray-700/50' : 'hover:bg-gray-50'
                   }`}>
-                    <td className="py-5 px-4 text-left w-2/3 max-w-lg truncate align-middle">
+                    <td className="py-5 px-4 text-left align-middle max-w-xl truncate">
                       <div className="flex items-center gap-3 min-w-0">
                         {getActivityIcon(item.type)}
                         <span
                           className={`text-sm font-medium ${
-                            isDark ? 'text-white' : 'text-gray-900'
-                          } truncate max-w-lg`}
+                          isDark ? 'text-white' : 'text-gray-900'
+                          } truncate max-w-xl`}
                           title={item.activity}
-                          style={{ display: 'inline-block', maxWidth: '28rem', verticalAlign: 'middle' }}
+                          style={{ display: 'inline-block', maxWidth: '24ch', verticalAlign: 'middle' }}
                         >
                           {item.activity}
                         </span>
@@ -182,7 +182,7 @@ const ActivityTable = ({ activities }) => {
                 ))}
               </tbody>
             </table>
-          </div>
+        </div>
 
         {/* Mobile/Tablet Card View */}
         <div className="lg:hidden space-y-6">
@@ -197,7 +197,7 @@ const ActivityTable = ({ activities }) => {
                   {getActivityIcon(item.type)}
                   <span
                     className={`text-base font-medium ${
-                      isDark ? 'text-white' : 'text-gray-900'
+                    isDark ? 'text-white' : 'text-gray-900'
                     } truncate max-w-[12rem]`}
                     title={item.activity}
                     style={{ display: 'inline-block', maxWidth: '12rem', verticalAlign: 'bottom' }}

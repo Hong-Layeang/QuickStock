@@ -140,7 +140,7 @@ export default function Products() {
             }`}>Products</h2>
             <p className={isDark ? 'text-gray-400' : 'text-gray-600'}>Manage all products here.</p>
           </div>
-          <button onClick={() => setShowAdd(true)} className="bg-orange-600 hover:bg-orange-700 text-white font-semibold px-5 py-2 rounded-xl shadow transition-all">+ Add Product</button>
+          <button onClick={() => setShowAdd(true)} className="bg-orange-600 hover:bg-orange-700 text-white font-semibold px-5 py-2 rounded-xl shadow transition-all cursor-pointer">+ Add Product</button>
         </div>
         <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
           <input
@@ -161,7 +161,7 @@ export default function Products() {
               isDark 
                 ? 'border-gray-700 bg-gray-900 text-white' 
                 : 'border-gray-300 bg-gray-50 text-gray-900'
-            }`}
+            } cursor-pointer`}
           >
             <option value="all">All Statuses</option>
             <option value="in stock">In Stock</option>
@@ -176,7 +176,7 @@ export default function Products() {
               isDark 
                 ? 'border-gray-700 bg-gray-900 text-white' 
                 : 'border-gray-300 bg-gray-50 text-gray-900'
-            }`}
+            } cursor-pointer`}
           >
             <option value="all">All Categories</option>
             {categories.map(cat => (
@@ -249,7 +249,7 @@ export default function Products() {
                   isDark ? 'text-gray-200' : 'text-gray-700'
                 }`}>{selected.length} selected</span>
                 <button
-                  className="px-4 py-2 rounded-xl bg-red-600 text-white font-semibold hover:bg-red-700 transition"
+                  className="px-4 py-2 rounded-xl bg-red-600 text-white font-semibold hover:bg-red-700 transition cursor-pointer"
                   onClick={() => setShowBulkDelete(true)}
                 >
                   Delete Selected
@@ -257,92 +257,113 @@ export default function Products() {
               </div>
             )}
             <table className="w-full text-sm">
-              <thead>
-                <tr className={`border-b ${
-                  isDark ? 'border-gray-700' : 'border-gray-200'
-                }`}>
-                  <th className="py-3 text-left font-semibold w-8">
-                    <input
-                      type="checkbox"
-                      checked={isAllSelected}
-                      onChange={handleSelectAll}
-                      className="accent-orange-600 w-4 h-4 rounded"
-                    />
-                  </th>
-                  <th className="py-3 text-left font-semibold cursor-pointer select-none" onClick={() => handleSort("name")}>Name {sortBy === "name" && (sortOrder === "asc" ? "▲" : "▼")}</th>
-                  <th className="py-3 text-left font-semibold cursor-pointer select-none" onClick={() => handleSort("category")}>Category {sortBy === "category" && (sortOrder === "asc" ? "▲" : "▼")}</th>
-                  <th className="py-3 text-left font-semibold cursor-pointer select-none" onClick={() => handleSort("unitprice")}>Unit Price {sortBy === "unitprice" && (sortOrder === "asc" ? "▲" : "▼")}</th>
-                  <th className="py-3 text-left font-semibold cursor-pointer select-none" onClick={() => handleSort("status")}>Status {sortBy === "status" && (sortOrder === "asc" ? "▲" : "▼")}</th>
-                  <th className="py-3 text-left font-semibold">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {paginated.length === 0 ? (
-                  <tr><td colSpan={6} className="text-center py-8 text-gray-400">No products found.</td></tr>
-                ) : paginated.map((p) => (
-                  <tr key={p.id} className={`border-b transition ${
-                    isDark 
-                      ? 'border-gray-800 hover:bg-gray-800/40' 
-                      : 'border-gray-100 hover:bg-orange-50'
-                  }`}>
-                    <td className="py-3 text-left w-8">
-                      <input
-                        type="checkbox"
-                        checked={selected.includes(p.id)}
-                        onChange={() => handleSelectRow(p.id)}
-                        className="accent-orange-600 w-4 h-4 rounded"
-                      />
-                    </td>
-                    <td className="py-3 font-medium text-left">{p.name}</td>
-                    <td className="py-3 text-left">{p.category}</td>
-                    <td className="py-3 text-left">{p.unitprice ? `$${Number(p.unitprice).toLocaleString(undefined, { minimumFractionDigits: 2 })}` : '-'}</td>
-                    <td className="py-3 text-left">
-                      {p.status === 'in stock' && (
-                        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold ${
-                          isDark ? 'bg-green-900/30 text-green-300' : 'bg-green-100 text-green-700'
-                        }`}>
-                          <FaCheckCircle className="mr-1 w-3 h-3" /> In Stock
-                        </span>
-                      )}
-                      {p.status === 'low stock' && (
-                        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold ${
-                          isDark ? 'bg-yellow-900/30 text-yellow-300' : 'bg-yellow-100 text-yellow-800'
-                        }`}>
-                          <TbAlertTriangle className="mr-1 w-3 h-3" /> Low Stock
-                        </span>
-                      )}
-                      {p.status === 'out of stock' && (
-                        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold ${
-                          isDark ? 'bg-red-900/30 text-red-300' : 'bg-red-100 text-red-700'
-                        }`}>
-                          <FiXCircle className="mr-1 w-3 h-3" /> Out of Stock
-                        </span>
-                      )}
-                      {p.status === 'discontinued' && (
-                        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold ${
-                          isDark ? 'bg-gray-800/30 text-gray-300' : 'bg-gray-200 text-gray-700'
-                        }`}>
-                          <FiXCircle className="mr-1 w-3 h-3" /> Discontinued
-                        </span>
-                      )}
-                    </td>
-                    <td className="py-3 flex gap-2">
-                      <button onClick={() => { setShowEdit(true); setEditId(p.id); setForm({ name: p.name, category: p.category, unitprice: p.unitprice, stock: p.stock || 0, status: p.status }); }} className="flex items-center gap-1 px-3 py-1 rounded bg-blue-500 text-white hover:bg-blue-600 transition">
-                        <FiEdit2 className="w-4 h-4" /> Edit
-                      </button>
-                      <button onClick={() => setDeleteId(p.id)} className="flex items-center gap-1 px-3 py-1 rounded bg-red-500 text-white hover:bg-red-600 transition">
-                        <FiTrash2 className="w-4 h-4" /> Delete
-                      </button>
+              {paginated.length === 0 ? (
+                <tbody>
+                  <tr>
+                    <td colSpan={6} className="py-12">
+                      <div className="flex flex-col items-center justify-center">
+                        <span className="text-7xl mb-4 select-none">😕</span>
+                        <div className="text-lg font-semibold mb-2 text-center">No products found.</div>
+                        <div className="text-sm text-gray-400 text-center">Try adjusting your filters or add a new product!</div>
+                      </div>
                     </td>
                   </tr>
-                ))}
-              </tbody>
+                </tbody>
+              ) : (
+                <>
+                  <thead>
+                    <tr className={`border-b ${isDark ? 'border-gray-700' : 'border-gray-200'}`}>
+                      <th className={`py-3 font-semibold w-8 ${isDark ? 'text-white' : 'text-gray-900'} flex items-center justify-center`}>
+                        <input
+                          type="checkbox"
+                          checked={isAllSelected}
+                          onChange={handleSelectAll}
+                          className="accent-orange-600 w-4 h-4 rounded"
+                        />
+                      </th>
+                      <th className={`py-3 text-left font-semibold cursor-pointer select-none ${isDark ? 'text-white' : 'text-gray-900'}`} onClick={() => handleSort("name")}>Name {sortBy === "name" && (sortOrder === "asc" ? "▲" : "▼")}</th>
+                      <th className={`py-3 text-left font-semibold cursor-pointer select-none ${isDark ? 'text-white' : 'text-gray-900'}`} onClick={() => handleSort("category")}>Category {sortBy === "category" && (sortOrder === "asc" ? "▲" : "▼")}</th>
+                      <th className={`py-3 text-left font-semibold cursor-pointer select-none ${isDark ? 'text-white' : 'text-gray-900'}`} onClick={() => handleSort("unitprice")}>Unit Price {sortBy === "unitprice" && (sortOrder === "asc" ? "▲" : "▼")}</th>
+                      <th className={`py-3 text-left font-semibold cursor-pointer select-none ${isDark ? 'text-white' : 'text-gray-900'}`} onClick={() => handleSort("status")}>Status {sortBy === "status" && (sortOrder === "asc" ? "▲" : "▼")}</th>
+                      <th className={`py-3 text-left font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {paginated.map((p) => (
+                      <tr key={p.id} className={`border-b transition ${
+                        isDark 
+                          ? 'border-gray-800 hover:bg-gray-700/40' 
+                          : 'border-gray-100 hover:bg-orange-50'
+                      }`}>
+                        <td className={`py-3 w-8 ${isDark ? 'text-white' : 'text-gray-900'} flex items-center justify-center`}>
+                          <input
+                            type="checkbox"
+                            checked={selected.includes(p.id)}
+                            onChange={() => handleSelectRow(p.id)}
+                            className="accent-orange-600 w-4 h-4 rounded"
+                          />
+                        </td>
+                        <td className={`py-3 font-medium text-left ${isDark ? 'text-white' : 'text-gray-900'}`}>{p.name}</td>
+                        <td className={`py-3 text-left ${isDark ? 'text-white' : 'text-gray-900'}`}>{p.category}</td>
+                        <td className={`py-3 text-left ${isDark ? 'text-white' : 'text-gray-900'}`}>{p.unitprice ? `$${Number(p.unitprice).toLocaleString(undefined, { minimumFractionDigits: 2 })}` : '-'}</td>
+                        <td className="py-3 text-left">
+                          {p.status === 'in stock' && (
+                            <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-bold border ${
+                              isDark ? 'bg-green-900/30 text-green-300 border-green-700' : 'bg-green-100 text-green-700 border-green-300'
+                            }`}>
+                              <FaCheckCircle className="mr-1 w-3 h-3" /> In Stock
+                            </span>
+                          )}
+                          {p.status === 'low stock' && (
+                            <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-bold border ${
+                              isDark ? 'bg-amber-900/30 text-amber-300 border-amber-700' : 'bg-amber-100 text-amber-800 border-amber-300'
+                            }`}>
+                              <TbAlertTriangle className="mr-1 w-3 h-3" /> Low Stock
+                            </span>
+                          )}
+                          {p.status === 'out of stock' && (
+                            <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-bold border ${
+                              isDark ? 'bg-red-900/30 text-red-300 border-red-700' : 'bg-red-100 text-red-700 border-red-300'
+                            }`}>
+                              <FiXCircle className="mr-1 w-3 h-3" /> Out of Stock
+                            </span>
+                          )}
+                          {p.status === 'discontinued' && (
+                            <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-bold border ${
+                              isDark ? 'bg-gray-800/30 text-gray-300 border-gray-600' : 'bg-gray-200 text-gray-700 border-gray-400'
+                            }`}>
+                              <FiXCircle className="mr-1 w-3 h-3" /> Discontinued
+                            </span>
+                          )}
+                        </td>
+                        <td className="py-3 flex gap-2">
+                          <button onClick={() => { setShowEdit(true); setEditId(p.id); setForm({ name: p.name, category: p.category, unitprice: p.unitprice, stock: p.stock || 0, status: p.status }); }} className="flex items-center gap-1 px-3 py-1 rounded bg-blue-500 text-white hover:bg-blue-600 transition cursor-pointer">
+                            <FiEdit2 className="w-4 h-4" /> Edit
+                          </button>
+                          <button onClick={() => setDeleteId(p.id)} className="flex items-center gap-1 px-3 py-1 rounded bg-red-500 text-white hover:bg-red-600 transition cursor-pointer">
+                            <FiTrash2 className="w-4 h-4" /> Delete
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </>
+              )}
             </table>
             {/* Pagination */}
             <div className="flex flex-wrap justify-center items-center gap-2 mt-4">
               <button
                 className={`px-3 py-1 rounded-xl font-semibold disabled:opacity-50 ${
-                  isDark ? 'bg-gray-700 text-gray-200' : 'bg-gray-200 text-gray-700'
+                  isDark ? 'bg-gray-700 text-gray-200 cursor-pointer' : 'bg-gray-200 text-gray-700 cursor-pointer'
+                }`}
+                onClick={() => handlePageChange(1)}
+                disabled={currentPage === 1}
+              >
+                «
+              </button>
+              <button
+                className={`px-3 py-1 rounded-xl font-semibold disabled:opacity-50 ${
+                  isDark ? 'bg-gray-700 text-gray-200 cursor-pointer' : 'bg-gray-200 text-gray-700 cursor-pointer'
                 }`}
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage === 1}
@@ -354,10 +375,10 @@ export default function Products() {
                   key={page}
                   className={`px-3 py-1 rounded-xl font-semibold ${
                     page === currentPage 
-                      ? 'bg-orange-600 text-white' 
+                      ? 'bg-orange-600 text-white cursor-pointer' 
                       : isDark 
-                        ? 'bg-gray-800 text-gray-200' 
-                        : 'bg-gray-100 text-gray-700'
+                        ? 'bg-gray-800 text-gray-200 cursor-pointer' 
+                        : 'bg-gray-100 text-gray-700 cursor-pointer'
                   }`}
                   onClick={() => handlePageChange(page)}
                 >
@@ -366,12 +387,21 @@ export default function Products() {
               ))}
               <button
                 className={`px-3 py-1 rounded-xl font-semibold disabled:opacity-50 ${
-                  isDark ? 'bg-gray-700 text-gray-200' : 'bg-gray-200 text-gray-700'
+                  isDark ? 'bg-gray-700 text-gray-200 cursor-pointer' : 'bg-gray-200 text-gray-700 cursor-pointer'
                 }`}
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
               >
                 Next
+              </button>
+              <button
+                className={`px-3 py-1 rounded-xl font-semibold disabled:opacity-50 ${
+                  isDark ? 'bg-gray-700 text-gray-200 cursor-pointer' : 'bg-gray-200 text-gray-700 cursor-pointer'
+                }`}
+                onClick={() => handlePageChange(totalPages)}
+                disabled={currentPage === totalPages}
+              >
+                »
               </button>
             </div>
           </div>
@@ -411,8 +441,8 @@ export default function Products() {
               </select>
             </div>
             <div className="flex gap-2 justify-end mt-6">
-              <button type="button" onClick={() => { setShowAdd(false); setForm(initialForm); }} className="px-4 py-2 rounded-xl bg-gray-200">Cancel</button>
-              <button type="submit" className="px-4 py-2 rounded-xl bg-orange-600 text-white">Add</button>
+              <button type="button" onClick={() => { setShowAdd(false); setForm(initialForm); }} className="px-4 py-2 rounded-xl bg-gray-200 cursor-pointer">Cancel</button>
+              <button type="submit" className="px-4 py-2 rounded-xl bg-orange-600 text-white cursor-pointer">Add</button>
             </div>
           </form>
         </div>
@@ -451,8 +481,8 @@ export default function Products() {
               </select>
             </div>
             <div className="flex gap-2 justify-end mt-6">
-              <button type="button" onClick={() => { setShowEdit(false); setForm(initialForm); setEditId(null); }} className="px-4 py-2 rounded-xl bg-gray-200">Cancel</button>
-              <button type="submit" className="px-4 py-2 rounded-xl bg-blue-600 text-white">Save</button>
+              <button type="button" onClick={() => { setShowEdit(false); setForm(initialForm); setEditId(null); }} className="px-4 py-2 rounded-xl bg-gray-200 cursor-pointer">Cancel</button>
+              <button type="submit" className="px-4 py-2 rounded-xl bg-blue-600 text-white cursor-pointer">Save</button>
             </div>
           </form>
         </div>
@@ -471,8 +501,8 @@ export default function Products() {
               isDark ? 'text-gray-300' : 'text-gray-700'
             }`}>Are you sure you want to delete this product?</p>
             <div className="flex gap-2 justify-end mt-6">
-              <button onClick={() => setDeleteId(null)} className="px-4 py-2 rounded-xl bg-gray-200">Cancel</button>
-              <button onClick={handleDelete} className="px-4 py-2 rounded-xl bg-red-600 text-white">Delete</button>
+              <button onClick={() => setDeleteId(null)} className="px-4 py-2 rounded-xl bg-gray-200 cursor-pointer">Cancel</button>
+              <button onClick={handleDelete} className="px-4 py-2 rounded-xl bg-red-600 text-white cursor-pointer">Delete</button>
             </div>
           </div>
         </div>
@@ -491,8 +521,8 @@ export default function Products() {
               isDark ? 'text-gray-300' : 'text-gray-700'
             }`}>Are you sure you want to delete {selected.length} selected products?</p>
             <div className="flex gap-2 justify-end mt-6">
-              <button onClick={() => setShowBulkDelete(false)} className="px-4 py-2 rounded-xl bg-gray-200">Cancel</button>
-              <button onClick={handleBulkDelete} className="px-4 py-2 rounded-xl bg-red-600 text-white">Delete</button>
+              <button onClick={() => setShowBulkDelete(false)} className="px-4 py-2 rounded-xl bg-gray-200 cursor-pointer">Cancel</button>
+              <button onClick={handleBulkDelete} className="px-4 py-2 rounded-xl bg-red-600 text-white cursor-pointer">Delete</button>
             </div>
           </div>
         </div>

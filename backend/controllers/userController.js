@@ -6,7 +6,7 @@ import hashPassword from "../node.bcrypt.js";
 // Get all users
 export const getUsers = async (req, res) => {
     try {
-        const users = await User.findAll(); // ✅ Sequelize correct method
+        const users = await User.findAll();
         
         // Transform users to include name field for frontend compatibility
         const usersWithName = users.map(user => ({
