@@ -25,6 +25,15 @@ export const login = async (req, res) => {
             { expiresIn: '1d' }
         );
 
+        // Log login activity
+        const ActivityLog = (await import('../models/ActivityLog.js')).default;
+        await ActivityLog.create({
+            userId: user.id,
+            activity: `User logged in`,
+            type: 'login',
+            status: 'completed',
+        });
+
         res.status(200).json({
             success: true,
             message: "Login successful",

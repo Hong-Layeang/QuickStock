@@ -374,16 +374,42 @@ export const getAdminReports = async (req, res) => {
   try {
     const reports = await Report.findAll({
       order: [['createdAt', 'DESC']],
+      include: [
+        {
+          model: Product,
+          as: 'Product',
+          attributes: ['name', 'supplierId'],
+          include: [
+            {
+              model: User,
+              as: 'supplier',
+              attributes: ['username'],
+            },
+          ],
+        },
+        {
+          model: User,
+          as: 'User',
+          attributes: ['username'],
+        },
+      ],
     });
+    // Map reports to include productName and supplierName at top level
+    const mappedReports = reports.map((report) => ({
+      ...report.toJSON(),
+      productName: report.Product?.name || '',
+      supplierName: report.Product?.supplier?.username || '',
+      userName: report.User?.username || '',
+    }));
     res.json({
       success: true,
-      data: reports
+      data: mappedReports,
     });
   } catch (error) {
     console.error('Error fetching admin reports:', error);
     res.status(500).json({
       success: false,
-      message: 'Failed to fetch reports'
+      message: 'Failed to fetch reports',
     });
   }
 };

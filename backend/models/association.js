@@ -10,8 +10,8 @@ Product.hasMany(Report, { foreignKey: 'productId' });
 Product.hasMany(ActivityLog, { foreignKey: 'productId' });
 
 // Report associations
-Report.belongsTo(Product, { foreignKey: 'productId' });
-Report.belongsTo(User, { foreignKey: 'userId' });
+Report.belongsTo(Product, { foreignKey: 'productId', as: 'Product' });
+Report.belongsTo(User, { foreignKey: 'userId', as: 'User' });
 
 // ActivityLog associations
 ActivityLog.belongsTo(Product, { foreignKey: 'productId' });

@@ -58,6 +58,15 @@ export const createUser = async (req, res) => {
             role: userRole,
         });
 
+        // Log user creation
+        const ActivityLog = (await import('../models/ActivityLog.js')).default;
+        await ActivityLog.create({
+            userId: newUser.id,
+            activity: `User registered (${userRole})`,
+            type: 'user',
+            status: 'completed',
+        });
+
         // Return user data with name field for frontend compatibility
         const userData = {
             id: newUser.id,
@@ -122,6 +131,14 @@ export const deleteUser = async (req, res) => {
         }
 
         await user.destroy();
+        // Log user deletion
+        const ActivityLog = (await import('../models/ActivityLog.js')).default;
+        await ActivityLog.create({
+            userId: req.user?.id || user.id,
+            activity: `User deleted (${user.username})`,
+            type: 'user',
+            status: 'completed',
+        });
         res.status(200).json({ success: true, message: "User deleted successfully" });
     } catch (error) {
         console.error("Error deleting user:", error.message);

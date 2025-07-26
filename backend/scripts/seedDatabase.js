@@ -7,10 +7,12 @@ import Report from '../models/Report.js';
 import ActivityLog from '../models/ActivityLog.js';
 
 // Number of suppliers and products to create
+const ADMINS_COUNT = 3;
 const NUM_SUPPLIERS = 5;
-const PRODUCTS_PER_SUPPLIER = 20;
+const PRODUCTS_PER_ADMIN = 150;
+const PRODUCTS_PER_SUPPLIER = 150;
 
-// Realistic Cambodian warehouse categories
+// Reduced to 6 categories for clarity
 const CATEGORIES = [
   'Construction Materials',
   'Beverages',
@@ -18,15 +20,6 @@ const CATEGORIES = [
   'Household Products',
   'Personal Care',
   'Electronics & Appliances',
-  'Stationery & Office Supplies',
-  'Plasticware & Containers',
-  'Agricultural Supplies',
-  'Clothing & Textiles',
-  'Automotive Supplies',
-  'Bags & Packaging',
-  'Hardware & Tools',
-  'Furniture',
-  'Batteries & Lighting',
 ];
 
 // Example product names for each category
@@ -66,23 +59,23 @@ async function seed() {
 
     // Create admin users first
     const admins = [];
-    for (let i = 0; i < 3; i++) {
-      const username = faker.internet.username();
+    for (let i = 0; i < ADMINS_COUNT; i++) {
+      const username = faker.internet.userName();
       const email = `admin${i + 1}@admin.com`;
       const rawPassword = `${username}@123`;
       const hashedPassword = await bcrypt.hash(rawPassword, 10);
-      
-      // Generate a realistic timestamp within the last 6 months
       const now = new Date();
       const daysAgo = faker.number.int({ min: 0, max: 180 });
-      const hoursAgo = faker.number.int({ min: 0, max: 23 });
-      const minutesAgo = faker.number.int({ min: 0, max: 59 });
-      
       const userDate = new Date(now);
       userDate.setDate(userDate.getDate() - daysAgo);
-      userDate.setHours(userDate.getHours() - hoursAgo);
-      userDate.setMinutes(userDate.getMinutes() - minutesAgo);
-      
+      // New user info
+      const birthdate = faker.date.birthdate({ min: 25, max: 50, mode: 'age' });
+      const phone = faker.phone.number('+855 1# ### ###');
+      const address = faker.location.streetAddress();
+      const gender = faker.helpers.arrayElement(['male', 'female', 'other']);
+      const avatar = faker.image.avatar();
+      const position = faker.person.jobTitle();
+      const note = faker.lorem.sentence();
       const [admin, created] = await User.findOrCreate({
         where: { email },
         defaults: {
@@ -90,6 +83,13 @@ async function seed() {
           email,
           password: hashedPassword,
           role: 'admin',
+          birthdate,
+          phone,
+          address,
+          gender,
+          avatar,
+          position,
+          note,
           createdAt: userDate,
           updatedAt: userDate
         },
@@ -101,22 +101,22 @@ async function seed() {
     // Create suppliers (role: 'supplier') - they don't create products
     const suppliers = [];
     for (let i = 0; i < NUM_SUPPLIERS; i++) {
-      const username = faker.internet.username();
+      const username = faker.internet.userName();
       const email = `supplier${i + 1}@supplier.com`;
       const rawPassword = `${username}@123`;
       const hashedPassword = await bcrypt.hash(rawPassword, 10);
-      
-      // Generate a realistic timestamp within the last 6 months
       const now = new Date();
       const daysAgo = faker.number.int({ min: 0, max: 180 });
-      const hoursAgo = faker.number.int({ min: 0, max: 23 });
-      const minutesAgo = faker.number.int({ min: 0, max: 59 });
-      
       const userDate = new Date(now);
       userDate.setDate(userDate.getDate() - daysAgo);
-      userDate.setHours(userDate.getHours() - hoursAgo);
-      userDate.setMinutes(userDate.getMinutes() - minutesAgo);
-      
+      // New user info
+      const birthdate = faker.date.birthdate({ min: 20, max: 40, mode: 'age' });
+      const phone = faker.phone.number('+855 9# ### ###');
+      const address = faker.location.streetAddress();
+      const gender = faker.helpers.arrayElement(['male', 'female', 'other']);
+      const avatar = faker.image.avatar();
+      const position = faker.person.jobTitle();
+      const note = faker.lorem.sentence();
       const [supplier, created] = await User.findOrCreate({
         where: { email },
         defaults: {
@@ -124,6 +124,13 @@ async function seed() {
           email,
           password: hashedPassword,
           role: 'supplier',
+          birthdate,
+          phone,
+          address,
+          gender,
+          avatar,
+          position,
+          note,
           createdAt: userDate,
           updatedAt: userDate
         },
@@ -134,54 +141,54 @@ async function seed() {
 
     // Admins create products and assign them to suppliers
     let totalProducts = 0;
-    for (let j = 0; j < PRODUCTS_PER_SUPPLIER * NUM_SUPPLIERS; j++) {
-      const admin = faker.helpers.arrayElement(admins);
-      const supplier = faker.helpers.arrayElement(suppliers);
-      const category = CATEGORIES[Math.floor(Math.random() * CATEGORIES.length)];
-      const names = PRODUCT_NAMES[category] || ['Generic Product'];
-      const productName = names[Math.floor(Math.random() * names.length)];
-      
-      // Generate a realistic timestamp within the last 3 months
-      const now = new Date();
-      const daysAgo = faker.number.int({ min: 0, max: 90 });
-      const hoursAgo = faker.number.int({ min: 0, max: 23 });
-      const minutesAgo = faker.number.int({ min: 0, max: 59 });
-      
-      const productDate = new Date(now);
-      productDate.setDate(productDate.getDate() - daysAgo);
-      productDate.setHours(productDate.getHours() - hoursAgo);
-      productDate.setMinutes(productDate.getMinutes() - minutesAgo);
-      
-      // Idempotency: avoid duplicate products for the same supplier
-      const [product, created] = await Product.findOrCreate({
-        where: { name: productName, supplierId: supplier.id },
-        defaults: {
-          name: productName,
-          category,
-          unitprice: parseFloat(faker.commerce.price()),
-          stock: faker.number.int({ min: 0, max: 100 }),
-          status: faker.helpers.arrayElement(['in stock', 'low stock', 'out of stock', 'discontinued']),
-          supplierId: supplier.id,
-          createdAt: productDate,
-          updatedAt: productDate
-        },
-      });
-      if (created) {
-        totalProducts++;
-        
-        // Create activity log for admin creating the product
-        await ActivityLog.create({
-          userId: admin.id,
-          activity: `Admin created product '${productName}' and assigned to supplier '${supplier.username}'`,
-          type: 'product',
-          status: 'completed',
-          productId: product.id,
-          createdAt: productDate,
-          updatedAt: productDate
+    // Each admin gets their own products
+    for (const admin of admins) {
+      for (let j = 0; j < PRODUCTS_PER_ADMIN; j++) {
+        const category = CATEGORIES[Math.floor(Math.random() * CATEGORIES.length)];
+        const names = PRODUCT_NAMES[category] || ['Generic Product'];
+        const productName = names[Math.floor(Math.random() * names.length)] + ' ' + faker.string.alpha(4).toUpperCase();
+        const now = new Date();
+        const daysAgo = faker.number.int({ min: 0, max: 90 });
+        const productDate = new Date(now);
+        productDate.setDate(productDate.getDate() - daysAgo);
+        // Assign about half of products to random suppliers, rest to admin
+        let assignedSupplierId, activityText;
+        if (j % 2 === 0 && suppliers.length > 0) {
+          const supplier = faker.helpers.arrayElement(suppliers);
+          assignedSupplierId = supplier.id;
+          activityText = `Admin assigned product '${productName}' to supplier '${supplier.username}'`;
+        } else {
+          assignedSupplierId = admin.id;
+          activityText = `Admin created product '${productName}' (self-owned)`;
+        }
+        const [product, created] = await Product.findOrCreate({
+          where: { name: productName, supplierId: assignedSupplierId },
+          defaults: {
+            name: productName,
+            category,
+            unitprice: parseFloat(faker.commerce.price()),
+            stock: faker.number.int({ min: 0, max: 100 }),
+            status: faker.helpers.arrayElement(['in stock', 'low stock', 'out of stock', 'discontinued']),
+            supplierId: assignedSupplierId,
+            createdAt: productDate,
+            updatedAt: productDate
+          },
         });
+        if (created) {
+          totalProducts++;
+          await ActivityLog.create({
+            userId: admin.id,
+            activity: activityText,
+            type: 'product',
+            status: 'completed',
+            productId: product.id,
+            createdAt: productDate,
+            updatedAt: productDate
+          });
+        }
       }
     }
-    console.log(`${totalProducts} products created by admins.`);
+    console.log(`${totalProducts} products created by admins and suppliers.`);
 
     // Fetch all products for reports
     const allProducts = await Product.findAll();
@@ -195,9 +202,9 @@ async function seed() {
         const product = faker.helpers.arrayElement(supplierProducts);
         const quantity = faker.number.int({ min: 1, max: 20 });
         const totalPrice = product.unitprice * quantity;
-        // Generate a realistic timestamp within the last 90 days
+        // Generate a timestamp within the last 7 days for analytics
         const now = new Date();
-        const daysAgo = faker.number.int({ min: 0, max: 89 });
+        const daysAgo = faker.number.int({ min: 0, max: 6 });
         const hoursAgo = faker.number.int({ min: 0, max: 23 });
         const minutesAgo = faker.number.int({ min: 0, max: 59 });
         const reportDate = new Date(now);

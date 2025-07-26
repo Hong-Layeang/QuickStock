@@ -50,6 +50,15 @@ export const createProduct = async (req, res) => {
             status,
             supplierId
         });
+        // Log product creation
+        const ActivityLog = (await import('../models/ActivityLog.js')).default;
+        await ActivityLog.create({
+            userId: req.user.id,
+            activity: `Created product '${name}'`,
+            type: 'product',
+            status: 'completed',
+            productId: newProduct.id
+        });
         
         // Transform product to match frontend expectations
         const transformedProduct = {
@@ -73,7 +82,7 @@ export const createProduct = async (req, res) => {
 
 export const editProduct = async (req, res) => {
     const { id } = req.params;
-    const { name, category, unitprice, stock, status } = req.body;
+    const { name, category, unitprice, stock, status, supplierId } = req.body;
 
     try {
         const product = await Product.findByPk(id);
@@ -81,12 +90,19 @@ export const editProduct = async (req, res) => {
             return res.status(404).json({ success: false, message: "Product not found" });
         }
 
-        const updatedProduct = await product.update({
-            name,
-            category,
-            unitprice,
-            stock,
-            status
+        const updateFields = { name, category, unitprice, stock, status };
+        if (supplierId !== undefined) {
+            updateFields.supplierId = supplierId;
+        }
+        const updatedProduct = await product.update(updateFields);
+        // Log product update
+        const ActivityLog = (await import('../models/ActivityLog.js')).default;
+        await ActivityLog.create({
+            userId: req.user.id,
+            activity: `Updated product '${updatedProduct.name}'`,
+            type: 'product',
+            status: 'completed',
+            productId: updatedProduct.id
         });
         
         // Transform product to match frontend expectations
@@ -119,6 +135,15 @@ export const deleteProduct = async (req, res) => {
         }
 
         await product.destroy();
+        // Log product deletion
+        const ActivityLog = (await import('../models/ActivityLog.js')).default;
+        await ActivityLog.create({
+            userId: req.user?.id || product.supplierId,
+            activity: `Deleted product '${product.name}'`,
+            type: 'product',
+            status: 'completed',
+            productId: product.id
+        });
         res.status(200).json({ success: true, message: "Product deleted" });
     } catch (error) {
         console.log("Error deleting product:", error);

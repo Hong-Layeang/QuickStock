@@ -24,6 +24,14 @@ const Product = sequelize.define("Product", {
     type: DataTypes.ENUM("in stock", "low stock", "out of stock", "discontinued"),
     defaultValue: "in stock",
   },
+  supplierId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'Users',
+      key: 'id'
+    }
+  },
 }, {
   timestamps: true,
 });
