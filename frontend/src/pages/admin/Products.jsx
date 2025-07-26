@@ -66,7 +66,7 @@ export default function Products() {
   });
 
   // Pagination
-  const pageSize = 5;
+  const pageSize = 30;
   const totalPages = Math.ceil(sorted.length / pageSize) || 1;
   const paginated = sorted.slice((currentPage - 1) * pageSize, currentPage * pageSize);
   const handlePageChange = (page) => {
@@ -256,7 +256,7 @@ export default function Products() {
                 </button>
               </div>
             )}
-            <table className="w-full text-sm">
+            <table className="table-fixed w-full text-sm">
               {paginated.length === 0 ? (
                 <tbody>
                   <tr>
@@ -273,19 +273,26 @@ export default function Products() {
                 <>
                   <thead>
                     <tr className={`border-b ${isDark ? 'border-gray-700' : 'border-gray-200'}`}>
-                      <th className={`py-3 font-semibold w-8 ${isDark ? 'text-white' : 'text-gray-900'} flex items-center justify-center`}>
-                        <input
-                          type="checkbox"
-                          checked={isAllSelected}
-                          onChange={handleSelectAll}
-                          className="accent-orange-600 w-4 h-4 rounded"
-                        />
+                      <th className="py-3 w-10" style={{width: '40px', minWidth: '40px', maxWidth: '40px'}}>
+                        <div className="flex justify-center">
+                          <input
+                            type="checkbox"
+                            checked={isAllSelected}
+                            onChange={handleSelectAll}
+                            className={`h-4 w-4 rounded-md border-2 cursor-pointer transition-all duration-200
+                              ${isDark 
+                                ? 'border-gray-600 bg-gray-700 checked:bg-orange-500 checked:border-orange-500 hover:border-orange-500' 
+                                : 'border-gray-300 bg-gray-100 checked:bg-orange-500 checked:border-orange-500 hover:border-orange-400'
+                              } focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 ${isDark ? 'focus:ring-offset-gray-900' : 'focus:ring-offset-white'}`}
+                          />
+                        </div>
                       </th>
-                      <th className={`py-3 text-left font-semibold cursor-pointer select-none ${isDark ? 'text-white' : 'text-gray-900'}`} onClick={() => handleSort("name")}>Name {sortBy === "name" && (sortOrder === "asc" ? "▲" : "▼")}</th>
-                      <th className={`py-3 text-left font-semibold cursor-pointer select-none ${isDark ? 'text-white' : 'text-gray-900'}`} onClick={() => handleSort("category")}>Category {sortBy === "category" && (sortOrder === "asc" ? "▲" : "▼")}</th>
-                      <th className={`py-3 text-left font-semibold cursor-pointer select-none ${isDark ? 'text-white' : 'text-gray-900'}`} onClick={() => handleSort("unitprice")}>Unit Price {sortBy === "unitprice" && (sortOrder === "asc" ? "▲" : "▼")}</th>
-                      <th className={`py-3 text-left font-semibold cursor-pointer select-none ${isDark ? 'text-white' : 'text-gray-900'}`} onClick={() => handleSort("status")}>Status {sortBy === "status" && (sortOrder === "asc" ? "▲" : "▼")}</th>
-                      <th className={`py-3 text-left font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>Actions</th>
+                      <th className={`py-3 text-left font-semibold cursor-pointer select-none w-1/5 ${isDark ? 'text-white' : 'text-gray-900'}`} style={{width: '20%'}} onClick={() => handleSort("name")}>Name {sortBy === "name" && (sortOrder === "asc" ? "▲" : "▼")}</th>
+                      <th className={`py-3 text-left font-semibold cursor-pointer select-none w-1/5 ${isDark ? 'text-white' : 'text-gray-900'}`} style={{width: '20%'}} onClick={() => handleSort("category")}>Category {sortBy === "category" && (sortOrder === "asc" ? "▲" : "▼")}</th>
+                      <th className={`py-3 text-center font-semibold w-1/12 ${isDark ? 'text-white' : 'text-gray-900'}`} style={{width: '8%'}}>Quantity</th>
+                      <th className={`py-3 font-semibold cursor-pointer select-none w-1/6 ${isDark ? 'text-white' : 'text-gray-900'}`} style={{width: '16.6%', textAlign: 'center'}} onClick={() => handleSort("unitprice")}>Unit Price {sortBy === "unitprice" && (sortOrder === "asc" ? "▲" : "▼")}</th>
+                      <th className={`py-3 text-center font-semibold cursor-pointer select-none w-1/6 ${isDark ? 'text-white' : 'text-gray-900'}`} style={{width: '16.6%'}} onClick={() => handleSort("status")}>Status {sortBy === "status" && (sortOrder === "asc" ? "▲" : "▼")}</th>
+                      <th className={`py-3 text-center font-semibold w-1/4 ${isDark ? 'text-white' : 'text-gray-900'}`} style={{width: '25%'}}>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -295,54 +302,89 @@ export default function Products() {
                           ? 'border-gray-800 hover:bg-gray-700/40' 
                           : 'border-gray-100 hover:bg-orange-50'
                       }`}>
-                        <td className={`py-3 w-8 ${isDark ? 'text-white' : 'text-gray-900'} flex items-center justify-center`}>
-                          <input
-                            type="checkbox"
-                            checked={selected.includes(p.id)}
-                            onChange={() => handleSelectRow(p.id)}
-                            className="accent-orange-600 w-4 h-4 rounded"
-                          />
+                        <td className="py-3 w-10" style={{width: '40px', minWidth: '40px', maxWidth: '40px'}}>
+                          <div className="flex justify-center">
+                            <input
+                              type="checkbox"
+                              checked={selected.includes(p.id)}
+                              onChange={() => handleSelectRow(p.id)}
+                              className={`h-4 w-4 rounded-md border-2 cursor-pointer transition-all duration-200
+                                ${isDark 
+                                  ? 'border-gray-600 bg-gray-700 checked:bg-orange-500 checked:border-orange-500 hover:border-orange-500' 
+                                  : 'border-gray-300 bg-gray-100 checked:bg-orange-500 checked:border-orange-500 hover:border-orange-400'
+                                } focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 ${isDark ? 'focus:ring-offset-gray-900' : 'focus:ring-offset-white'}`}
+                            />
+                          </div>
                         </td>
-                        <td className={`py-3 font-medium text-left ${isDark ? 'text-white' : 'text-gray-900'}`}>{p.name}</td>
-                        <td className={`py-3 text-left ${isDark ? 'text-white' : 'text-gray-900'}`}>{p.category}</td>
-                        <td className={`py-3 text-left ${isDark ? 'text-white' : 'text-gray-900'}`}>{p.unitprice ? `$${Number(p.unitprice).toLocaleString(undefined, { minimumFractionDigits: 2 })}` : '-'}</td>
-                        <td className="py-3 text-left">
-                          {p.status === 'in stock' && (
-                            <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-bold border ${
-                              isDark ? 'bg-green-900/30 text-green-300 border-green-700' : 'bg-green-100 text-green-700 border-green-300'
-                            }`}>
-                              <FaCheckCircle className="mr-1 w-3 h-3" /> In Stock
-                            </span>
-                          )}
-                          {p.status === 'low stock' && (
-                            <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-bold border ${
-                              isDark ? 'bg-amber-900/30 text-amber-300 border-amber-700' : 'bg-amber-100 text-amber-800 border-amber-300'
-                            }`}>
-                              <TbAlertTriangle className="mr-1 w-3 h-3" /> Low Stock
-                            </span>
-                          )}
-                          {p.status === 'out of stock' && (
-                            <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-bold border ${
-                              isDark ? 'bg-red-900/30 text-red-300 border-red-700' : 'bg-red-100 text-red-700 border-red-300'
-                            }`}>
-                              <FiXCircle className="mr-1 w-3 h-3" /> Out of Stock
-                            </span>
-                          )}
-                          {p.status === 'discontinued' && (
-                            <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-bold border ${
-                              isDark ? 'bg-gray-800/30 text-gray-300 border-gray-600' : 'bg-gray-200 text-gray-700 border-gray-400'
-                            }`}>
-                              <FiXCircle className="mr-1 w-3 h-3" /> Discontinued
-                            </span>
-                          )}
+                        <td className={`py-3 font-medium text-left w-1/5 ${isDark ? 'text-white' : 'text-gray-900'}`} style={{width: '20%'}}>{p.name}</td>
+                        <td className={`py-3 text-left w-1/5 ${isDark ? 'text-white' : 'text-gray-900'}`} style={{width: '20%'}}>{p.category}</td>
+                        <td className={`py-3 text-center w-1/12 ${isDark ? 'text-white' : 'text-gray-900'}`} style={{width: '8%'}}>{p.stock ?? 0}</td>
+                        <td className={`py-3 text-center w-1/6 ${isDark ? 'text-white' : 'text-gray-900'}`} style={{width: '16.6%'}}>{p.unitprice ? `$${Number(p.unitprice).toLocaleString(undefined, { minimumFractionDigits: 2 })}` : '-'}</td>
+                        <td className="py-3 w-1/6" style={{width: '16.6%'}}>
+                          <div className="flex justify-center">
+                            {p.status === 'in stock' && (
+                              <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-bold border ${
+                                isDark ? 'bg-green-900/30 text-green-300 border-green-700' : 'bg-green-100 text-green-700 border-green-300'
+                              }`}>
+                                <FaCheckCircle className="mr-1 w-3 h-3" /> In Stock
+                              </span>
+                            )}
+                            {p.status === 'low stock' && (
+                              <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-bold border ${
+                                isDark ? 'bg-amber-900/30 text-amber-300 border-amber-700' : 'bg-amber-100 text-amber-800 border-amber-300'
+                              }`}>
+                                <TbAlertTriangle className="mr-1 w-3 h-3" /> Low Stock
+                              </span>
+                            )}
+                            {p.status === 'out of stock' && (
+                              <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-bold border ${
+                                isDark ? 'bg-red-900/30 text-red-300 border-red-700' : 'bg-red-100 text-red-700 border-red-300'
+                              }`}>
+                                <FiXCircle className="mr-1 w-3 h-3" /> Out of Stock
+                              </span>
+                            )}
+                            {p.status === 'discontinued' && (
+                              <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-bold border ${
+                                isDark ? 'bg-gray-800/30 text-gray-300 border-gray-600' : 'bg-gray-200 text-gray-700 border-gray-400'
+                              }`}>
+                                <FiXCircle className="mr-1 w-3 h-3" /> Discontinued
+                              </span>
+                            )}
+                          </div>
                         </td>
-                        <td className="py-3 flex gap-2">
-                          <button onClick={() => { setShowEdit(true); setEditId(p.id); setForm({ name: p.name, category: p.category, unitprice: p.unitprice, stock: p.stock || 0, status: p.status }); }} className="flex items-center gap-1 px-3 py-1 rounded bg-blue-500 text-white hover:bg-blue-600 transition cursor-pointer">
-                            <FiEdit2 className="w-4 h-4" /> Edit
-                          </button>
-                          <button onClick={() => setDeleteId(p.id)} className="flex items-center gap-1 px-3 py-1 rounded bg-red-500 text-white hover:bg-red-600 transition cursor-pointer">
-                            <FiTrash2 className="w-4 h-4" /> Delete
-                          </button>
+                        <td className="py-3 w-1/4" style={{width: '25%'}}>
+                          <div className="flex justify-center gap-3">
+                            <button 
+                              onClick={() => { 
+                                setShowEdit(true); 
+                                setEditId(p.id); 
+                                setForm({ 
+                                  name: p.name, 
+                                  category: p.category, 
+                                  unitprice: p.unitprice, 
+                                  stock: p.stock || 0, 
+                                  status: p.status 
+                                }); 
+                              }} 
+                              className={`flex items-center gap-2 px-4 py-1.5 rounded-lg text-sm font-medium shadow-sm transition-all duration-200 cursor-pointer
+                                ${isDark 
+                                  ? 'bg-gray-700 text-blue-400 hover:bg-gray-600 hover:text-blue-300' 
+                                  : 'bg-blue-50 text-blue-600 hover:bg-blue-100'
+                                }`}
+                            >
+                              <FiEdit2 className="w-3.5 h-3.5" /> Edit
+                            </button>
+                            <button 
+                              onClick={() => setDeleteId(p.id)} 
+                              className={`flex items-center gap-2 px-4 py-1.5 rounded-lg text-sm font-medium shadow-sm transition-all duration-200 cursor-pointer
+                                ${isDark 
+                                  ? 'bg-gray-700 text-red-400 hover:bg-gray-600 hover:text-red-300' 
+                                  : 'bg-red-50 text-red-600 hover:bg-red-100'
+                                }`}
+                            >
+                              <FiTrash2 className="w-3.5 h-3.5" /> Delete
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -410,39 +452,195 @@ export default function Products() {
 
       {/* Add Product Modal */}
       {showAdd && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
           <form onSubmit={handleAdd} className={`p-8 rounded-2xl shadow-xl w-full max-w-md space-y-6 ${
-            isDark ? 'bg-gray-900' : 'bg-white'
+            isDark ? 'bg-gray-800 border border-gray-700' : 'bg-white'
           }`}>
-            <h3 className="text-xl font-bold mb-4">Add Product</h3>
-            <div className="space-y-3">
-              <label className="block text-sm font-semibold mb-1">Name</label>
-              <input type="text" placeholder="Name" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} required className="w-full px-4 py-2 border rounded-xl" />
+            <h3 className={`text-2xl font-bold mb-6 text-left pl-1 ${isDark ? 'text-white' : 'text-gray-900'}`}>Add Product</h3>
+            <div className="space-y-4">
+              <div>
+                <label className={`block text-base mb-2 text-left pl-1 ${isDark ? 'text-gray-100' : 'text-gray-700'}`}>Name</label>
+                <input 
+                  type="text" 
+                  placeholder="Name" 
+                  value={form.name} 
+                  onChange={e => setForm({ ...form, name: e.target.value })} 
+                  required 
+                  className={`w-full px-4 py-2.5 rounded-xl transition-colors duration-200 ${
+                    isDark 
+                      ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-orange-500' 
+                      : 'bg-white border-gray-300 focus:border-orange-500'
+                  } border focus:ring-2 focus:ring-orange-500/20`}
+                />
+              </div>
+              <div>
+                <label className={`block text-base mb-2 text-left pl-1 ${isDark ? 'text-gray-100' : 'text-gray-700'}`}>Category</label>
+                <div className="relative">
+                  <select
+                    value={form.category}
+                    onChange={e => {
+                      if (e.target.value === "new") {
+                        const newCategory = prompt("Enter new category name:");
+                        if (newCategory && newCategory.trim()) {
+                          setForm({ ...form, category: newCategory.trim() });
+                        }
+                      } else {
+                        setForm({ ...form, category: e.target.value });
+                      }
+                    }}
+                    className={`w-full px-4 py-2.5 rounded-xl transition-colors duration-200 appearance-none ${
+                      isDark 
+                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-orange-500' 
+                        : 'bg-white border-gray-300 focus:border-orange-500'
+                    } border focus:ring-2 focus:ring-orange-500/20 cursor-pointer`}
+                  >
+                    <option value="">Select Category</option>
+                    {categories.map(cat => (
+                      <option key={cat} value={cat}>{cat}</option>
+                    ))}
+                    <option value="new">+ Add New Category</option>
+                  </select>
+                  <div className={`absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none ${
+                    isDark ? 'text-gray-400' : 'text-gray-500'
+                  }`}>
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <label className={`block text-base mb-2 text-left pl-1 ${isDark ? 'text-gray-100' : 'text-gray-700'}`}>Unit Price</label>
+                <div className="flex items-center">
+                  <button 
+                    type="button"
+                    onClick={() => {
+                      const currentPrice = parseFloat(form.unitprice) || 0;
+                      setForm(prev => ({ 
+                        ...prev, 
+                        unitprice: Math.max(0, currentPrice - 0.01).toFixed(2)
+                      }));
+                    }}
+                    className={`px-3 py-2.5 rounded-l-xl border-r-0 transition-colors duration-200 cursor-pointer ${
+                      isDark 
+                        ? 'bg-gray-700 border-gray-600 text-gray-300 hover:bg-gray-600' 
+                        : 'bg-gray-100 border-gray-300 text-gray-700 hover:bg-gray-200'
+                    } border`}
+                  >
+                    -
+                  </button>
+                  <div className="relative flex-1">
+                    <span className={`absolute left-4 top-1/2 -translate-y-1/2 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>$</span>
+                    <input 
+                      type="number" 
+                      placeholder="0.00" 
+                      value={form.unitprice} 
+                      onChange={e => setForm({ ...form, unitprice: e.target.value })} 
+                      required 
+                      min="0" 
+                      step="0.01"
+                      className={`w-full pl-8 pr-4 py-2.5 transition-colors duration-200 text-center appearance-none ${
+                        isDark 
+                          ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
+                          : 'bg-white border-gray-300'
+                      } border-y focus:ring-2 focus:ring-orange-500/20 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none`}
+                    />
+                  </div>
+                  <button 
+                    type="button"
+                    onClick={() => {
+                      const currentPrice = parseFloat(form.unitprice) || 0;
+                      setForm(prev => ({ 
+                        ...prev, 
+                        unitprice: (currentPrice + 0.01).toFixed(2)
+                      }));
+                    }}
+                    className={`px-3 py-2.5 rounded-r-xl border-l-0 transition-colors duration-200 cursor-pointer ${
+                      isDark 
+                        ? 'bg-gray-700 border-gray-600 text-gray-300 hover:bg-gray-600' 
+                        : 'bg-gray-100 border-gray-300 text-gray-700 hover:bg-gray-200'
+                    } border`}
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+              <div>
+                <label className={`block text-base mb-2 text-left pl-1 ${isDark ? 'text-gray-100' : 'text-gray-700'}`}>Stock</label>
+                <div className="flex items-center">
+                  <button 
+                    type="button"
+                    onClick={() => setForm(prev => ({ ...prev, stock: Math.max(0, (prev.stock || 0) - 1) }))}
+                    className={`px-3 py-2.5 rounded-l-xl border-r-0 transition-colors duration-200 cursor-pointer ${
+                      isDark 
+                        ? 'bg-gray-700 border-gray-600 text-gray-300 hover:bg-gray-600' 
+                        : 'bg-gray-100 border-gray-300 text-gray-700 hover:bg-gray-200'
+                    } border`}
+                  >
+                    -
+                  </button>
+                  <input 
+                    type="number" 
+                    placeholder="0" 
+                    value={form.stock} 
+                    onChange={e => setForm({ ...form, stock: parseInt(e.target.value) || 0 })} 
+                    required 
+                    min="0"
+                    className={`w-full px-4 py-2.5 transition-colors duration-200 text-center appearance-none ${
+                      isDark 
+                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
+                        : 'bg-white border-gray-300'
+                    } border-y focus:ring-2 focus:ring-orange-500/20 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none`}
+                  />
+                  <button 
+                    type="button"
+                    onClick={() => setForm(prev => ({ ...prev, stock: (prev.stock || 0) + 1 }))}
+                    className={`px-3 py-2.5 rounded-r-xl border-l-0 transition-colors duration-200 cursor-pointer ${
+                      isDark 
+                        ? 'bg-gray-700 border-gray-600 text-gray-300 hover:bg-gray-600' 
+                        : 'bg-gray-100 border-gray-300 text-gray-700 hover:bg-gray-200'
+                    } border`}
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+              <div>
+                <label className={`block text-base mb-2 text-left pl-1 ${isDark ? 'text-gray-100' : 'text-gray-700'}`}>Status</label>
+                <select 
+                  value={form.status} 
+                  onChange={e => setForm({ ...form, status: e.target.value })} 
+                  className={`w-full px-4 py-2.5 rounded-xl transition-colors duration-200 cursor-pointer ${
+                    isDark 
+                      ? 'bg-gray-700 border-gray-600 text-white focus:border-orange-500' 
+                      : 'bg-white border-gray-300 focus:border-orange-500'
+                  } border focus:ring-2 focus:ring-orange-500/20`}
+                >
+                  <option value="in stock">In Stock</option>
+                  <option value="low stock">Low Stock</option>
+                  <option value="out of stock">Out of Stock</option>
+                  <option value="discontinued">Discontinued</option>
+                </select>
+              </div>
             </div>
-            <div className="space-y-3">
-              <label className="block text-sm font-semibold mb-1">Category</label>
-              <input type="text" placeholder="Category" value={form.category} onChange={e => setForm({ ...form, category: e.target.value })} required className="w-full px-4 py-2 border rounded-xl" />
-            </div>
-            <div className="space-y-3">
-              <label className="block text-sm font-semibold mb-1">Unit Price</label>
-              <input type="number" placeholder="Unit Price" value={form.unitprice} onChange={e => setForm({ ...form, unitprice: e.target.value })} required className="w-full px-4 py-2 border rounded-xl" min="0" step="0.01" />
-            </div>
-            <div className="space-y-3">
-              <label className="block text-sm font-semibold mb-1">Stock</label>
-              <input type="number" placeholder="Stock Quantity" value={form.stock} onChange={e => setForm({ ...form, stock: parseInt(e.target.value) || 0 })} required className="w-full px-4 py-2 border rounded-xl" min="0" />
-            </div>
-            <div className="space-y-3">
-              <label className="block text-sm font-semibold mb-1">Status</label>
-              <select value={form.status} onChange={e => setForm({ ...form, status: e.target.value })} className="w-full px-4 py-2 border rounded-xl">
-                <option value="in stock">In Stock</option>
-                <option value="low stock">Low Stock</option>
-                <option value="out of stock">Out of Stock</option>
-                <option value="discontinued">Discontinued</option>
-              </select>
-            </div>
-            <div className="flex gap-2 justify-end mt-6">
-              <button type="button" onClick={() => { setShowAdd(false); setForm(initialForm); }} className="px-4 py-2 rounded-xl bg-gray-200 cursor-pointer">Cancel</button>
-              <button type="submit" className="px-4 py-2 rounded-xl bg-orange-600 text-white cursor-pointer">Add</button>
+            <div className="flex gap-3 justify-end mt-8">
+              <button 
+                type="button" 
+                onClick={() => { setShowAdd(false); setForm(initialForm); }} 
+                className={`px-5 py-2.5 rounded-xl transition-colors duration-200 cursor-pointer ${
+                  isDark 
+                    ? 'bg-gray-700 text-gray-200 hover:bg-gray-600 border border-gray-600' 
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                Cancel
+              </button>
+              <button 
+                type="submit" 
+                className="px-5 py-2.5 rounded-xl bg-orange-600 text-white hover:bg-orange-700 transition-colors duration-200 cursor-pointer"
+              >
+                Add
+              </button>
             </div>
           </form>
         </div>
@@ -450,39 +648,194 @@ export default function Products() {
 
       {/* Edit Product Modal */}
       {showEdit && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
           <form onSubmit={handleEdit} className={`p-8 rounded-2xl shadow-xl w-full max-w-md space-y-6 ${
-            isDark ? 'bg-gray-900' : 'bg-white'
+            isDark ? 'bg-gray-800 border border-gray-700' : 'bg-white'
           }`}>
-            <h3 className="text-xl font-bold mb-4">Edit Product</h3>
-            <div className="space-y-3">
-              <label className="block text-sm font-semibold mb-1">Name</label>
-              <input type="text" placeholder="Name" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} required className="w-full px-4 py-2 border rounded-xl" />
+            <h3 className={`text-2xl font-bold mb-6 text-left pl-1 ${isDark ? 'text-white' : 'text-gray-900'}`}>Edit Product</h3>
+            <div className="space-y-4">
+              <div>
+                <label className={`block text-base mb-2 text-left pl-1 ${isDark ? 'text-gray-100' : 'text-gray-700'}`}>Name</label>
+                <input 
+                  type="text" 
+                  placeholder="Name" 
+                  value={form.name} 
+                  onChange={e => setForm({ ...form, name: e.target.value })} 
+                  required 
+                  className={`w-full px-4 py-2.5 rounded-xl transition-colors duration-200 ${
+                    isDark 
+                      ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500' 
+                      : 'bg-white border-gray-300 focus:border-blue-500'
+                  } border focus:ring-2 focus:ring-blue-500/20`}
+                />
+              </div>
+              <div>
+                <label className={`block text-base mb-2 text-left pl-1 ${isDark ? 'text-gray-100' : 'text-gray-700'}`}>Category</label>
+                <div className="relative">
+                  <select
+                    value={form.category}
+                    onChange={e => {
+                      if (e.target.value === "new") {
+                        const newCategory = prompt("Enter new category name:");
+                        if (newCategory && newCategory.trim()) {
+                          setForm({ ...form, category: newCategory.trim() });
+                        }
+                      } else {
+                        setForm({ ...form, category: e.target.value });
+                      }
+                    }}
+                    className={`w-full px-4 py-2.5 rounded-xl transition-colors duration-200 appearance-none ${
+                      isDark 
+                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500' 
+                        : 'bg-white border-gray-300 focus:border-blue-500'
+                    } border focus:ring-2 focus:ring-blue-500/20 cursor-pointer`}
+                  >
+                    {categories.map(cat => (
+                      <option key={cat} value={cat}>{cat}</option>
+                    ))}
+                    <option value="new">+ Add New Category</option>
+                  </select>
+                  <div className={`absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none ${
+                    isDark ? 'text-gray-400' : 'text-gray-500'
+                  }`}>
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <label className={`block text-base mb-2 ${isDark ? 'text-gray-100' : 'text-gray-700'}`}>Unit Price</label>
+                <div className="flex items-center">
+                  <button 
+                    type="button"
+                    onClick={() => {
+                      const currentPrice = parseFloat(form.unitprice) || 0;
+                      setForm(prev => ({ 
+                        ...prev, 
+                        unitprice: Math.max(0, currentPrice - 0.01).toFixed(2)
+                      }));
+                    }}
+                    className={`px-3 py-2.5 rounded-l-xl border-r-0 transition-colors duration-200 cursor-pointer ${
+                      isDark 
+                        ? 'bg-gray-700 border-gray-600 text-gray-300 hover:bg-gray-600' 
+                        : 'bg-gray-100 border-gray-300 text-gray-700 hover:bg-gray-200'
+                    } border`}
+                  >
+                    -
+                  </button>
+                  <div className="relative flex-1">
+                    <span className={`absolute left-4 top-1/2 -translate-y-1/2 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>$</span>
+                    <input 
+                      type="number" 
+                      placeholder="0.00" 
+                      value={form.unitprice} 
+                      onChange={e => setForm({ ...form, unitprice: e.target.value })} 
+                      required 
+                      min="0" 
+                      step="0.01"
+                      className={`w-full pl-8 pr-4 py-2.5 transition-colors duration-200 text-center appearance-none ${
+                        isDark 
+                          ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
+                          : 'bg-white border-gray-300'
+                      } border-y focus:ring-2 focus:ring-blue-500/20 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none`}
+                    />
+                  </div>
+                  <button 
+                    type="button"
+                    onClick={() => {
+                      const currentPrice = parseFloat(form.unitprice) || 0;
+                      setForm(prev => ({ 
+                        ...prev, 
+                        unitprice: (currentPrice + 0.01).toFixed(2)
+                      }));
+                    }}
+                    className={`px-3 py-2.5 rounded-r-xl border-l-0 transition-colors duration-200 cursor-pointer ${
+                      isDark 
+                        ? 'bg-gray-700 border-gray-600 text-gray-300 hover:bg-gray-600' 
+                        : 'bg-gray-100 border-gray-300 text-gray-700 hover:bg-gray-200'
+                    } border`}
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+              <div>
+                <label className={`block text-base mb-2 ${isDark ? 'text-gray-100' : 'text-gray-700'}`}>Stock</label>
+                <div className="flex items-center">
+                  <button 
+                    type="button"
+                    onClick={() => setForm(prev => ({ ...prev, stock: Math.max(0, (prev.stock || 0) - 1) }))}
+                    className={`px-3 py-2.5 rounded-l-xl border-r-0 transition-colors duration-200 cursor-pointer ${
+                      isDark 
+                        ? 'bg-gray-700 border-gray-600 text-gray-300 hover:bg-gray-600' 
+                        : 'bg-gray-100 border-gray-300 text-gray-700 hover:bg-gray-200'
+                    } border`}
+                  >
+                    -
+                  </button>
+                  <input 
+                    type="number" 
+                    placeholder="0" 
+                    value={form.stock} 
+                    onChange={e => setForm({ ...form, stock: parseInt(e.target.value) || 0 })} 
+                    required 
+                    min="0"
+                    className={`w-full px-4 py-2.5 transition-colors duration-200 text-center appearance-none ${
+                      isDark 
+                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
+                        : 'bg-white border-gray-300'
+                    } border-y focus:ring-2 focus:ring-blue-500/20 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none`}
+                  />
+                  <button 
+                    type="button"
+                    onClick={() => setForm(prev => ({ ...prev, stock: (prev.stock || 0) + 1 }))}
+                    className={`px-3 py-2.5 rounded-r-xl border-l-0 transition-colors duration-200 cursor-pointer ${
+                      isDark 
+                        ? 'bg-gray-700 border-gray-600 text-gray-300 hover:bg-gray-600' 
+                        : 'bg-gray-100 border-gray-300 text-gray-700 hover:bg-gray-200'
+                    } border`}
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+              <div>
+                <label className={`block text-base mb-2 ${isDark ? 'text-gray-100' : 'text-gray-700'}`}>Status</label>
+                <select 
+                  value={form.status} 
+                  onChange={e => setForm({ ...form, status: e.target.value })} 
+                  className={`w-full px-4 py-2.5 rounded-xl transition-colors duration-200 cursor-pointer ${
+                    isDark 
+                      ? 'bg-gray-700 border-gray-600 text-white focus:border-blue-500' 
+                      : 'bg-white border-gray-300 focus:border-blue-500'
+                  } border focus:ring-2 focus:ring-blue-500/20`}
+                >
+                  <option value="in stock">In Stock</option>
+                  <option value="low stock">Low Stock</option>
+                  <option value="out of stock">Out of Stock</option>
+                  <option value="discontinued">Discontinued</option>
+                </select>
+              </div>
             </div>
-            <div className="space-y-3">
-              <label className="block text-sm font-semibold mb-1">Category</label>
-              <input type="text" placeholder="Category" value={form.category} onChange={e => setForm({ ...form, category: e.target.value })} required className="w-full px-4 py-2 border rounded-xl" />
-            </div>
-            <div className="space-y-3">
-              <label className="block text-sm font-semibold mb-1">Unit Price</label>
-              <input type="number" placeholder="Unit Price" value={form.unitprice} onChange={e => setForm({ ...form, unitprice: e.target.value })} required className="w-full px-4 py-2 border rounded-xl" min="0" step="0.01" />
-            </div>
-            <div className="space-y-3">
-              <label className="block text-sm font-semibold mb-1">Stock</label>
-              <input type="number" placeholder="Stock Quantity" value={form.stock} onChange={e => setForm({ ...form, stock: parseInt(e.target.value) || 0 })} required className="w-full px-4 py-2 border rounded-xl" min="0" />
-            </div>
-            <div className="space-y-3">
-              <label className="block text-sm font-semibold mb-1">Status</label>
-              <select value={form.status} onChange={e => setForm({ ...form, status: e.target.value })} className="w-full px-4 py-2 border rounded-xl">
-                <option value="in stock">In Stock</option>
-                <option value="low stock">Low Stock</option>
-                <option value="out of stock">Out of Stock</option>
-                <option value="discontinued">Discontinued</option>
-              </select>
-            </div>
-            <div className="flex gap-2 justify-end mt-6">
-              <button type="button" onClick={() => { setShowEdit(false); setForm(initialForm); setEditId(null); }} className="px-4 py-2 rounded-xl bg-gray-200 cursor-pointer">Cancel</button>
-              <button type="submit" className="px-4 py-2 rounded-xl bg-blue-600 text-white cursor-pointer">Save</button>
+            <div className="flex gap-3 justify-end mt-8">
+              <button 
+                type="button" 
+                onClick={() => { setShowEdit(false); setForm(initialForm); setEditId(null); }} 
+                className={`px-5 py-2.5 rounded-xl transition-colors duration-200 cursor-pointer ${
+                  isDark 
+                    ? 'bg-gray-700 text-gray-200 hover:bg-gray-600 border border-gray-600' 
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                Cancel
+              </button>
+              <button 
+                type="submit" 
+                className="px-5 py-2.5 rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-200 cursor-pointer"
+              >
+                Save
+              </button>
             </div>
           </form>
         </div>
