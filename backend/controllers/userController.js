@@ -7,18 +7,20 @@ import hashPassword from "../node.bcrypt.js";
 export const getUsers = async (req, res) => {
     try {
         const users = await User.findAll();
-        
-        // Transform users to include name field for frontend compatibility
-        const usersWithName = users.map(user => ({
+        // Return all relevant fields for frontend compatibility
+        const usersWithAllFields = users.map(user => ({
             id: user.id,
             name: user.username,
             email: user.email,
             role: user.role,
+            phone: user.phone,
+            address: user.address,
+            gender: user.gender,
+            birthdate: user.birthdate,
             createdAt: user.createdAt,
             updatedAt: user.updatedAt
         }));
-        
-        res.status(200).json(usersWithName);
+        res.status(200).json(usersWithAllFields);
     } catch (error) {
         console.error("Error in fetching users data:", error.message);
         res.status(500).json({ success: false, message: "Server Error" });
@@ -42,7 +44,7 @@ export const getUsersById = async (req, res) => {
 
 // Create a new user
 export const createUser = async (req, res) => {
-    const { name, email, password, role } = req.body;
+    const { name, email, password, role, phone, address, gender, birthdate } = req.body;
 
     // Ensure only supplier role can be created through registration
     const userRole = role === "admin" ? "supplier" : (role || "supplier");
@@ -56,6 +58,10 @@ export const createUser = async (req, res) => {
             email,
             password: hashedPassword,
             role: userRole,
+            phone,
+            address,
+            gender,
+            birthdate
         });
 
         // Log user creation
@@ -67,12 +73,16 @@ export const createUser = async (req, res) => {
             status: 'completed',
         });
 
-        // Return user data with name field for frontend compatibility
+        // Return user data with all fields for frontend compatibility
         const userData = {
             id: newUser.id,
             name: newUser.username,
             email: newUser.email,
             role: newUser.role,
+            phone: newUser.phone,
+            address: newUser.address,
+            gender: newUser.gender,
+            birthdate: newUser.birthdate,
             createdAt: newUser.createdAt,
             updatedAt: newUser.updatedAt
         };
@@ -142,6 +152,42 @@ export const deleteUser = async (req, res) => {
         res.status(200).json({ success: true, message: "User deleted successfully" });
     } catch (error) {
         console.error("Error deleting user:", error.message);
+        res.status(500).json({ success: false, message: "Server Error" });
+    }
+};
+
+// Get current user profile
+export const getCurrentUser = async (req, res) => {
+    try {
+        console.log('getCurrentUser - req.user:', req.user); // Debug log
+        
+        if (!req.user || !req.user.id) {
+            return res.status(401).json({ success: false, message: "User not authenticated" });
+        }
+        
+        const user = await User.findByPk(req.user.id);
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+        
+        // Return complete user profile
+        const userProfile = {
+            id: user.id,
+            name: user.username,
+            username: user.username,
+            email: user.email,
+            phone: user.phone,
+            address: user.address,
+            gender: user.gender,
+            birthdate: user.birthdate,
+            role: user.role,
+            createdAt: user.createdAt,
+            updatedAt: user.updatedAt
+        };
+        
+        res.status(200).json(userProfile);
+    } catch (error) {
+        console.error("Error fetching current user:", error.message);
         res.status(500).json({ success: false, message: "Server Error" });
     }
 };

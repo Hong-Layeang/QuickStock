@@ -1,7 +1,7 @@
 import { TrendingUp, DollarSign, Package, BarChart3, ClipboardList, Star, UserCheck, Layers, Users } from "lucide-react"
 import useThemeStore from '../stores/useThemeStore'
 
-const TransactionSummary = ({ metrics }) => {
+const TransactionSummary = ({ metrics, title = "Transaction Summary", subtitle = "Sales and performance metrics" }) => {
   const { isDark } = useThemeStore();
 
   // Icon mapping for dynamic icons
@@ -48,10 +48,10 @@ const TransactionSummary = ({ metrics }) => {
             <div>
               <h2 className={`text-xl font-bold ${
                 isDark ? 'text-white' : 'text-gray-900'
-              }`}>Transaction Summary</h2>
+              }`}>{title}</h2>
               <p className={`text-sm ${
                 isDark ? 'text-gray-400' : 'text-gray-500'
-              }`}>Sales and performance metrics</p>
+              }`}>{subtitle}</p>
             </div>
           </div>
           <button className={`text-sm font-medium transition-colors hover:cursor-pointer ${

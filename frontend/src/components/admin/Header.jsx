@@ -5,10 +5,12 @@ import useAuthStore from "../../stores/useAuthStore"
 import useThemeStore from "../../stores/useThemeStore"
 import ThemeToggle from "../ThemeToggle"
 import NotificationDropdown from "../NotificationDropdown"
+import { useNavigate } from "react-router-dom"
 
 const Header = () => {
   const user = useAuthStore((state) => state.user)
   const { isDark } = useThemeStore()
+  const navigate = useNavigate()
 
   return (
     <header className={`${isDark ? "bg-gray-900" : "bg-white"} border-b shadow-sm ${
@@ -71,9 +73,12 @@ const Header = () => {
             <NotificationDropdown />
 
             {/* Settings */}
-            <button className={`p-2 rounded-xl transition-colors group hover:cursor-pointer ${
-              isDark ? 'hover:bg-gray-800' : 'hover:bg-gray-100'
-            }`}>
+            <button 
+              onClick={() => navigate('/admin/settings')}
+              className={`p-2 rounded-xl transition-colors group hover:cursor-pointer ${
+                isDark ? 'hover:bg-gray-800' : 'hover:bg-gray-100'
+              }`}
+            >
               <Settings className={`h-5 w-5 group-hover:scale-110 transition-transform hover:cursor-pointer ${
                 isDark ? 'text-gray-300' : 'text-gray-600'
               }`} />
@@ -95,9 +100,12 @@ const Header = () => {
                   {user?.email || 'admin@quickstock.com'}
                 </p>
               </div>
-              <button className={`p-2 rounded-xl transition-colors group hover:cursor-pointer ${
-                isDark ? 'hover:bg-gray-800' : 'hover:bg-gray-100'
-              }`}>
+              <button 
+                onClick={() => navigate('/admin/settings')}
+                className={`p-2 rounded-xl transition-colors group hover:cursor-pointer ${
+                  isDark ? 'hover:bg-gray-800' : 'hover:bg-gray-100'
+                }`}
+              >
                 <div className="h-8 w-8 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full flex items-center justify-center text-white font-medium text-sm group-hover:scale-110 transition-transform">
                   {user?.name?.charAt(0)?.toUpperCase() || 'A'}
                 </div>

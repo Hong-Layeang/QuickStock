@@ -24,6 +24,23 @@ const useUserStore = create((set) => ({
         }
     },
 
+    // Fetch current user profile
+    fetchCurrentUser: async () => {
+        set({ loading: true, error: null });
+        try {
+            const token = localStorage.getItem('token');
+            const res = await axios.get(`${API_BASE_URL}/api/users/me`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            return res.data;
+        } catch (error) {
+            set({ error: error.response?.data?.message || 'Failed to fetch current user', loading: false });
+            return null;
+        }
+    },
+
     // create a new supplier or admin by admin
     createUser: async (newUser) => {
         if (!newUser.email || !newUser.password) {

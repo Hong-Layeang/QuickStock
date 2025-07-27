@@ -34,6 +34,7 @@ export default function Products() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [categoryFilter, setCategoryFilter] = useState("all");
+  const [supplierFilter, setSupplierFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [sortBy, setSortBy] = useState(null);
   const [sortOrder, setSortOrder] = useState("asc");
@@ -61,7 +62,9 @@ export default function Products() {
       (statusFilter === "out of stock" && p.status === "out of stock") ||
       (statusFilter === "discontinued" && p.status === "discontinued");
     const matchesCategory = categoryFilter === "all" || p.category === categoryFilter;
-    return matchesSearch && matchesStatus && matchesCategory;
+    const matchesSupplier = supplierFilter === "all" || 
+      (p.supplierId && p.supplierId.toString() === supplierFilter);
+    return matchesSearch && matchesStatus && matchesCategory && matchesSupplier;
   });
 
   // Sorting
@@ -93,7 +96,7 @@ export default function Products() {
     setCurrentPage(page);
   };
   // Reset page on filter/search/sort change
-  React.useEffect(() => { setCurrentPage(1); }, [search, statusFilter, sortBy, sortOrder]);
+  React.useEffect(() => { setCurrentPage(1); }, [search, statusFilter, categoryFilter, supplierFilter, sortBy, sortOrder]);
 
   // Sorting handler
   const handleSort = (col) => {
@@ -167,79 +170,113 @@ export default function Products() {
     setShowBulkDelete(false);
   };
   // Deselect on filter/search/page change
-  React.useEffect(() => { setSelected([]); }, [search, statusFilter, categoryFilter, currentPage, loading]);
+  React.useEffect(() => { setSelected([]); }, [search, statusFilter, categoryFilter, supplierFilter, currentPage, loading]);
 
   return (
     <AdminLayout>
-      <div className={`rounded-2xl p-6 shadow-md border ${
+      <div className={`rounded-2xl p-4 sm:p-6 shadow-md border ${
         isDark 
           ? 'bg-gray-800 border-gray-700' 
           : 'bg-white border-gray-200'
       }`}>
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
-          <div>
-            <h2 className={`text-2xl font-bold mb-1 ${
+        {/* Header */}
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6 gap-4">
+          <div className="flex-1">
+            <h2 className={`text-xl sm:text-2xl font-bold mb-1 ${
               isDark ? 'text-white' : 'text-gray-900'
             }`}>Products</h2>
-            <p className={isDark ? 'text-gray-400' : 'text-gray-600'}>Manage all products here.</p>
+            <p className={`text-sm sm:text-base ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>Manage all products here.</p>
             {/* Status summary badges */}
-            <div className="flex flex-wrap gap-2 mt-2">
-              <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
+            <div className="flex flex-wrap gap-2 mt-3">
+              <span className={`inline-block px-2 sm:px-3 py-1 rounded-full text-xs font-semibold ${
                 isDark ? 'bg-green-900/30 text-green-300' : 'bg-green-100 text-green-800'
               }`}>
                 In Stock: {inStockCount}
               </span>
-              <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
+              <span className={`inline-block px-2 sm:px-3 py-1 rounded-full text-xs font-semibold ${
                 isDark ? 'bg-yellow-900/30 text-yellow-300' : 'bg-yellow-100 text-yellow-800'
               }`}>
                 Low Stock: {lowStockCount}
               </span>
-              <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
+              <span className={`inline-block px-2 sm:px-3 py-1 rounded-full text-xs font-semibold ${
                 isDark ? 'bg-red-900/30 text-red-300' : 'bg-red-100 text-red-800'
               }`}>
                 Out of Stock: {outOfStockCount}
               </span>
-              <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
+              <span className={`inline-block px-2 sm:px-3 py-1 rounded-full text-xs font-semibold ${
                 isDark ? 'bg-gray-900/30 text-gray-300' : 'bg-gray-100 text-gray-800'
               }`}>
                 Discontinued: {discontinuedCount}
               </span>
+              <span className={`inline-block px-2 sm:px-3 py-1 rounded-full text-xs font-semibold ${
+                isDark ? 'bg-orange-900 text-orange-100' : 'bg-orange-200 text-orange-700'
+              }`}>
+                Total Products: {products.length}
+              </span>
             </div>
           </div>
-          <button onClick={() => setShowAdd(true)} className="bg-orange-600 hover:bg-orange-700 text-white font-semibold px-5 py-2 rounded-xl shadow transition-all cursor-pointer">+ Add Product</button>
+          <div className="flex-shrink-0">
+            <button 
+              onClick={() => setShowAdd(true)} 
+              className="w-full sm:w-auto bg-orange-600 hover:bg-orange-700 text-white font-semibold px-4 sm:px-5 py-2 rounded-xl shadow transition-all cursor-pointer text-sm sm:text-base hover:scale-105"
+            >
+              + Add Product
+            </button>
+          </div>
         </div>
-        <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
-          <input
-            type="text"
-            placeholder="Search by name or category..."
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            className={`pl-4 pr-4 py-2 rounded-2xl border focus:outline-none focus:ring-2 focus:ring-orange-400 shadow-sm transition-all duration-200 ${isDark ? 'bg-gray-700 text-white border-gray-600' : 'bg-white text-gray-900 border-gray-300'}`}
-            style={{ minWidth: 260 }}
-          />
-          <select
-            value={statusFilter}
-            onChange={e => setStatusFilter(e.target.value)}
-            className={`px-4 py-2 rounded-xl border focus:outline-none focus:ring-2 focus:ring-orange-400 shadow-sm transition-all duration-200 cursor-pointer ${isDark ? 'bg-gray-700 text-white border-gray-600' : 'bg-white text-gray-900 border-gray-300'}`}
-            style={{ minWidth: 200 }}
-          >
-            <option value="all">All Statuses</option>
-            <option value="in stock">In Stock</option>
-            <option value="low stock">Low Stock</option>
-            <option value="out of stock">Out of Stock</option>
-            <option value="discontinued">Discontinued</option>
-          </select>
-          <select
-            value={categoryFilter}
-            onChange={e => setCategoryFilter(e.target.value)}
-            className={`px-4 py-2 rounded-xl border focus:outline-none focus:ring-2 focus:ring-orange-400 shadow-sm transition-all duration-200 cursor-pointer ${isDark ? 'bg-gray-700 text-white border-gray-600' : 'bg-white text-gray-900 border-gray-300'}`}
-            style={{ minWidth: 200 }}
-          >
-            <option value="all">All Categories</option>
-            {categories.map(cat => (
-              <option key={cat} value={cat}>{cat}</option>
-            ))}
-          </select>
+        
+        {/* Filters */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
+          <div className="sm:col-span-2 lg:col-span-1">
+            <input
+              type="text"
+              placeholder="Search by name or category..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              className={`w-full px-3 sm:px-4 py-2 sm:py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-orange-400 shadow-sm transition-all duration-200 text-sm sm:text-base ${isDark ? 'bg-gray-700 text-white border-gray-600' : 'bg-white text-gray-900 border-gray-300'}`}
+            />
+          </div>
+          <div>
+            <select
+              value={statusFilter}
+              onChange={e => setStatusFilter(e.target.value)}
+              className={`w-full px-3 sm:px-4 py-2 sm:py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-orange-400 shadow-sm transition-all duration-200 cursor-pointer text-sm sm:text-base ${isDark ? 'bg-gray-700 text-white border-gray-600' : 'bg-white text-gray-900 border-gray-300'}`}
+            >
+              <option value="all">All Statuses</option>
+              <option value="in stock">In Stock</option>
+              <option value="low stock">Low Stock</option>
+              <option value="out of stock">Out of Stock</option>
+              <option value="discontinued">Discontinued</option>
+            </select>
+          </div>
+          <div>
+            <select
+              value={categoryFilter}
+              onChange={e => setCategoryFilter(e.target.value)}
+              className={`w-full px-3 sm:px-4 py-2 sm:py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-orange-400 shadow-sm transition-all duration-200 cursor-pointer text-sm sm:text-base ${isDark ? 'bg-gray-700 text-white border-gray-600' : 'bg-white text-gray-900 border-gray-300'}`}
+            >
+              <option value="all">All Categories</option>
+              {categories.map(cat => (
+                <option key={cat} value={cat}>{cat}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <select
+              value={supplierFilter}
+              onChange={e => setSupplierFilter(e.target.value)}
+              className={`w-full px-3 sm:px-4 py-2 sm:py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-orange-400 shadow-sm transition-all duration-200 cursor-pointer text-sm sm:text-base ${isDark ? 'bg-gray-700 text-white border-gray-600' : 'bg-white text-gray-900 border-gray-300'}`}
+            >
+              <option value="all">All Suppliers</option>
+              {suppliers.length > 0 ? suppliers.map(supplier => (
+                <option key={supplier.id} value={supplier.id.toString()}>
+                  {supplier.name}
+                </option>
+              )) : (
+                <option disabled>No suppliers found</option>
+              )}
+            </select>
+          </div>
         </div>
         {loading && (
           <div className="overflow-x-auto">
@@ -313,11 +350,11 @@ export default function Products() {
                 </button>
               </div>
             )}
-            <table className="table-fixed w-full text-sm">
+            <table className="table-fixed w-full text-sm" style={{minWidth: '800px'}}>
               {paginated.length === 0 ? (
                 <tbody>
                   <tr>
-                    <td colSpan={6} className="py-12">
+                    <td colSpan={7} className="py-12">
                       <div className="flex flex-col items-center justify-center">
                         <span className="text-7xl mb-4 select-none">😕</span>
                         <div className="text-lg font-semibold mb-2 text-center">No products found.</div>
@@ -345,11 +382,12 @@ export default function Products() {
                         </div>
                       </th>
                       <th className={`py-3 text-left font-semibold cursor-pointer select-none w-1/5 ${isDark ? 'text-white' : 'text-gray-900'}`} style={{width: '20%'}} onClick={() => handleSort("name")}>Name {sortBy === "name" && (sortOrder === "asc" ? "▲" : "▼")}</th>
-                      <th className={`py-3 text-left font-semibold cursor-pointer select-none w-1/5 ${isDark ? 'text-white' : 'text-gray-900'}`} style={{width: '20%'}} onClick={() => handleSort("category")}>Category {sortBy === "category" && (sortOrder === "asc" ? "▲" : "▼")}</th>
+                      <th className={`py-3 text-left font-semibold cursor-pointer select-none w-1/5 ${isDark ? 'text-white' : 'text-gray-900'}`} style={{width: '12%'}} onClick={() => handleSort("category")}>Category {sortBy === "category" && (sortOrder === "asc" ? "▲" : "▼")}</th>
                       <th className={`py-3 text-center font-semibold w-1/12 ${isDark ? 'text-white' : 'text-gray-900'}`} style={{width: '8%'}}>Quantity</th>
-                      <th className={`py-3 font-semibold cursor-pointer select-none w-1/6 ${isDark ? 'text-white' : 'text-gray-900'}`} style={{width: '16.6%', textAlign: 'center'}} onClick={() => handleSort("unitprice")}>Unit Price {sortBy === "unitprice" && (sortOrder === "asc" ? "▲" : "▼")}</th>
-                      <th className={`py-3 text-center font-semibold cursor-pointer select-none w-1/6 ${isDark ? 'text-white' : 'text-gray-900'}`} style={{width: '16.6%'}} onClick={() => handleSort("status")}>Status {sortBy === "status" && (sortOrder === "asc" ? "▲" : "▼")}</th>
-                      <th className={`py-3 text-center font-semibold w-1/4 ${isDark ? 'text-white' : 'text-gray-900'}`} style={{width: '25%'}}>Actions</th>
+                      <th className={`py-3 font-semibold cursor-pointer select-none w-1/6 ${isDark ? 'text-white' : 'text-gray-900'}`} style={{width: '16%', textAlign: 'center'}} onClick={() => handleSort("unitprice")}>Unit Price {sortBy === "unitprice" && (sortOrder === "asc" ? "▲" : "▼")}</th>
+                      <th className={`py-3 text-left font-semibold w-1/6 ${isDark ? 'text-white' : 'text-gray-900'}`} style={{width: '12%'}}>Supplier</th>
+                      <th className={`py-3 text-center font-semibold cursor-pointer select-none w-1/6 ${isDark ? 'text-white' : 'text-gray-900'}`} style={{width: '12%'}} onClick={() => handleSort("status")}>Status {sortBy === "status" && (sortOrder === "asc" ? "▲" : "▼")}</th>
+                      <th className={`py-3 text-center font-semibold w-1/4 ${isDark ? 'text-white' : 'text-gray-900'}`} style={{width: '20%'}}>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -374,10 +412,13 @@ export default function Products() {
                           </div>
                         </td>
                         <td className={`py-3 font-medium text-left w-1/5 ${isDark ? 'text-white' : 'text-gray-900'}`} style={{width: '20%'}}>{p.name}</td>
-                        <td className={`py-3 text-left w-1/5 ${isDark ? 'text-white' : 'text-gray-900'}`} style={{width: '20%'}}>{p.category}</td>
+                        <td className={`py-3 text-left w-1/5 ${isDark ? 'text-white' : 'text-gray-900'}`} style={{width: '12%'}}>{p.category}</td>
                         <td className={`py-3 text-center w-1/12 ${isDark ? 'text-white' : 'text-gray-900'}`} style={{width: '8%'}}>{p.stock ?? 0}</td>
-                        <td className={`py-3 text-center w-1/6 ${isDark ? 'text-white' : 'text-gray-900'}`} style={{width: '16.6%'}}>{p.unitprice ? `$${Number(p.unitprice).toLocaleString(undefined, { minimumFractionDigits: 2 })}` : '-'}</td>
-                        <td className="py-3 w-1/6" style={{width: '16.6%'}}>
+                        <td className={`py-3 text-center w-1/6 text-green-600 dark:text-green-400`} style={{width: '12%'}}>{p.unitprice ? `$${Number(p.unitprice).toLocaleString(undefined, { minimumFractionDigits: 2 })}` : '-'}</td>
+                        <td className={`py-3 text-left w-1/6 ${isDark ? 'text-gray-300' : 'text-gray-600'}`} style={{width: '16%'}}>
+                          {suppliers.find(s => s.id === p.supplierId)?.name || 'N/A'}
+                        </td>
+                        <td className="py-3 w-1/6" style={{width: '12%'}}>
                           <div className="flex justify-center">
                             {p.status === 'in stock' && (
                               <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-bold border ${
@@ -409,8 +450,8 @@ export default function Products() {
                             )}
                           </div>
                         </td>
-                        <td className="py-3 w-1/4" style={{width: '25%'}}>
-                          <div className="flex justify-center gap-3">
+                        <td className="py-3 w-1/4" style={{width: '20%'}}>
+                          <div className="flex justify-center gap-1 sm:gap-2">
                             <button 
                               onClick={() => { 
                                 setShowEdit(true); 
@@ -423,23 +464,27 @@ export default function Products() {
                                   status: p.status 
                                 }); 
                               }} 
-                              className={`flex items-center gap-2 px-4 py-1.5 rounded-lg text-sm font-medium shadow-sm transition-all duration-200 cursor-pointer
+                              className={`flex items-center gap-1 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg text-xs sm:text-sm font-medium shadow-sm transition-all duration-200 cursor-pointer
                                 ${isDark 
                                   ? 'bg-gray-700 text-blue-400 hover:bg-gray-600 hover:text-blue-300' 
                                   : 'bg-blue-50 text-blue-600 hover:bg-blue-100'
                                 }`}
                             >
-                              <FiEdit2 className="w-3.5 h-3.5" /> Edit
+                              <FiEdit2 className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> 
+                              <span className="hidden sm:inline">Edit</span>
+                              <span className="sm:hidden">E</span>
                             </button>
                             <button 
                               onClick={() => setDeleteId(p.id)} 
-                              className={`flex items-center gap-2 px-4 py-1.5 rounded-lg text-sm font-medium shadow-sm transition-all duration-200 cursor-pointer
+                              className={`flex items-center gap-1 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg text-xs sm:text-sm font-medium shadow-sm transition-all duration-200 cursor-pointer
                                 ${isDark 
                                   ? 'bg-gray-700 text-red-400 hover:bg-gray-600 hover:text-red-300' 
                                   : 'bg-red-50 text-red-600 hover:bg-red-100'
                                 }`}
                             >
-                              <FiTrash2 className="w-3.5 h-3.5" /> Delete
+                              <FiTrash2 className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> 
+                              <span className="hidden sm:inline">Delete</span>
+                              <span className="sm:hidden">D</span>
                             </button>
                           </div>
                         </td>

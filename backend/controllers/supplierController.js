@@ -59,43 +59,58 @@ export const getSupplierDashboard = async (req, res) => {
       status: act.status,
     }));
 
-    // Dashboard metrics
+    // Calculate total value of supplier's inventory
+    const supplierProducts = await Product.findAll({ 
+      where: { supplierId },
+      attributes: ['unitprice', 'stock']
+    });
+    const totalInventoryValue = supplierProducts.reduce((sum, p) => sum + (p.unitprice || 0) * (p.stock || 0), 0);
+
+    // Get supplier's reports for revenue calculation
+    const supplierReports = await Report.findAll({ 
+      where: { userId: supplierId, status: 'completed' },
+      attributes: ['totalPrice', 'quantity']
+    });
+    const totalRevenue = supplierReports.reduce((sum, r) => sum + (r.totalPrice || 0), 0);
+    const totalSales = supplierReports.reduce((sum, r) => sum + (r.quantity || 0), 0);
+
+    // Dashboard metrics for Transaction Summary (different from cards)
     const metrics = [
       {
-        label: 'Total Products',
-        value: totalProducts.toString(),
-        change: '+5%',
-        icon: 'package',
-        color: 'text-blue-600',
-        bgColor: 'bg-blue-100 dark:bg-blue-900/20'
-      },
-      {
-        label: 'In Stock',
-        value: inStockProducts.toString(),
-        change: 'Active',
-        icon: 'check-circle',
+        label: 'Total Sales Revenue',
+        value: `$${totalRevenue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+        change: 'All time earnings',
+        icon: 'dollar-sign',
         color: 'text-green-600',
         bgColor: 'bg-green-100 dark:bg-green-900/20'
       },
       {
-        label: 'Low Stock Items',
-        value: lowStockProducts.toString(),
-        change: 'Needs attention',
-        icon: 'alert-triangle',
-        color: 'text-red-600',
-        bgColor: 'bg-red-100 dark:bg-red-900/20'
+        label: 'Items Sold',
+        value: totalSales.toString(),
+        change: 'Total quantity sold',
+        icon: 'trending-up',
+        color: 'text-blue-600',
+        bgColor: 'bg-blue-100 dark:bg-blue-900/20'
       },
       {
-        label: 'Out of Stock',
-        value: outOfStockProducts.toString(),
-        change: 'Requires restocking',
-        icon: 'package-x',
-        color: 'text-orange-600',
-        bgColor: 'bg-orange-100 dark:bg-orange-900/20'
+        label: 'Inventory Value',
+        value: `$${totalInventoryValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+        change: 'Current stock value',
+        icon: 'package',
+        color: 'text-purple-600',
+        bgColor: 'bg-purple-100 dark:bg-purple-900/20'
+      },
+      {
+        label: 'Avg. Product Price',
+        value: totalProducts > 0 ? `$${(totalInventoryValue / totalProducts).toFixed(2)}` : '$0.00',
+        change: 'Average value per product',
+        icon: 'bar-chart-3',
+        color: 'text-indigo-600',
+        bgColor: 'bg-indigo-100 dark:bg-indigo-900/20'
       }
     ];
 
-    // Dashboard cards data
+    // Dashboard cards data (exactly 4 cards)
     const cards = [
       {
         icon: 'boxes',
@@ -148,19 +163,6 @@ export const getSupplierDashboard = async (req, res) => {
         change: 'from last month',
         link: '/supplier/my-products?filter=in-stock',
         description: 'Your products currently in stock'
-      },
-      {
-        icon: 'package-minus',
-        title: 'Out of Stock',
-        value: outOfStockProducts.toString(),
-        subtitle: 'items',
-        bg: 'bg-gradient-to-br from-red-400 via-red-500 to-red-600',
-        text: 'text-white',
-        trend: '+0%',
-        trendDirection: 'flat',
-        change: 'from last week',
-        link: '/supplier/my-products?filter=out-of-stock',
-        description: 'Your products that are out of stock'
       }
     ];
 

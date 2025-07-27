@@ -1,7 +1,7 @@
 import { Clock, User, Activity } from "lucide-react"
 import useThemeStore from '../stores/useThemeStore'
 
-const ActivityTable = ({ activities }) => {
+const ActivityTable = ({ activities, title = "Recent Activities", subtitle = "Latest inventory activities" }) => {
   const { isDark } = useThemeStore();
 
   const getActivityIcon = (type) => {
@@ -40,10 +40,10 @@ const ActivityTable = ({ activities }) => {
               <div>
                 <h2 className={`text-xl font-bold ${
                   isDark ? 'text-white' : 'text-gray-900'
-                }`}>Recent Activities</h2>
+                }`}>{title}</h2>
                 <p className={`text-sm ${
                   isDark ? 'text-gray-400' : 'text-gray-500'
-                }`}>Latest inventory activities</p>
+                }`}>{subtitle}</p>
               </div>
             </div>
           </div>
@@ -82,10 +82,10 @@ const ActivityTable = ({ activities }) => {
             <div>
               <h2 className={`text-xl font-bold ${
                 isDark ? 'text-white' : 'text-gray-900'
-              }`}>Recent Activities</h2>
+              }`}>{title}</h2>
               <p className={`text-sm ${
                 isDark ? 'text-gray-400' : 'text-gray-500'
-              }`}>Latest inventory activities</p>
+              }`}>{subtitle}</p>
             </div>
           </div>
           <button className={`text-sm font-medium transition-colors hover:cursor-pointer ${

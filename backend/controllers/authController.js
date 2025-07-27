@@ -40,8 +40,16 @@ export const login = async (req, res) => {
             token,
             user: {
                 id: user.id,
+                name: user.name,
+                username: user.username,
                 email: user.email,
-                role: user.role
+                phone: user.phone,
+                address: user.address,
+                gender: user.gender,
+                birthdate: user.birthdate,
+                role: user.role,
+                createdAt: user.createdAt,
+                updatedAt: user.updatedAt
             }
         });
 
