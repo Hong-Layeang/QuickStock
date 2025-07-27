@@ -61,10 +61,12 @@ export const getAdminDashboard = async (req, res) => {
       });
       const totalReports = reports.length;
       const totalValue = reports.reduce((sum, report) => sum + report.totalPrice, 0);
+      const totalQuantity = reports.reduce((sum, report) => sum + (report.quantity || 0), 0);
       salesData.push({
         name: dayName,
-        reports: totalReports,
+        sales: totalQuantity, // show total quantity sold as 'sales' for chart
         value: totalValue,
+        reports: totalReports,
       });
     }
 
@@ -158,6 +160,7 @@ export const getAdminDashboard = async (req, res) => {
       },
     });
     const totalSalesToday = salesTodayReports.reduce((sum, r) => sum + (r.totalPrice || 0), 0);
+    const totalQuantityToday = salesTodayReports.reduce((sum, r) => sum + (r.quantity || 0), 0);
 
     // Total Sales This Month
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -437,11 +440,13 @@ export const getAdminAnalytics = async (req, res) => {
       });
       const totalReports = reports.length;
       const dayValue = reports.reduce((sum, report) => sum + report.totalPrice, 0);
+      const totalQuantity = reports.reduce((sum, report) => sum + (report.quantity || 0), 0);
       totalValue += dayValue;
       analyticsData.push({
         name: dayName,
-        orders: totalReports,
+        sales: totalQuantity, // match dashboard: total quantity sold
         value: dayValue,
+        reports: totalReports,
       });
     }
     res.json({

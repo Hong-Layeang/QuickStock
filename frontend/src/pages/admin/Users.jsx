@@ -24,11 +24,14 @@ export default function Users() {
 
   useEffect(() => { fetchUsers(); }, [fetchUsers]);
 
-  const filtered = users.filter(u =>
-    (u.name?.toLowerCase().includes(search.toLowerCase()) ||
-    u.email?.toLowerCase().includes(search.toLowerCase()) ||
-    u.role?.toLowerCase().includes(search.toLowerCase()))
-  );
+  // Filter and sort users: newest first (matches dashboard logic)
+  const filtered = users
+    .filter(u =>
+      (u.name?.toLowerCase().includes(search.toLowerCase()) ||
+      u.email?.toLowerCase().includes(search.toLowerCase()) ||
+      u.role?.toLowerCase().includes(search.toLowerCase()))
+    )
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
   const handleAdd = async (e) => {
     e.preventDefault();

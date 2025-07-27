@@ -7,6 +7,14 @@ import { FiSearch, FiCalendar, FiX } from "react-icons/fi";
 export default function Reports() {
   const { isDark } = useThemeStore();
   const { reports, loading, error, fetchAdminReports } = useReportStore();
+  // Status counts for badges
+  const completedCount = reports.filter(r => r.status === 'completed').length;
+  const pendingCount = reports.filter(r => r.status === 'pending').length;
+  const rejectedCount = reports.filter(r => r.status === 'rejected').length;
+  // Print function
+  const handlePrint = () => {
+    window.print();
+  };
 
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
@@ -15,17 +23,19 @@ export default function Reports() {
   const [dateDropdownOpen, setDateDropdownOpen] = useState(false);
   const dateDropdownRef = useRef(null);
 
-  // Filtered reports based on search, status, and date
-  const filteredReports = reports.filter((report) => {
-    const matchesSearch =
-      report.productName?.toLowerCase().includes(search.toLowerCase()) ||
-      report.supplierName?.toLowerCase().includes(search.toLowerCase());
-    const matchesStatus = statusFilter ? report.status === statusFilter : true;
-    const reportDate = new Date(report.createdAt);
-    const matchesDateFrom = dateFrom ? reportDate >= new Date(dateFrom) : true;
-    const matchesDateTo = dateTo ? reportDate <= new Date(dateTo + 'T23:59:59') : true;
-    return matchesSearch && matchesStatus && matchesDateFrom && matchesDateTo;
-  });
+  // Filtered and sorted reports: newest first (matches dashboard logic)
+  const filteredReports = reports
+    .filter((report) => {
+      const matchesSearch =
+        report.productName?.toLowerCase().includes(search.toLowerCase()) ||
+        report.supplierName?.toLowerCase().includes(search.toLowerCase());
+      const matchesStatus = statusFilter ? report.status === statusFilter : true;
+      const reportDate = new Date(report.createdAt);
+      const matchesDateFrom = dateFrom ? reportDate >= new Date(dateFrom) : true;
+      const matchesDateTo = dateTo ? reportDate <= new Date(dateTo + 'T23:59:59') : true;
+      return matchesSearch && matchesStatus && matchesDateFrom && matchesDateTo;
+    })
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -53,10 +63,33 @@ export default function Reports() {
           ? 'bg-gray-800 border-gray-700' 
           : 'bg-white border-gray-200'
       }`}>
-        <h2 className={`text-2xl font-bold mb-2 ${
-          isDark ? 'text-white' : 'text-gray-900'
-        }`}>Reports</h2>
-        <p className={isDark ? 'text-gray-400' : 'text-gray-600'}>Manage all reports submitted by suppliers.</p>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2 gap-4">
+          <div>
+            <h2 className={`text-2xl font-bold mb-2 ${
+              isDark ? 'text-white' : 'text-gray-900'
+            }`}>Reports</h2>
+            <p className={isDark ? 'text-gray-400' : 'text-gray-600'}>Manage all reports submitted by suppliers.</p>
+            {/* Status summary badges */}
+            <div className="flex flex-wrap gap-2 mt-2">
+              <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
+                isDark ? 'bg-green-900/30 text-green-300' : 'bg-green-100 text-green-800'
+              }`}>
+                Completed: {completedCount}
+              </span>
+              <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
+                isDark ? 'bg-yellow-900/30 text-yellow-300' : 'bg-yellow-100 text-yellow-800'
+              }`}>
+                Pending: {pendingCount}
+              </span>
+              <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
+                isDark ? 'bg-red-900/30 text-red-300' : 'bg-red-100 text-red-800'
+              }`}>
+                Rejected: {rejectedCount}
+              </span>
+            </div>
+          </div>
+          <button onClick={handlePrint} className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2 rounded-xl shadow transition-all cursor-pointer print:hidden">Print Report</button>
+        </div>
         {/* Search and Filter Controls */}
         <div className="flex flex-col md:flex-row gap-4 mt-4 mb-4 items-center">
           {/* Search input with icon */}

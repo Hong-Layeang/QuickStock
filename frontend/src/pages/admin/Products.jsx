@@ -6,6 +6,7 @@ import { TbAlertTriangle } from "react-icons/tb";
 import { FiEdit2, FiXCircle, FiTrash2 } from "react-icons/fi";
 import { FiLoader } from "react-icons/fi";
 import useThemeStore from "../../stores/useThemeStore.js";
+import useUserStore from "../../stores/useUserStore.js";
 
 const initialForm = {
   name: "",
@@ -13,11 +14,18 @@ const initialForm = {
   unitprice: "",
   stock: 0,
   status: "in stock",
+  supplierId: "", // for assignment
 };
 
 export default function Products() {
   const { isDark } = useThemeStore();
   const { products, loading, error, fetchProducts, addProduct, editProduct, deleteProduct } = useProductStore();
+  const { users, fetchUsers } = useUserStore();
+  // Status counts (match dashboard logic)
+  const lowStockCount = products.filter(p => p.stock < 10).length;
+  const inStockCount = products.filter(p => p.status === 'in stock').length;
+  const outOfStockCount = products.filter(p => p.status === 'out of stock').length;
+  const discontinuedCount = products.filter(p => p.status === 'discontinued').length;
   const [showAdd, setShowAdd] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
   const [form, setForm] = useState(initialForm);
@@ -36,10 +44,13 @@ export default function Products() {
   const [deleting, setDeleting] = useState(false);
   const [formError, setFormError] = useState("");
 
-  useEffect(() => { fetchProducts(); }, []);
+  useEffect(() => { fetchProducts(); fetchUsers(); }, []);
 
   // Get unique categories for filter dropdown
   const categories = Array.from(new Set(products.map(p => p.category))).filter(Boolean);
+
+  // Filter suppliers from users
+  const suppliers = users.filter(u => u.role === 'supplier');
 
   const filtered = products.filter(p => {
     const matchesSearch = p.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -54,8 +65,8 @@ export default function Products() {
   });
 
   // Sorting
+  // Always show newest products first by default (matches dashboard)
   const sorted = [...filtered].sort((a, b) => {
-    // Default: sort by createdAt descending (latest first)
     if (!sortBy) {
       return new Date(b.createdAt) - new Date(a.createdAt);
     }
@@ -171,6 +182,29 @@ export default function Products() {
               isDark ? 'text-white' : 'text-gray-900'
             }`}>Products</h2>
             <p className={isDark ? 'text-gray-400' : 'text-gray-600'}>Manage all products here.</p>
+            {/* Status summary badges */}
+            <div className="flex flex-wrap gap-2 mt-2">
+              <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
+                isDark ? 'bg-green-900/30 text-green-300' : 'bg-green-100 text-green-800'
+              }`}>
+                In Stock: {inStockCount}
+              </span>
+              <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
+                isDark ? 'bg-yellow-900/30 text-yellow-300' : 'bg-yellow-100 text-yellow-800'
+              }`}>
+                Low Stock: {lowStockCount}
+              </span>
+              <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
+                isDark ? 'bg-red-900/30 text-red-300' : 'bg-red-100 text-red-800'
+              }`}>
+                Out of Stock: {outOfStockCount}
+              </span>
+              <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
+                isDark ? 'bg-gray-900/30 text-gray-300' : 'bg-gray-100 text-gray-800'
+              }`}>
+                Discontinued: {discontinuedCount}
+              </span>
+            </div>
           </div>
           <button onClick={() => setShowAdd(true)} className="bg-orange-600 hover:bg-orange-700 text-white font-semibold px-5 py-2 rounded-xl shadow transition-all cursor-pointer">+ Add Product</button>
         </div>
@@ -648,6 +682,19 @@ export default function Products() {
                     <option value="discontinued">Discontinued</option>
                   </select>
                 </div>
+                <div>
+                  <label className={`block text-base mb-2 text-left pl-1 ${isDark ? 'text-gray-100' : 'text-gray-700'}`}>Assign to Supplier (optional)</label>
+                  <select
+                    value={form.supplierId}
+                    onChange={e => setForm({ ...form, supplierId: e.target.value })}
+                    className={`w-full px-4 py-2.5 rounded-xl transition-colors duration-200 cursor-pointer border focus:ring-2 focus:ring-orange-500/20 ${isDark ? 'bg-gray-700 border-gray-600 text-white' : 'bg-white border-gray-300'}`}
+                  >
+                    <option value="">-- Admin Owned --</option>
+                    {suppliers.map(s => (
+                      <option key={s.id} value={s.id}>{s.username || s.email}</option>
+                    ))}
+                  </select>
+                </div>
               </div>
             <div className="flex gap-3 justify-end mt-8">
               <button 
@@ -849,6 +896,19 @@ export default function Products() {
                     <option value="discontinued">Discontinued</option>
                   </select>
                 </div>
+                <div>
+                  <label className={`block text-base mb-2 ${isDark ? 'text-gray-100' : 'text-gray-700'}`}>Assign to Supplier (optional)</label>
+                  <select
+                    value={form.supplierId}
+                    onChange={e => setForm({ ...form, supplierId: e.target.value })}
+                    className={`w-full px-4 py-2.5 rounded-xl transition-colors duration-200 cursor-pointer border focus:ring-2 focus:ring-blue-500/20 ${isDark ? 'bg-gray-700 border-gray-600 text-white' : 'bg-white border-gray-300'}`}
+                  >
+                    <option value="">-- Admin Owned --</option>
+                    {suppliers.map(s => (
+                <option key={s.id} value={s.id}>{s.username}</option>
+                    ))}
+                  </select>
+                </div>
               </div>
             <div className="flex gap-3 justify-end mt-8">
               <button 
@@ -916,4 +976,4 @@ export default function Products() {
       )}
     </AdminLayout>
   );
-} 
+}

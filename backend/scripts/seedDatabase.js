@@ -161,14 +161,42 @@ async function seed() {
           assignedSupplierId = admin.id;
           activityText = `Admin created product '${productName}' (self-owned)`;
         }
+        // Set realistic price ranges by category
+        let minPrice = 1, maxPrice = 100;
+        switch (category) {
+          case 'Construction Materials': minPrice = 10; maxPrice = 50; break;
+          case 'Beverages': minPrice = 0.25; maxPrice = 2; break;
+          case 'Food & Groceries': minPrice = 0.5; maxPrice = 30; break;
+          case 'Household Products': minPrice = 1; maxPrice = 15; break;
+          case 'Personal Care': minPrice = 1; maxPrice = 20; break;
+          case 'Electronics & Appliances': minPrice = 10; maxPrice = 100; break;
+          default: minPrice = 1; maxPrice = 50; break;
+        }
+        const unitprice = parseFloat(faker.commerce.price({ min: minPrice, max: maxPrice, dec: 2 }));
+        // Assign stock and status more realistically
+        let stock, status;
+        const stockRand = faker.number.int({ min: 0, max: 100 });
+        if (stockRand === 0) {
+          status = 'out of stock';
+          stock = 0;
+        } else if (stockRand < 10) {
+          status = 'low stock';
+          stock = stockRand;
+        } else if (stockRand < 90) {
+          status = 'in stock';
+          stock = stockRand;
+        } else {
+          status = 'discontinued';
+          stock = stockRand;
+        }
         const [product, created] = await Product.findOrCreate({
           where: { name: productName, supplierId: assignedSupplierId },
           defaults: {
             name: productName,
             category,
-            unitprice: parseFloat(faker.commerce.price()),
-            stock: faker.number.int({ min: 0, max: 100 }),
-            status: faker.helpers.arrayElement(['in stock', 'low stock', 'out of stock', 'discontinued']),
+            unitprice,
+            stock,
+            status,
             supplierId: assignedSupplierId,
             createdAt: productDate,
             updatedAt: productDate
@@ -200,7 +228,9 @@ async function seed() {
       const supplierProducts = await Product.findAll({ where: { supplierId: supplier.id } });
       for (let i = 0; i < NUM_REPORTS_PER_SUPPLIER; i++) {
         const product = faker.helpers.arrayElement(supplierProducts);
-        const quantity = faker.number.int({ min: 1, max: 20 });
+        // Make sales quantity not exceed product stock, and more realistic
+        let maxQty = Math.max(1, Math.min(product.stock, 20));
+        const quantity = faker.number.int({ min: 1, max: maxQty });
         const totalPrice = product.unitprice * quantity;
         // Generate a timestamp within the last 7 days for analytics
         const now = new Date();

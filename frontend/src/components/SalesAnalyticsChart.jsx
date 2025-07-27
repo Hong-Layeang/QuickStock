@@ -20,7 +20,7 @@ const SalesAnalyticsChart = ({ loading, data }) => {
     if (data && data.length > 0) {
       const processedData = data.map(item => ({
         name: item.name,
-        sales: item.orders || 0,
+        sales: item.sales || 0, // use total quantity sold from backend
         value: item.value || 0
       }));
       setChartData(processedData);
