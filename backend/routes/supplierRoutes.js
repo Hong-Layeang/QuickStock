@@ -1,5 +1,5 @@
 import express from 'express';
-import { getSupplierDashboard, getSupplierProducts, getSupplierActivityLog, submitReport, getSupplierReports } from '../controllers/supplierController.js';
+import { getSupplierDashboard, getSupplierProducts, getSupplierActivityLog, submitReport, getSupplierReports, submitSaleReport } from '../controllers/supplierController.js';
 import { verifyToken } from '../middleware/verifyToken.js';
 import { roleCheck } from '../middleware/roleCheck.js';
 
@@ -18,5 +18,8 @@ router.get('/activity-log', verifyToken, roleCheck('supplier'), getSupplierActiv
 router.post('/reports', verifyToken, roleCheck('supplier'), submitReport);
 // Supplier views their submitted reports
 router.get('/reports', verifyToken, roleCheck('supplier'), getSupplierReports);
+
+// Supplier submits sale to customer
+router.post('/submit-report', verifyToken, roleCheck('supplier'), submitSaleReport);
 
 export default router;

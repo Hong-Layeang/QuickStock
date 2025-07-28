@@ -19,6 +19,7 @@ import AdminSettingsPage from './pages/admin/Settings.jsx';
 
 import SupplierDashBoardPage from './pages/supplier/Dashboard.jsx';
 import SupplierProductsPage from './pages/supplier/MyProducts.jsx';
+import SupplierReportsPage from './pages/supplier/Reports.jsx';
 import SupplierActivityLogPage from './pages/supplier/ActivityLog.jsx';
 import SupplierSettingsPage from './pages/supplier/Settings.jsx';
 
@@ -163,6 +164,7 @@ const App = () => {
         <Route path="/supplier" element={<SupplierLayout />}>
           <Route path="dashboard" element={<SupplierDashBoardPage />} />
           <Route path="my-products" element={<SupplierProductsPage />} />
+          <Route path="reports" element={<SupplierReportsPage />} />
           <Route path="activity-log" element={<SupplierActivityLogPage />} />
           <Route path="settings" element={<SupplierSettingsPage />} />
         </Route>
