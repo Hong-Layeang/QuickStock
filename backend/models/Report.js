@@ -29,6 +29,11 @@ const Report = sequelize.define('Report', {
     allowNull: false,
     defaultValue: 'completed',
   },
+  paymentMethod: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    defaultValue: 'cash',
+  },
 }, {
   timestamps: true,
 });

@@ -247,6 +247,7 @@ async function seed() {
           quantity,
           totalPrice,
           status: 'completed',
+          paymentMethod: faker.helpers.arrayElement(['cash', 'qr', 'cash', 'qr', 'cash']), // More cash payments
           createdAt: reportDate,
           updatedAt: reportDate
         });
