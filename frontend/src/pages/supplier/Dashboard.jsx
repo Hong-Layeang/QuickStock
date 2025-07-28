@@ -133,12 +133,7 @@ export default function DashBoard() {
         )}
 
         {/* Sales Analytics Chart */}
-        <SalesAnalyticsChart 
-          loading={loading || analyticsLoading} 
-          data={analyticsData}
-          title="Your Sales Performance"
-          subtitle="Track your daily sales and revenue"
-        />
+        <SalesAnalyticsChart loading={loading || analyticsLoading} data={analyticsData} />
 
         {/* Dashboard Cards */}
         <DashboardCards 

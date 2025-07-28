@@ -5,10 +5,12 @@ import useAuthStore from "../../stores/useAuthStore"
 import useThemeStore from "../../stores/useThemeStore"
 import ThemeToggle from "../ThemeToggle"
 import NotificationDropdown from "../NotificationDropdown"
+import { useNavigate } from "react-router-dom"
 
 const Header = () => {
   const user = useAuthStore((state) => state.user)
   const { isDark } = useThemeStore()
+  const navigate = useNavigate()
 
   return (
     <header className={`border-b shadow-sm ${
@@ -58,7 +60,7 @@ const Header = () => {
           {/* Right Section - Actions */}
           <div className="flex items-center space-x-2 sm:space-x-4">
             {/* Search Button (Mobile) */}
-            <button className={`md:hidden p-2 rounded-xl transition-colors ${
+            <button className={`md:hidden p-2 rounded-xl transition-colors cursor-pointer ${
               isDark ? 'hover:bg-gray-800' : 'hover:bg-gray-100'
             }`}>
               <Search className={`h-5 w-5 ${
@@ -73,9 +75,12 @@ const Header = () => {
             <NotificationDropdown userType="supplier" />
 
             {/* Settings */}
-            <button className={`p-2 rounded-xl transition-colors group ${
-              isDark ? 'hover:bg-gray-800' : 'hover:bg-gray-100'
-            }`}>
+            <button 
+              onClick={() => navigate('/supplier/settings')}
+              className={`p-2 rounded-xl transition-colors group cursor-pointer ${
+                isDark ? 'hover:bg-gray-800' : 'hover:bg-gray-100'
+              }`}
+            >
               <Settings className={`h-5 w-5 group-hover:scale-110 transition-transform ${
                 isDark ? 'text-gray-300' : 'text-gray-600'
               }`} />
@@ -97,9 +102,12 @@ const Header = () => {
                   {user?.email || 'supplier@quickstock.com'}
                 </p>
               </div>
-              <button className={`p-2 rounded-xl transition-colors group ${
-                isDark ? 'hover:bg-gray-800' : 'hover:bg-gray-100'
-              }`}>
+              <button 
+                onClick={() => navigate('/supplier/settings')}
+                className={`p-2 rounded-xl transition-colors group cursor-pointer ${
+                  isDark ? 'hover:bg-gray-800' : 'hover:bg-gray-100'
+                }`}
+              >
                 <div className="h-8 w-8 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full flex items-center justify-center text-white font-medium text-sm group-hover:scale-110 transition-transform">
                   {user?.name?.charAt(0)?.toUpperCase() || 'S'}
                 </div>

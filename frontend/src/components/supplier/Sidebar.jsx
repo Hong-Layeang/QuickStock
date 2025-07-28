@@ -1,6 +1,6 @@
 "use client"
 
-import { ChartNoAxesCombined, Package, ClipboardList, Users, X, Menu } from "lucide-react"
+import { ChartNoAxesCombined, Package, ClipboardList, Settings, X, Menu } from "lucide-react"
 import { useState, useEffect } from "react"
 import Logo from "../Logo"
 import useAuthStore from "../../stores/useAuthStore"
@@ -20,14 +20,14 @@ const SideBar = () => {
     if (location.pathname.includes("/supplier/my-products")) setActive("products");
     else if (location.pathname.includes("/supplier/dashboard")) setActive("dashboard");
     else if (location.pathname.includes("/supplier/reports")) setActive("reports");
-    else if (location.pathname.includes("/supplier/suppliers")) setActive("suppliers");
+    else if (location.pathname.includes("/supplier/settings")) setActive("settings");
   }, [location.pathname]);
 
   const menuItems = [
     { key: "dashboard", label: "Dashboard", icon: <ChartNoAxesCombined className="w-5 h-5" />, path: "/supplier/dashboard" },
     { key: "products", label: "Products", icon: <Package className="w-5 h-5" />, path: "/supplier/my-products" },
     { key: "reports", label: "Reports", icon: <ClipboardList className="w-5 h-5" />, path: "/supplier/reports" },
-    { key: "suppliers", label: "Suppliers", icon: <Users className="w-5 h-5" />, path: "/supplier/suppliers" },
+    { key: "settings", label: "Settings", icon: <Settings className="w-5 h-5" />, path: "/supplier/settings" },
   ]
 
   const handleLogout = () => {
@@ -57,7 +57,7 @@ const SideBar = () => {
                 setMobileMenuOpen(false)
                 if (item.path) navigate(item.path)
               }}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 group
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 group cursor-pointer
                 ${
                   active === item.key
                     ? "bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg shadow-orange-500/25"
@@ -83,7 +83,7 @@ const SideBar = () => {
       }`}>
         <button
           onClick={handleLogout}
-          className={`w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 ${
+          className={`w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 cursor-pointer ${
             isDark
               ? 'text-gray-300 hover:bg-red-900/20 hover:text-red-400'
               : 'text-gray-700 hover:bg-red-50 hover:text-red-600'
@@ -103,7 +103,7 @@ const SideBar = () => {
       {/* Mobile Menu Toggle Button */}
       <button
         onClick={() => setMobileMenuOpen(true)}
-        className={`lg:hidden fixed top-4 left-4 z-40 p-2 rounded-xl shadow-lg border transition-colors ${
+        className={`lg:hidden fixed top-4 left-4 z-40 p-2 rounded-xl shadow-lg border transition-colors cursor-pointer ${
           isDark 
             ? 'bg-gray-800 border-gray-700 hover:bg-gray-700' 
             : 'bg-white border-gray-200 hover:bg-gray-50'
@@ -130,11 +130,11 @@ const SideBar = () => {
           <div className="relative h-full">
             <button
               onClick={() => setMobileMenuOpen(false)}
-              className={`absolute top-4 right-4 p-2 rounded-lg transition-colors ${
+              className={`absolute top-4 right-4 p-2 rounded-lg transition-colors cursor-pointer ${
                 isDark ? 'hover:bg-gray-800' : 'hover:bg-gray-100'
               }`}
             >
-              <X className={`h-5 w-5 hover:cursor-pointer ${
+              <X className={`h-5 w-5 ${
                 isDark ? 'text-gray-400' : 'text-gray-500'
               }`} />
             </button>

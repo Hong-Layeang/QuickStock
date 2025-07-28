@@ -3,6 +3,7 @@ import Product from '../models/Product.js';
 import ActivityLog from '../models/ActivityLog.js';
 import Report from '../models/Report.js';
 import { Op } from 'sequelize';
+import sequelize from '../config/database.js';
 
 // Get supplier dashboard data
 export const getSupplierDashboard = async (req, res) => {
@@ -59,6 +60,95 @@ export const getSupplierDashboard = async (req, res) => {
       status: act.status,
     }));
 
+    // Calculate previous period values for change/trend (like admin)
+    const now = new Date();
+    const startOfThisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59, 999);
+
+    // Calculate trends for supplier's products
+    const totalProductsLastMonth = await Product.count({
+      where: {
+        supplierId,
+        createdAt: { [Op.between]: [startOfLastMonth, endOfLastMonth] }
+      }
+    });
+
+    const fourteenDaysAgo = new Date();
+    fourteenDaysAgo.setDate(fourteenDaysAgo.getDate() - 14);
+    const sevenDaysAgoForLowStock = new Date();
+    sevenDaysAgoForLowStock.setDate(sevenDaysAgoForLowStock.getDate() - 7);
+    
+    const lowStockLastWeek = await Product.count({
+      where: {
+        supplierId,
+        stock: { [Op.lt]: 10 },
+        createdAt: { [Op.between]: [fourteenDaysAgo, sevenDaysAgoForLowStock] }
+      }
+    });
+
+    const outOfStockLastWeek = await Product.count({
+      where: {
+        supplierId,
+        stock: { [Op.eq]: 0 },
+        createdAt: { [Op.between]: [fourteenDaysAgo, sevenDaysAgoForLowStock] }
+      }
+    });
+
+    const recentProductsPrev = await Product.count({
+      where: {
+        supplierId,
+        createdAt: { [Op.between]: [fourteenDaysAgo, sevenDaysAgo] }
+      }
+    });
+
+    // Helper for percent change (same as admin)
+    function getChange(current, prev) {
+      const diff = current - prev;
+      const percent = prev === 0 ? (current > 0 ? 100 : 0) : (diff / Math.abs(prev)) * 100;
+      return {
+        percent: percent.toFixed(1),
+        direction: percent > 0 ? 'up' : percent < 0 ? 'down' : 'flat',
+        sign: percent > 0 ? '+' : ''
+      };
+    }
+
+    // Calculate changes
+    const prodChange = getChange(totalProducts, totalProductsLastMonth);
+    const lowStockChange = getChange(lowStockProducts, lowStockLastWeek);
+    const outOfStockChange = getChange(outOfStockProducts, outOfStockLastWeek);
+    const recentProdChange = getChange(recentProducts, recentProductsPrev);
+
+    // Generate sales analytics data for the last 7 days using supplier's reports
+    const salesData = [];
+    const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    for (let i = 6; i >= 0; i--) {
+      const date = new Date();
+      date.setDate(date.getDate() - i);
+      const startOfDay = new Date(date.setHours(0, 0, 0, 0));
+      const endOfDay = new Date(date.setHours(23, 59, 59, 999));
+      const dayName = days[startOfDay.getDay() === 0 ? 6 : startOfDay.getDay() - 1];
+      
+      const reports = await Report.findAll({
+        where: {
+          userId: supplierId,
+          createdAt: { [Op.between]: [startOfDay, endOfDay] },
+          status: 'completed',
+        },
+      });
+      
+      const totalReports = reports.length;
+      const totalValue = reports.reduce((sum, report) => sum + report.totalPrice, 0);
+      const totalQuantity = reports.reduce((sum, report) => sum + (report.quantity || 0), 0);
+      
+      salesData.push({
+        name: dayName,
+        sales: totalQuantity,
+        value: totalValue,
+        reports: totalReports,
+      });
+    }
+
     // Calculate total value of supplier's inventory
     const supplierProducts = await Product.findAll({ 
       where: { supplierId },
@@ -74,43 +164,128 @@ export const getSupplierDashboard = async (req, res) => {
     const totalRevenue = supplierReports.reduce((sum, r) => sum + (r.totalPrice || 0), 0);
     const totalSales = supplierReports.reduce((sum, r) => sum + (r.quantity || 0), 0);
 
-    // Dashboard metrics for Transaction Summary (different from cards)
+    // Calculate supplier-specific metrics for today and this month
+    const startOfToday = new Date();
+    startOfToday.setHours(0, 0, 0, 0);
+    const endOfToday = new Date();
+    endOfToday.setHours(23, 59, 59, 999);
+    
+    const salesTodayReports = await Report.findAll({
+      where: {
+        userId: supplierId,
+        createdAt: { [Op.between]: [startOfToday, endOfToday] },
+        status: 'completed',
+      },
+    });
+    const totalSalesToday = salesTodayReports.reduce((sum, r) => sum + (r.totalPrice || 0), 0);
+
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const salesMonthReports = await Report.findAll({
+      where: {
+        userId: supplierId,
+        createdAt: { [Op.between]: [startOfMonth, endOfToday] },
+        status: 'completed',
+      },
+    });
+    const totalSalesMonth = salesMonthReports.reduce((sum, r) => sum + (r.totalPrice || 0), 0);
+    const totalSalesQuantityMonth = salesMonthReports.reduce((sum, r) => sum + (r.quantity || 0), 0);
+
+    // Pending Orders for this supplier
+    const pendingOrders = await Report.count({ 
+      where: { 
+        userId: supplierId,
+        status: { [Op.ne]: 'completed' } 
+      } 
+    });
+
+    // Top Selling Product for this supplier
+    const topProductAgg = await Report.findAll({
+      where: { 
+        userId: supplierId,
+        status: 'completed' 
+      },
+      include: [{ model: Product, as: 'Product', where: { supplierId } }],
+      attributes: ['productId', [sequelize.fn('SUM', sequelize.col('quantity')), 'totalSold']],
+      group: ['productId'],
+      order: [[sequelize.fn('SUM', sequelize.col('quantity')), 'DESC']],
+      limit: 1,
+      raw: true
+    });
+    let topSellingProduct = 'N/A';
+    if (topProductAgg[0]) {
+      const prod = await Product.findByPk(topProductAgg[0].productId);
+      topSellingProduct = prod ? prod.name : 'N/A';
+    }
+
+    // Total Categories for this supplier
+    const categories = await Product.findAll({ 
+      where: { supplierId },
+      attributes: [[sequelize.fn('DISTINCT', sequelize.col('category')), 'category']], 
+      raw: true 
+    });
+    const totalCategories = categories.length;
+
+    // Dashboard metrics for Transaction Summary (supplier-specific, matching admin structure)
     const metrics = [
       {
-        label: 'Total Sales Revenue',
-        value: `$${totalRevenue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
-        change: 'All time earnings',
-        icon: 'dollar-sign',
-        color: 'text-green-600',
-        bgColor: 'bg-green-100 dark:bg-green-900/20'
-      },
-      {
-        label: 'Items Sold',
-        value: totalSales.toString(),
-        change: 'Total quantity sold',
+        label: 'Total Sales Today',
+        value: `$${totalSalesToday.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
         icon: 'trending-up',
-        color: 'text-blue-600',
-        bgColor: 'bg-blue-100 dark:bg-blue-900/20'
+        color: 'text-green-600',
+        bgColor: 'bg-green-100 dark:bg-green-900/20',
       },
       {
-        label: 'Inventory Value',
-        value: `$${totalInventoryValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
-        change: 'Current stock value',
-        icon: 'package',
-        color: 'text-purple-600',
-        bgColor: 'bg-purple-100 dark:bg-purple-900/20'
-      },
-      {
-        label: 'Avg. Product Price',
-        value: totalProducts > 0 ? `$${(totalInventoryValue / totalProducts).toFixed(2)}` : '$0.00',
-        change: 'Average value per product',
+        label: 'Total Sales This Month',
+        value: `$${totalSalesMonth.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
         icon: 'bar-chart-3',
+        color: 'text-blue-600',
+        bgColor: 'bg-blue-100 dark:bg-blue-900/20',
+      },
+      {
+        label: 'Pending Orders',
+        value: pendingOrders.toString(),
+        icon: 'clipboard-list',
+        color: 'text-yellow-600',
+        bgColor: 'bg-yellow-100 dark:bg-yellow-900/20',
+      },
+      {
+        label: 'Top Selling Product',
+        value: topSellingProduct,
+        icon: 'star',
+        color: 'text-purple-600',
+        bgColor: 'bg-purple-100 dark:bg-purple-900/20',
+      },
+      {
+        label: 'Average Sale Price',
+        value: totalSalesQuantityMonth > 0 ? `$${(totalSalesMonth / totalSalesQuantityMonth).toFixed(2)}` : '$0.00',
+        icon: 'user-check',
         color: 'text-indigo-600',
-        bgColor: 'bg-indigo-100 dark:bg-indigo-900/20'
-      }
+        bgColor: 'bg-indigo-100 dark:bg-indigo-900/20',
+      },
+      {
+        label: 'Total Categories',
+        value: totalCategories.toString(),
+        icon: 'layers',
+        color: 'text-pink-600',
+        bgColor: 'bg-pink-100 dark:bg-pink-900/20',
+      },
+      {
+        label: 'Total Products',
+        value: totalProducts.toString(),
+        icon: 'users',
+        color: 'text-blue-600',
+        bgColor: 'bg-blue-100 dark:bg-blue-900/20',
+      },
+      {
+        label: 'Total Inventory Value',
+        value: `$${totalInventoryValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+        icon: 'package',
+        color: 'text-teal-600',
+        bgColor: 'bg-teal-100 dark:bg-teal-900/20',
+      },
     ];
 
-    // Dashboard cards data (exactly 4 cards)
+    // Dashboard cards data (matching admin structure exactly)
     const cards = [
       {
         icon: 'boxes',
@@ -119,8 +294,8 @@ export const getSupplierDashboard = async (req, res) => {
         subtitle: 'products',
         bg: 'bg-gradient-to-br from-blue-400 via-blue-500 to-blue-600',
         text: 'text-white',
-        trend: '+5%',
-        trendDirection: 'up',
+        trend: `${prodChange.sign}${prodChange.percent}%`,
+        trendDirection: prodChange.direction,
         change: 'from last month',
         link: '/supplier/my-products',
         description: 'Total number of your products'
@@ -132,11 +307,24 @@ export const getSupplierDashboard = async (req, res) => {
         subtitle: 'items',
         bg: 'bg-gradient-to-br from-yellow-400 via-yellow-500 to-orange-500',
         text: 'text-white',
-        trend: '+2%',
-        trendDirection: 'up',
+        trend: `${lowStockChange.sign}${lowStockChange.percent}%`,
+        trendDirection: lowStockChange.direction,
         change: 'from last week',
         link: '/supplier/my-products?filter=low-stock',
         description: 'Your products that need restocking'
+      },
+      {
+        icon: 'package-minus',
+        title: 'Out of Stock',
+        value: outOfStockProducts.toString(),
+        subtitle: 'items',
+        bg: 'bg-gradient-to-br from-red-400 via-red-500 to-red-600',
+        text: 'text-white',
+        trend: `${outOfStockChange.sign}${outOfStockChange.percent}%`,
+        trendDirection: outOfStockChange.direction,
+        change: 'from last week',
+        link: '/supplier/my-products?filter=out-of-stock',
+        description: 'Your products that are out of stock'
       },
       {
         icon: 'package-plus',
@@ -145,24 +333,11 @@ export const getSupplierDashboard = async (req, res) => {
         subtitle: 'products',
         bg: 'bg-gradient-to-br from-green-400 via-green-500 to-green-600',
         text: 'text-white',
-        trend: '+8%',
-        trendDirection: 'up',
+        trend: `${recentProdChange.sign}${recentProdChange.percent}%`,
+        trendDirection: recentProdChange.direction,
         change: 'from last week',
         link: '/supplier/my-products?filter=recent',
         description: 'Products you added recently'
-      },
-      {
-        icon: 'check-circle',
-        title: 'In Stock',
-        value: inStockProducts.toString(),
-        subtitle: 'products',
-        bg: 'bg-gradient-to-br from-green-400 via-green-500 to-green-600',
-        text: 'text-white',
-        trend: '+12%',
-        trendDirection: 'up',
-        change: 'from last month',
-        link: '/supplier/my-products?filter=in-stock',
-        description: 'Your products currently in stock'
       }
     ];
 
@@ -172,12 +347,14 @@ export const getSupplierDashboard = async (req, res) => {
         cards,
         activities,
         metrics,
+        salesData,
         summary: {
           totalProducts,
           lowStockProducts,
           outOfStockProducts,
           recentProducts,
-          inStockProducts
+          inStockProducts,
+          totalInventoryValue,
         }
       }
     });
@@ -278,10 +455,104 @@ export const getSupplierReports = async (req, res) => {
     const reports = await Report.findAll({
       where: { userId: supplierId },
       order: [['createdAt', 'DESC']],
+      include: [
+        {
+          model: Product,
+          as: 'Product',
+          attributes: ['name', 'supplierId'],
+        },
+        {
+          model: User,
+          as: 'User',
+          attributes: ['username'],
+        },
+      ],
     });
-    res.json({ success: true, data: reports });
+    
+    // Map reports to include productName at top level
+    const mappedReports = reports.map((report) => ({
+      ...report.toJSON(),
+      productName: report.Product?.name || '',
+      userName: report.User?.username || '',
+    }));
+    
+    res.json({ success: true, data: mappedReports });
   } catch (error) {
     console.error('Error fetching supplier reports:', error);
     res.status(500).json({ success: false, message: 'Failed to fetch reports' });
   }
-}; 
+};
+
+// Submit sale report - record sales to customers
+export const submitSaleReport = async (req, res) => {
+  try {
+    const supplierId = req.user.id;
+    const { productId, quantity, totalPrice, paymentMethod = 'cash' } = req.body;
+
+    // Verify the product belongs to this supplier
+    const product = await Product.findOne({
+      where: { 
+        id: productId, 
+        supplierId: supplierId 
+      }
+    });
+
+    if (!product) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'Product not found or does not belong to this supplier' 
+      });
+    }
+
+    // Check if enough stock is available
+    if (product.stock < quantity) {
+      return res.status(400).json({ 
+        success: false, 
+        message: `Insufficient stock. Available: ${product.stock}, Requested: ${quantity}` 
+      });
+    }
+
+    // Create sales report  
+    const report = await Report.create({
+      userId: supplierId,
+      productId: productId,
+      quantity: quantity,
+      totalPrice: totalPrice,
+      status: 'completed',
+      paymentMethod: paymentMethod
+    });
+
+    // Update product stock
+    await product.update({
+      stock: product.stock - quantity,
+      status: (product.stock - quantity) === 0 ? 'out of stock' : 
+              (product.stock - quantity) < 10 ? 'low stock' : 'in stock'
+    });
+
+    // Log the activity
+    await ActivityLog.create({
+      userId: supplierId,
+      activity: `Completed sale of ${quantity} ${product.name}(s)`,
+      type: 'sale',
+      status: 'completed',
+      productId: product.id,
+      createdAt: new Date()
+    });
+
+    res.json({ 
+      success: true, 
+      message: 'Sale recorded successfully',
+      data: {
+        report: report,
+        updatedStock: product.stock - quantity
+      }
+    });
+
+  } catch (error) {
+    console.error('Error submitting sale report:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to process sale' 
+    });
+  }
+};
