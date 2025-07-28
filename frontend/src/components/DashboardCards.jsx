@@ -235,13 +235,35 @@ const DashboardCards = ({ cards, loading = false, onRefresh }) => {
           <div 
             key={idx} 
             className={getCardStyling(card)}
-            onClick={() => navigate(card.link || '/admin/dashboard')}
+            onClick={() => {
+              if (card.title === 'Low in Stock') {
+                navigate('/supplier/my-products?filter=low-stock');
+              } else if (card.title === 'Recent Products') {
+                navigate('/supplier/my-products?filter=recent');
+              } else if (card.title === 'In Stock') {
+                navigate('/supplier/my-products?filter=in-stock');
+              } else if (card.title === 'Out of Stock') {
+                navigate('/supplier/my-products?filter=out-of-stock');
+              } else {
+                navigate(card.link || '/admin/dashboard');
+              }
+            }}
             role="button"
             tabIndex={0}
             onKeyDown={(e) => {
               if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
-                navigate(card.link || '/admin/dashboard');
+                if (card.title === 'Low in Stock') {
+                  navigate('/supplier/my-products?filter=low-stock');
+                } else if (card.title === 'Recent Products') {
+                  navigate('/supplier/my-products?filter=recent');
+                } else if (card.title === 'In Stock') {
+                  navigate('/supplier/my-products?filter=in-stock');
+                } else if (card.title === 'Out of Stock') {
+                  navigate('/supplier/my-products?filter=out-of-stock');
+                } else {
+                  navigate(card.link || '/admin/dashboard');
+                }
               }
             }}
             aria-label={`${card.title}: ${card.value} ${card.subtitle}. ${card.description || ''}`}

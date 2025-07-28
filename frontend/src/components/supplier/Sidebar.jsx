@@ -1,22 +1,33 @@
 "use client"
 
 import { ChartNoAxesCombined, Package, ClipboardList, Users, X, Menu } from "lucide-react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Logo from "../Logo"
 import useAuthStore from "../../stores/useAuthStore"
 import useThemeStore from "../../stores/useThemeStore"
+import { useNavigate, useLocation } from "react-router-dom";
 
 const SideBar = () => {
   const [active, setActive] = useState("dashboard")
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const logout = useAuthStore((state) => state.logout)
   const { isDark } = useThemeStore()
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Set active state based on current location
+  useEffect(() => {
+    if (location.pathname.includes("/supplier/my-products")) setActive("products");
+    else if (location.pathname.includes("/supplier/dashboard")) setActive("dashboard");
+    else if (location.pathname.includes("/supplier/reports")) setActive("reports");
+    else if (location.pathname.includes("/supplier/suppliers")) setActive("suppliers");
+  }, [location.pathname]);
 
   const menuItems = [
-    { key: "dashboard", label: "Dashboard", icon: <ChartNoAxesCombined className="w-5 h-5" /> },
-    { key: "products", label: "Products", icon: <Package className="w-5 h-5" /> },
-    { key: "reports", label: "Reports", icon: <ClipboardList className="w-5 h-5" /> },
-    { key: "suppliers", label: "Suppliers", icon: <Users className="w-5 h-5" /> },
+    { key: "dashboard", label: "Dashboard", icon: <ChartNoAxesCombined className="w-5 h-5" />, path: "/supplier/dashboard" },
+    { key: "products", label: "Products", icon: <Package className="w-5 h-5" />, path: "/supplier/my-products" },
+    { key: "reports", label: "Reports", icon: <ClipboardList className="w-5 h-5" />, path: "/supplier/reports" },
+    { key: "suppliers", label: "Suppliers", icon: <Users className="w-5 h-5" />, path: "/supplier/suppliers" },
   ]
 
   const handleLogout = () => {
@@ -44,6 +55,7 @@ const SideBar = () => {
               onClick={() => {
                 setActive(item.key)
                 setMobileMenuOpen(false)
+                if (item.path) navigate(item.path)
               }}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 group
                 ${
