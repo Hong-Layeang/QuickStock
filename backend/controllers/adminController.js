@@ -44,7 +44,7 @@ export const getAdminDashboard = async (req, res) => {
       }
     });
 
-    // Generate sales analytics data for the last 7 days using real reports
+    // Generate sales analytics data for the last 7 days
     const salesData = [];
     const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
     for (let i = 6; i >= 0; i--) {

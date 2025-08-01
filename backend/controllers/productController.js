@@ -4,7 +4,6 @@ export const getProducts = async (req, res) => {
     try {
         const products = await Product.findAll();
         
-        // Transform products to match frontend expectations
         const transformedProducts = products.map(product => ({
             id: product.id,
             name: product.name,
@@ -38,17 +37,25 @@ export const getProductById = async (req, res) => {
 }
 
 export const createProduct = async (req, res) => {
-    const { name, category, unitprice, stock = 0, status = 'in stock' } = req.body;
-    const supplierId = req.user.id; // this is set by verifyToken
-
+    const { name, category, unitprice, stock = 0, status = 'in stock', supplierId } = req.body;
+    
     try {
+        // For admin users, use the supplierId from request body if provided, otherwise use admin's ID
+        // For supplier users, always use their own ID
+        let finalSupplierId;
+        if (req.user.role === 'admin') {
+            finalSupplierId = supplierId && supplierId !== '' ? parseInt(supplierId) : req.user.id;
+        } else {
+            finalSupplierId = req.user.id;
+        }
+
         const newProduct = await Product.create({
             name,
             category,
             unitprice,
             stock,
             status,
-            supplierId
+            supplierId: finalSupplierId
         });
         // Log product creation
         const ActivityLog = (await import('../models/ActivityLog.js')).default;
@@ -91,9 +98,14 @@ export const editProduct = async (req, res) => {
         }
 
         const updateFields = { name, category, unitprice, stock, status };
-        if (supplierId !== undefined) {
-            updateFields.supplierId = supplierId;
+        
+        // Handle supplierId assignment for admin users
+        if (req.user.role === 'admin') {
+            if (supplierId !== undefined) {
+                updateFields.supplierId = supplierId === '' ? req.user.id : parseInt(supplierId);
+            }
         }
+        
         const updatedProduct = await product.update(updateFields);
         // Log product update
         const ActivityLog = (await import('../models/ActivityLog.js')).default;

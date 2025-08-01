@@ -7,7 +7,6 @@ import hashPassword from "../node.bcrypt.js";
 export const getUsers = async (req, res) => {
     try {
         const users = await User.findAll();
-        // Return all relevant fields for frontend compatibility
         const usersWithAllFields = users.map(user => ({
             id: user.id,
             name: user.username,
@@ -159,8 +158,6 @@ export const deleteUser = async (req, res) => {
 // Get current user profile
 export const getCurrentUser = async (req, res) => {
     try {
-        console.log('getCurrentUser - req.user:', req.user); // Debug log
-        
         if (!req.user || !req.user.id) {
             return res.status(401).json({ success: false, message: "User not authenticated" });
         }

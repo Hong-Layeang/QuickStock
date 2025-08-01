@@ -461,7 +461,8 @@ export default function Products() {
                                   category: p.category, 
                                   unitprice: p.unitprice, 
                                   stock: p.stock || 0, 
-                                  status: p.status 
+                                  status: p.status,
+                                  supplierId: p.supplierId || ""
                                 }); 
                               }} 
                               className={`flex items-center gap-1 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg text-xs sm:text-sm font-medium shadow-sm transition-all duration-200 cursor-pointer
@@ -736,7 +737,7 @@ export default function Products() {
                   >
                     <option value="">-- Admin Owned --</option>
                     {suppliers.map(s => (
-                      <option key={s.id} value={s.id}>{s.username || s.email}</option>
+                      <option key={s.id} value={s.id}>{s.name || s.username || s.email}</option>
                     ))}
                   </select>
                 </div>
@@ -950,7 +951,7 @@ export default function Products() {
                   >
                     <option value="">-- Admin Owned --</option>
                     {suppliers.map(s => (
-                <option key={s.id} value={s.id}>{s.username}</option>
+                      <option key={s.id} value={s.id}>{s.name || s.username || s.email}</option>
                     ))}
                   </select>
                 </div>

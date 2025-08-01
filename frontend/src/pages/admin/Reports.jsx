@@ -221,7 +221,7 @@ export default function Reports() {
               <thead>
                 <tr className={isDark ? 'bg-gray-700' : 'bg-gray-100'}>
                   <th className="px-3 sm:px-4 py-3 text-left font-medium w-40">Date</th>
-                  <th className="px-3 sm:px-4 py-3 text-left font-medium w-50">Supplier</th>
+                  <th className="px-3 sm:px-4 py-3 text-left font-medium w-35">Supplier</th>
                   <th className="px-3 sm:px-4 py-3 text-left font-medium w-0">Product</th>
                   <th className="px-3 sm:px-4 py-3 text-left font-medium w-16">Qty</th>
                   <th className="px-3 sm:px-4 py-3 text-left font-medium w-20">Price</th>
@@ -250,7 +250,7 @@ export default function Reports() {
                           {new Date(report.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                         </div>
                       </td>
-                      <td className="px-3 sm:px-4 py-3 w-50">
+                      <td className="px-3 sm:px-4 py-3 w-35">
                         <div className="text-xs sm:text-sm font-medium truncate text-left">
                           {report.supplierName || 'Unknown'}
                         </div>
@@ -263,8 +263,8 @@ export default function Reports() {
                       <td className="px-3 sm:px-4 py-3 text-xs sm:text-sm w-16 text-left">
                         {report.quantity || 0}
                       </td>
-                      <td className="px-3 sm:px-4 py-3 w-20">
-                        <span className={`text-xs sm:text-sm font-bold text-left ${isDark ? 'text-green-300' : 'text-green-600'}`}>
+                      <td className="px-3 sm:px-4 py-3 w-20 text-left">
+                        <span className={`text-xs sm:text-sm font-bold ${isDark ? 'text-green-300' : 'text-green-600'}`}>
                           ${report.totalPrice?.toFixed(2) || '0.00'}
                         </span>
                       </td>
@@ -273,7 +273,7 @@ export default function Reports() {
                           {report.paymentMethod === 'qr' ? 'QR' : 'Cash'}
                         </span>
                       </td>
-                      <td className="px-3 sm:px-4 py-3 w-20">
+                      <td className="px-3 sm:px-4 py-3 w-20 text-left">
                         <span className={`inline-block px-1 py-1 rounded text-xs font-medium ${
                           report.status === 'completed'
                             ? isDark ? 'bg-green-900/30 text-green-300' : 'bg-green-100 text-green-800'
